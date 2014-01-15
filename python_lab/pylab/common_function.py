@@ -15,7 +15,7 @@ def exeTime(func):
         print "%s: func_%s starts" % (time.strftime("%X", time.localtime()), func.__name__)
         back = func(*args, **args2)
         print "%s: func_%s ends" % (time.strftime("%X", time.localtime()), func.__name__)
-        print ">>%s takes %.3f seconds" % (func.__name__, time.time() - t0)
+        print ">>func_%s takes %.3f seconds" % (func.__name__, time.time() - t0)
         return back
     return newFunc
 
