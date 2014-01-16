@@ -44,31 +44,31 @@ def calcMobility(node1, node2):
 
 def getPathInfo(lsPath):
     '''compute statistic for each roaming path'''
-    mb = CPathInfo()
-    mb.m_nPathLen = len(lsPath)
-    mb.m_strIMEI = lsPath[0].m_strIMEI
+    info = CPathInfo()
+    info.m_nPathLen = len(lsPath)
+    info.m_strIMEI = lsPath[0].m_strIMEI
     for x in lsPath:
-        mb.m_dMobility += x.m_dMobility_speed
+        info.m_dMobility += x.m_dMobility_speed
         for y in x.m_lsApps:
             # uplink
-            mb.m_nUpBytes += y.m_nUpBytes
-            mb.m_nUpPackets += y.m_nUpPackets
-            if mb.m_dMaxUpSpeed < y.m_dUpSpeed:
-                mb.m_dMaxUpSpeed = y.m_dUpSpeed
-            if mb.m_dMinUpSpeed > y.m_dUpSpeed:
-                mb.m_dMinUpSpeed = y.m_dUpSpeed
+            info.m_nUpBytes += y.m_nUpBytes
+            info.m_nUpPackets += y.m_nUpPackets
+            if info.m_dMaxUpSpeed < y.m_dUpSpeed:
+                info.m_dMaxUpSpeed = y.m_dUpSpeed
+            if info.m_dMinUpSpeed > y.m_dUpSpeed:
+                info.m_dMinUpSpeed = y.m_dUpSpeed
             
             #downlink
-            mb.m_nDownBytes += y.m_nDownBytes
-            mb.m_nDownPackets += y.m_nDownPackets
-            if mb.m_dMaxDownSpeed < y.m_dDownSpeed:
-                mb.m_dMaxDownSpeed = y.m_dDownSpeed
-            if mb.m_dMinDownSpeed > y.m_dDownSpeed:
-                mb.m_dMinDownSpeed = y.m_dDownSpeed
+            info.m_nDownBytes += y.m_nDownBytes
+            info.m_nDownPackets += y.m_nDownPackets
+            if info.m_dMaxDownSpeed < y.m_dDownSpeed:
+                info.m_dMaxDownSpeed = y.m_dDownSpeed
+            if info.m_dMinDownSpeed > y.m_dDownSpeed:
+                info.m_dMinDownSpeed = y.m_dDownSpeed
     
-    mb.m_dMobility = mb.m_dMobility / len(lsPath) # overall mobility = average of mobility of each node
+    info.m_dMobility = info.m_dMobility / len(lsPath) # overall mobility = average of mobility of each node
     
-    return mb
+    return info
 
 def writePath2File(strIMEI, strOutDir, lsPath):
     if len(lsPath) != 0:
@@ -78,7 +78,7 @@ def writePath2File(strIMEI, strOutDir, lsPath):
             text += "\n"
          
         # get path info
-        info = common_function.getPathInfo(lsPath)
+        info = getPathInfo(lsPath)
         text += info.toString()
         strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
         with open(strOutFilePath, 'w') as hOutFile:
