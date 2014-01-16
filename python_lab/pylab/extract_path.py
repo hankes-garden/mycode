@@ -6,16 +6,18 @@ Created on 2014年1月14日
 '''
 
 from app import *
-import common_function
 from node import *
 from tuple import *
+from common_function import *
+
+import multiprocessing
 
 
-# some constants
+# some global variables
 g_max_buffer_size = 0
 g_max_buffer_size = 1024*1024*512
+result_list = []
 
-@common_function.exeTime
 def extractPath(strIMEI, lsInFiles, strOutDir):
     '''extract roaming path of given IMEI from CDR'''
     if len(lsInFiles) == 0 :
@@ -25,7 +27,6 @@ def extractPath(strIMEI, lsInFiles, strOutDir):
     
     for strInFilePath in lsInFiles:
         with open(strInFilePath) as hInFile:
-            hInFile.readline() # skip header
             curNode = CNode("", 0, 0)
             
             while(1):
@@ -50,7 +51,7 @@ def extractPath(strIMEI, lsInFiles, strOutDir):
                             newNode.m_nRat = tp.m_nRat
                             newNode.m_lsApps.append(tp.m_app)
                             if (curNode.m_nCellID != 0):
-                                newNode.m_dMobility_speed = common_function.calcMobility(curNode, newNode)
+                                newNode.m_dMobility_speed = calcMobility(curNode, newNode)
                                 
                             lsPath.append(newNode)
                             curNode = newNode
@@ -77,24 +78,37 @@ def extractPath(strIMEI, lsInFiles, strOutDir):
                     except NameError as err:
                         print(err)
 
-    # Note: all the nodes of given IMEI will first store in MEM and then write to file 
-    if len(lsPath) != 0:            
-        text = ""         
-        for x in lsPath:
-            text += x.toString()
-            text += "\n"
-        # get path info
-        info = common_function.getPathInfo(lsPath)
-        text += info.toString()
-        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
-        with open(strOutFilePath, 'w') as hOutFile:
-            hOutFile.write(text)
-    else:
-        raise NameError("Error: Empty roaming path")
-                    
+    # Note: all the nodes of given IMEI will first store in MEM and then write to file
+#     writePath2File(strIMEI, strOutDir, lsPath)
+    strFilePath = serializePath(strIMEI, strOutDir, lsPath)
+    return strFilePath
+
+
+def log_result(rt):
+    result_list.append(rt)
+    
+def proc_init():
+    print("Starting proc:", multiprocessing.current_process().name )
+    
+def fake_extractPath(strIMEI, lsInFiles, strOutDir):
+    print("doing " + strIMEI)
+
+def extractPathinParallel(lsImeis, lsCDRFilePaths, strOutDir):
+    nPoolSize = min(len(lsImeis), multiprocessing.cpu_count()*2)
+    pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
+    for strImei in lsImeis:
+        pool.apply_async(extractPath, args=(strImei, lsCDRFilePaths, strOutDir), callback = log_result)
+    pool.close()
+    pool.join()
+    print(result_list)
+    
         
 if __name__ == '__main__':
-    lsIn = ["D:\\t1.csv", "D:\\t2.csv"]
-    extractPath("127460079774812", lsIn, "d:\\")
+    lsImeis = ["127460079774812", "0128480018959912", "8613440243171178"]
+    lsCDR = ["D:\\yanglin\\local\\work\\playground\\t1.csv", \
+             "D:\\yanglin\\local\\work\\playground\\t2.csv", \
+             "D:\\yanglin\\local\\work\\playground\\t3.csv"]
+    strOutDir = "D:\\yanglin\\local\\work\\playground\\"
+    extractPathinParallel(lsImeis, lsCDR, strOutDir)
 
     

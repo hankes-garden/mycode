@@ -4,8 +4,7 @@ Created on 2014年1月14日
 
 @author: jason
 '''
-
-import common_function
+from common_function import *
 from app import *
 import time
 
@@ -37,8 +36,8 @@ class CTuple(object):
             raise NameError("Could NOT parse this line correctly.")
         
         try :
-            self.m_firstTime = common_function.reformat_time_string(lsItems[0])
-            self.m_endTime = common_function.reformat_time_string(lsItems[1])
+            self.m_firstTime = reformat_time_string(lsItems[0])
+            self.m_endTime = reformat_time_string(lsItems[1])
             self.m_strIMEI = lsItems[4]
             self.m_nLac = int(lsItems[7])
             self.m_nCellID = int(lsItems[9])
@@ -60,8 +59,8 @@ class CTuple(object):
         
     def toString(self):
         text = "%s, %s, %s, %d, %d, %d, %d, %d, %d, %d, %d, %d, %.3f, %.3f, %d, %d, %d" % \
-                                      (common_function.get_time_str(self.m_firstTime), \
-                                      common_function.get_time_str(self.m_endTime), \
+                                      (get_time_str(self.m_firstTime), \
+                                      get_time_str(self.m_endTime), \
                                       self.m_strIMEI, \
                                       self.m_nLac, \
                                       self.m_nCellID, \

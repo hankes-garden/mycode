@@ -5,9 +5,11 @@ Created on 2014年1月14日
 @author: jason
 '''
 
-import time
 from node import *
 from pathinfo import *
+
+import time
+import cPickle
 
 def exeTime(func):
     def newFunc(*args, **args2):
@@ -39,7 +41,7 @@ def calcMobility(node1, node2):
     '''calculate moving speed'''
     return 1.0
 
-@exeTime
+
 def getPathInfo(lsPath):
     '''compute statistic for each roaming path'''
     mb = CPathInfo()
@@ -68,5 +70,39 @@ def getPathInfo(lsPath):
     
     return mb
 
+def writePath2File(strIMEI, strOutDir, lsPath):
+    if len(lsPath) != 0:
+        text = ""
+        for x in lsPath:
+            text += x.toString()
+            text += "\n"
+         
+        # get path info
+        info = common_function.getPathInfo(lsPath)
+        text += info.toString()
+        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
+        with open(strOutFilePath, 'w') as hOutFile:
+            hOutFile.write(text)
+    else:
+        raise NameError("Error: Empty roaming path")
+    
+
+def serializePath(strIMEI, strOutDir, lsPath):
+    if len(lsPath) != 0:
+        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
+        with open(strOutFilePath, 'w') as hOutFile:
+            cPickle.dump(lsPath, hOutFile, protocol=0)
+        return strOutFilePath
+    else:
+        raise NameError("Error: Empty roaming path")
+   
+
+def deserializePath(strFilePath):
+    lsPath = 0
+    with open(strFilePath) as hFile:
+        lsPath = cPickle.load(hFile)
+    return lsPath
+    
 if __name__ == '__main__':
     print('This is a common module which includes many useful functions')
+    

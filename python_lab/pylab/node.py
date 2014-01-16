@@ -4,7 +4,7 @@ Created on 2014年1月15日
 
 @author: jason
 '''
-import common_function
+from common_function import *
 import time
 
 class CNode(object):
@@ -44,8 +44,8 @@ class CNode(object):
                     (self.m_strIMEI, \
                      self.m_nLac, \
                      self.m_nCellID, \
-                     common_function.get_time_str(self.m_firstTime), \
-                     common_function.get_time_str(self.m_endTime), \
+                     get_time_str(self.m_firstTime), \
+                     get_time_str(self.m_endTime), \
                      self.m_dDuration, \
                      self.m_nRat, \
                      self.m_dMobility_speed)
