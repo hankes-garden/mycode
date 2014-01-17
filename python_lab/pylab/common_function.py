@@ -63,6 +63,7 @@ def getPathInfo(lsPath):
             # uplink
             info.m_nUpBytes += y.m_nUpBytes
             info.m_nUpPackets += y.m_nUpPackets
+            info.m_dAvgUpSpeed += y.m_dUpSpeed
             if info.m_dMaxUpSpeed < y.m_dUpSpeed:
                 info.m_dMaxUpSpeed = y.m_dUpSpeed
             if info.m_dMinUpSpeed > y.m_dUpSpeed:
@@ -71,13 +72,17 @@ def getPathInfo(lsPath):
             #downlink
             info.m_nDownBytes += y.m_nDownBytes
             info.m_nDownPackets += y.m_nDownPackets
+            info.m_dAvgUpSpeed += y.m_dUpSpeed
             if info.m_dMaxDownSpeed < y.m_dDownSpeed:
                 info.m_dMaxDownSpeed = y.m_dDownSpeed
             if info.m_dMinDownSpeed > y.m_dDownSpeed:
                 info.m_dMinDownSpeed = y.m_dDownSpeed
     
-    info.m_dMobility = info.m_dMobility / len(lsPath) # overall mobility = average of mobility of each node
-    
+    if (len(lsPath) != 0):
+        info.m_dAvgUpSpeed = info.m_dAvgUpSpeed / len(lsPath)
+        info.m_dAvgDownSpeed = info.m_dAvgDownSpeed / len(lsPath)
+        info.m_dMobility = info.m_dMobility / len(lsPath) # overall mobility = average of mobility of each node
+        
     return info
 
 def writePath2File(strIMEI, strOutDir, lsPath):
