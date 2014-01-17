@@ -45,11 +45,22 @@ def shareReadTest(nMode):
 
 
 if __name__ == '__main__':
-    ls = list()
-    for x in range(3):
-        ap = CApp(x,x)
-        ls.append(ap)
-    ls[len(ls)-1] = CApp(9,9)
-    print ls
-    
+    dict={}
+    for x in range(10):
+        strKey = "k%d" % (x)
+        curApp = CApp(x,x)
+        ls = range(x)
+        dict[strKey] = (curApp, ls)
+
+    rt = dict.get("k5")
+    print rt[0].m_nServiceType
+    for y in rt[1]:
+        print y
+        
+    dict["k5"] = range(100)
+        
+    rt = dict.get("k5")
+    for y in rt[1]:
+        print y
+        
     

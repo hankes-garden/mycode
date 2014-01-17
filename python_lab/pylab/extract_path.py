@@ -11,20 +11,24 @@ from tuple import *
 from common_function import *
 
 
+def constructDict(lsImeis):
+    dict = {}
+    for strImei in lsImeis:
+        lsPath = list()
+        dict[strImei.strip()] = lsPath
+    return dict
+    
 
 
-def extractPath(strImei, strInDir, lsInFiles, strOutDir):
+def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
     '''extract roaming path of given IMEI from CDR'''
     if len(lsInFiles) == 0 :
         raise NameError("Error: empty input file list")
     
-    lsPath = list() # the roaming path
-    strIMEI = strImei.strip()
+    dict = constructDict(lsImeis)
     for strInFileName in lsInFiles:
         print("Begin to scan file: "+strInFileName+"\n")
         with open(strInDir+strInFileName) as hInFile:
-            curNode = CNode("", 0, 0)
-            
             while(1):
                 lsLines = hInFile.readlines(MAX_PROC_MEM)
                 if not lsLines:
@@ -33,49 +37,43 @@ def extractPath(strImei, strInDir, lsInFiles, strOutDir):
                 for line in lsLines:
                     try:
                         it = line.split(',')
-                        if (len(it) != const_tuple_number or it[4].strip() != strIMEI): 
+                        if (len(it) != const_tuple_number or it[4].strip() not in dict): 
                             continue # unqualified line, skip it
                         
                         # parse line
                         tp = CTuple()
                         tp.parseFromStr(line)
                         
-                        if (tp.m_strIMEI.strip() != strIMEI.strip() ): 
-                            continue # not the given user, skip it!
+                        ls = dict.get(tp.m_strIMEI)
                         
-                        
-                        
-                        if (tp.m_nCellID != curNode.m_nCellID): #enter a new cell
+                        if ( (len(ls) == 0) or (tp.m_nCellID != ls[-1].m_nCellID) ): #enter a new cell
                             newNode = CNode(tp.m_strIMEI, tp.m_nLac, tp.m_nCellID)
                             newNode.m_firstTime = tp.m_firstTime
                             newNode.m_endTime = tp.m_endTime
                             newNode.updateDuration()
                             newNode.m_nRat = tp.m_nRat
                             newNode.m_lsApps.append(tp.m_app)
-                            if (curNode.m_nCellID != 0):
-                                newNode.m_dMobility_speed = calcMobility(curNode, newNode)
+                            if (len(ls)!=0):
+                                newNode.m_dMobility_speed = calcMobility(ls[-1], newNode)
                                 
-                            lsPath.append(newNode)
-                            curNode = newNode
+                            ls.append(newNode)
                             
                         else: # still in current cell
-                            curNode.m_firstTime = min(curNode.m_firstTime, tp.m_firstTime)
-                            curNode.m_endTime = max(curNode.m_firstTime, tp.m_endTime)
-                            curNode.updateDuration()
+                            ls[-1].m_firstTime = min(ls[-1].m_firstTime, tp.m_firstTime)
+                            ls[-1].m_endTime = max(ls[-1].m_firstTime, tp.m_endTime)
+                            ls[-1].updateDuration()
                             
-                            index = curNode.findAppIndex(tp.m_app)
+                            index = ls[-1].findAppIndex(tp.m_app)
                             if (index != -1):  # already exists in the app list
-                                curNode.m_lsApps[index].m_nUpPackets += tp.m_app.m_nUpPackets
-                                curNode.m_lsApps[index].m_nDownPackets += tp.m_app.m_nDownPackets
-                                curNode.m_lsApps[index].m_nUpBytes += tp.m_app.m_nUpBytes
-                                curNode.m_lsApps[index].m_dUpSpeed = max(curNode.m_lsApps[index].m_dUpSpeed, tp.m_app.m_dUpSpeed)
-                                curNode.m_lsApps[index].m_dDowSpeed = \
-                                max(curNode.m_lsApps[index].m_dDownSpeed, tp.m_app.m_dDownSpeed)
+                                ls[-1].m_lsApps[index].m_nUpPackets += tp.m_app.m_nUpPackets
+                                ls[-1].m_lsApps[index].m_nDownPackets += tp.m_app.m_nDownPackets
+                                ls[-1].m_lsApps[index].m_nUpBytes += tp.m_app.m_nUpBytes
+                                ls[-1].m_lsApps[index].m_dUpSpeed = max(ls[-1].m_lsApps[index].m_dUpSpeed, tp.m_app.m_dUpSpeed)
+                                ls[-1].m_lsApps[index].m_dDowSpeed = \
+                                max(ls[-1].m_lsApps[index].m_dDownSpeed, tp.m_app.m_dDownSpeed)
                             else: # new app
-                                curNode.m_lsApps.append(tp.m_app)
+                                ls[-1].m_lsApps.append(tp.m_app)
                             
-                            lsPath[len(lsPath)-1] = curNode
-                        
                     except NameError as err:
                         print(err)
                     except IndexError:
@@ -84,18 +82,28 @@ def extractPath(strImei, strInDir, lsInFiles, strOutDir):
                         
 
     # Note: all the nodes of given IMEI will first store in MEM and then write to file
-    print("Begin to serialize path to file...")
-    strFilePath = serializePath(strIMEI, strOutDir, lsPath)
-    tx = "extract path for IMEI:%s finished, #nodes=%d." % (strIMEI, len(lsPath) ) 
-    print(tx)
-    return lsPath
+    print("Begin to serialize paths to file...")
+    for key in dict.keys():
+        strFilePath = serializePath(key, strOutDir, dict.get(key) )
+    print("Serialization is done")
+    
+    return dict
 
  
 if __name__ == '__main__':
     lsImeis = ["0127460079774812", "0128480018959912", "8613440243171178"]
-    lsCDR = ["/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100308.dat", \
-             "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100309.dat"]
-    strOutDir = "/mnt/disk12/yanglin/workspace/paths/"
-    lsResult = extractPath("0127460079774812", lsCDR, strOutDir)
+    lsCDR = ["export-userservice-2013100310-sample.dat", \
+            ]
+    strInDir = "D:\\yanglin\\mbb_mobility_measurement\\gz_xdr\\sample_data\\"
+    strOutDir = "D:\\yanglin\\playground\\"
+    rt = extractPath(lsImeis, strInDir, lsCDR, strOutDir)
+    
+    result_list = list()
+    for path in rt.values():
+        result_list.append(path)
+        
+    import measurement
+    text = measurement.statistic(result_list)
+    print text
 
     

@@ -10,20 +10,26 @@ from extract_path import *
 
 import multiprocessing
 
+
 result_list = []
 
 def log_result(rt):
-    if (len(rt) != 0):
-        result_list.append(rt)
+    for path in rt.values():
+        result_list.append(path)
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
     
 def extractPathinParallel(lsImeis, strInDir, lsCDRFilePaths, strOutDir):
-    nPoolSize = min(len(lsImeis), 10)
+    nImeiCount = len(lsImeis)
+    nPoolSize = min(nImeiCount/IMEI_PER_PROC, MAX_PROC_NUM)
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
-    for strImei in lsImeis:
-        pool.apply_async(extractPath, args=(strImei, strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
+    
+    nStartIndex = 0
+    while nStartIndex < nImeiCount:
+        nEndIndex = min(nStartIndex+IMEI_PER_PROC, nImeiCount)
+        pool.apply_async(extractPath, args=(lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
+        nStartIndex = nEndIndex
     pool.close()
     pool.join()
     
@@ -59,15 +65,16 @@ def pickIMEI(strDistinctedImeisPath):
         
 def conductMeasurement():
     print("begin to pick Imeis...")
-    lsImeis = pickIMEI("/mnt/disk12/yanglin/workspace/distinct_imei.txt")
-    print("picked %d IMEIs to extrac." % (len(lsImeis)))
+    lsImeis = pickIMEI("/mnt/disk7/yanglin/data/distinct_imei.txt")
+    print("%d IMEIs need to be processed." % (len(lsImeis)))
 
     print("begin to extract path for these Imeis...")
-    strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
+    strInDir = "/mnt/disk7/yanglin/data/cdr/"
     lsCDR = [\
-            # "new1.dat", \
-             "export-userservice-2013100308.dat", \
-             "export-userservice-2013100309.dat" \
+             "new1.dat", \
+             "new2.dat" \
+            # "export-userservice-2013100308.dat", \
+            # "export-userservice-2013100309.dat" \
             # "export-userservice-2013100312.dat", \
             # "export-userservice-2013100313.dat", \
             # "export-userservice-2013100314.dat", \
@@ -79,13 +86,14 @@ def conductMeasurement():
             # "export-userservice-2013100320.dat" \
             ]
 
-    strOutDir = "/mnt/disk12/yanglin/workspace/paths/"
+    strOutDir = "/mnt/disk7/yanglin/data/out/"
     lsResult = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
 
     print("extraction finished, start doing statistics...")
     text = statistic(lsResult)
     if (text != ""):
-        with open(strOutDir+"result.txt", 'w') as hRtFile:
+        strOutFileName = "statistic_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+        with open(strOutDir+strOutFileName, 'w') as hRtFile:
             hRtFile.write(text)
     else:
         print("no result, something must be wrong!")
