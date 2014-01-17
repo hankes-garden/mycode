@@ -11,35 +11,39 @@ from tuple import *
 from common_function import *
 
 
-# some global variables
-g_max_buffer_size = 0
-g_max_buffer_size = 1024*1024*512
 
 
-def extractPath(strIMEI, lsInFiles, strOutDir):
+def extractPath(strImei, strInDir, lsInFiles, strOutDir):
     '''extract roaming path of given IMEI from CDR'''
     if len(lsInFiles) == 0 :
         raise NameError("Error: empty input file list")
     
     lsPath = list() # the roaming path
-    
-    for strInFilePath in lsInFiles:
-        with open(strInFilePath) as hInFile:
+    strIMEI = strImei.strip()
+    for strInFileName in lsInFiles:
+        print("Begin to scan file: "+strInFileName+"\n")
+        with open(strInDir+strInFileName) as hInFile:
             curNode = CNode("", 0, 0)
             
             while(1):
-                lsLines = hInFile.readlines(g_max_buffer_size)
+                lsLines = hInFile.readlines(MAX_PROC_MEM)
                 if not lsLines:
                     break
                 
                 for line in lsLines:
                     try:
-                        if (line.split(',')[4].strip() != strIMEI.strip() ): 
-                            continue # not the given user, skip it!
+                        it = line.split(',')
+                        if (len(it) != const_tuple_number or it[4].strip() != strIMEI): 
+                            continue # unqualified line, skip it
                         
                         # parse line
                         tp = CTuple()
                         tp.parseFromStr(line)
+                        
+                        if (tp.m_strIMEI.strip() != strIMEI.strip() ): 
+                            continue # not the given user, skip it!
+                        
+                        
                         
                         if (tp.m_nCellID != curNode.m_nCellID): #enter a new cell
                             newNode = CNode(tp.m_strIMEI, tp.m_nLac, tp.m_nCellID)
@@ -70,18 +74,28 @@ def extractPath(strIMEI, lsInFiles, strOutDir):
                             else: # new app
                                 curNode.m_lsApps.append(tp.m_app)
                             
-                            lsPath.pop()
-                            lsPath.append(curNode)
+                            lsPath[len(lsPath)-1] = curNode
                         
                     except NameError as err:
                         print(err)
+                    except IndexError:
+                        print "Index error, line=", line
+                        raise
+                        
 
     # Note: all the nodes of given IMEI will first store in MEM and then write to file
-#     writePath2File(strIMEI, strOutDir, lsPath)
+    print("Begin to serialize path to file...")
     strFilePath = serializePath(strIMEI, strOutDir, lsPath)
+    tx = "extract path for IMEI:%s finished, #nodes=%d." % (strIMEI, len(lsPath) ) 
+    print(tx)
     return lsPath
 
-
-
+ 
+if __name__ == '__main__':
+    lsImeis = ["0127460079774812", "0128480018959912", "8613440243171178"]
+    lsCDR = ["/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100308.dat", \
+             "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100309.dat"]
+    strOutDir = "/mnt/disk12/yanglin/workspace/paths/"
+    lsResult = extractPath("0127460079774812", lsCDR, strOutDir)
 
     

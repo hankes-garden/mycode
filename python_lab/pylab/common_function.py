@@ -11,7 +11,15 @@ from pathinfo import *
 import time
 import cPickle
 
+MAX_PROC_MEM = 0
+MAX_PROC_MEM = 1024*1024*1024*1
+
+SAMPLING_INTERVAL = 1000
+
 def exeTime(func):
+    '''
+    NOTE: Decorator will raise pickleError in MultiProcess!!
+    '''
     def newFunc(*args, **args2):
         t0 = time.time()
         print "%s: func_%s starts" % (time.strftime("%X", time.localtime()), func.__name__)
@@ -39,7 +47,7 @@ def get_time_str(tm):
 
 def calcMobility(node1, node2):
     '''calculate moving speed'''
-    return 1.0
+    return 0
 
 
 def getPathInfo(lsPath):
@@ -94,7 +102,7 @@ def serializePath(strIMEI, strOutDir, lsPath):
             cPickle.dump(lsPath, hOutFile, protocol=0)
         return strOutFilePath
     else:
-        raise NameError("Error: Empty roaming path")
+        print("[INFO] No path extracted for IMEI="+strIMEI)
    
 
 def deserializePath(strFilePath):

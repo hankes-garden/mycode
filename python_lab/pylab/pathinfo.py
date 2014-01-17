@@ -33,7 +33,7 @@ class CPathInfo(object):
         self.m_dAvgDownSpeed = 0.0
         
     def toString(self):
-        text = "PathInfo: %s, %d, %.3f, %d, %d, %.3f, %.3f, %.3f, %d, %d, %.3f, %.3f, %.3f" % \
+        text = "%s, %d, %.3f, %d, %d, %.3f, %.3f, %.3f, %d, %d, %.3f, %.3f, %.3f" % \
                     (self.m_strIMEI, \
                      self.m_nPathLen, \
                      self.m_dMobility, \
