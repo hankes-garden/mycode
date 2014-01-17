@@ -81,11 +81,13 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                         raise
                         
 
-    # Note: all the nodes of given IMEI will first store in MEM and then write to file
-    print("Begin to serialize paths to file...")
-    for key in dict.keys():
-        strFilePath = serializePath(key, strOutDir, dict.get(key) )
-    print("Serialization is done")
+#     # Note: all the nodes of given IMEI will first store in MEM and then write to file at once
+#     print("Begin to serialize paths to file...")
+#     for key in dict.keys():
+#         strFilePath = serializePath(key, strOutDir, dict.get(key) )
+#     print("Serialization is done")
+
+    print("Path extraction for given IMEIs is done")
     
     return dict
 

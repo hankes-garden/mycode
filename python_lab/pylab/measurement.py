@@ -16,6 +16,7 @@ result_list = []
 def log_result(rt):
     for path in rt.values():
         result_list.append(path)
+    print("==> "+len(result_list)+" imeis have been processed.")
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -71,19 +72,19 @@ def conductMeasurement():
     print("begin to extract path for these Imeis...")
     strInDir = "/mnt/disk7/yanglin/data/cdr/"
     lsCDR = [\
-             "new1.dat", \
-             "new2.dat" \
-            # "export-userservice-2013100308.dat", \
-            # "export-userservice-2013100309.dat" \
-            # "export-userservice-2013100312.dat", \
-            # "export-userservice-2013100313.dat", \
+            # "new1.dat", \
+            # "new2.dat" \
+             "export-userservice-2013100307.dat", \
+             "export-userservice-2013100308.dat", \
+             "export-userservice-2013100309.dat", \
+             "export-userservice-2013100310.dat", \
             # "export-userservice-2013100314.dat", \
             # "export-userservice-2013100315.dat", \
             # "export-userservice-2013100316.dat", \
             # "export-userservice-2013100317.dat", \
             # "export-userservice-2013100318.dat", \
             # "export-userservice-2013100319.dat", \
-            # "export-userservice-2013100320.dat" \
+            # "export-userservice-2013100320.dat", \
             ]
 
     strOutDir = "/mnt/disk7/yanglin/data/out/"

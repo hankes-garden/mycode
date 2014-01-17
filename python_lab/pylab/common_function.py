@@ -14,9 +14,9 @@ import cPickle
 MAX_PROC_MEM = 0
 MAX_PROC_MEM = 1024*1024*1024*1
 
-SAMPLING_INTERVAL = 1000 # there are about 7 million users
+SAMPLING_INTERVAL = 100 # there are about 7 million users
 MAX_PROC_NUM = 15
-IMEI_PER_PROC = 100 # how many Imeis should be processed in each process
+IMEI_PER_PROC = 300 # how many Imeis should be processed in each process
 
 def exeTime(func):
     '''
