@@ -16,11 +16,11 @@ def main():
 def foo(n):
     print "I'm foo, with %d" % (n)
     
-def serializePath(strIMEI, strOutDir, lsPath):
-    if len(lsPath) != 0:
-        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
+def serialize2File(strFileName, strOutDir, obj):
+    if len(obj) != 0:
+        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(obj), strFileName)
         with open(strOutFilePath, 'w') as hOutFile:
-            cPickle.dump(lsPath, hOutFile, protocol=0)
+            cPickle.dump(obj, hOutFile, protocol=0)
         return strOutFilePath
     else:
         raise NameError("Error: Empty roaming path")

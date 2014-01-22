@@ -102,21 +102,21 @@ def writePath2File(strIMEI, strOutDir, lsPath):
         raise NameError("Error: Empty roaming path")
     
 
-def serializePath(strIMEI, strOutDir, lsPath):
-    if len(lsPath) != 0:
-        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
+def serialize2File(strFileName, strOutDir, obj):
+    if len(obj) != 0:
+        strOutFilePath = "%s%s.txt" % (strOutDir, strFileName)
         with open(strOutFilePath, 'w') as hOutFile:
-            cPickle.dump(lsPath, hOutFile, protocol=0)
+            cPickle.dump(obj, hOutFile, protocol=0)
         return strOutFilePath
     else:
-        print("[INFO] No path extracted for IMEI="+strIMEI)
+        print("Nothing to serialize!")
    
 
-def deserializePath(strFilePath):
-    lsPath = 0
+def deserializeFromFile(strFilePath):
+    obj = 0
     with open(strFilePath) as hFile:
-        lsPath = cPickle.load(hFile)
-    return lsPath
+        obj = cPickle.load(hFile)
+    return obj
     
 if __name__ == '__main__':
     print('This is a common module which includes many useful functions')

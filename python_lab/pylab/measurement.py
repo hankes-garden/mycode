@@ -89,11 +89,17 @@ def conductMeasurement():
 
     strOutDir = "/mnt/disk7/yanglin/data/out/"
     lsResult = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
-
+    
+#     save result
+    strOutFileName = "ser_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    
+    print("extraction finished, start serialization...")
+    serialize2File(strOutFileName, strOutDir, lsResult)
+    print("serialization is finished")
+    
     print("extraction finished, start doing statistics...")
     text = statistic(lsResult)
     if (text != ""):
-        strOutFileName = "statistic_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
         with open(strOutDir+strOutFileName, 'w') as hRtFile:
             hRtFile.write(text)
     else:
