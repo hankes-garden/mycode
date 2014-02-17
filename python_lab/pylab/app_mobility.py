@@ -88,3 +88,4 @@ if __name__ == '__main__':
     lsResult = 0
     lsResult = deserializeFromFile(sys.argv[1])
     measure_app_mobility(lsResult)
+
