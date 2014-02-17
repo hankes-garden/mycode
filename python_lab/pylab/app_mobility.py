@@ -6,6 +6,9 @@ Created on 2014年2月16日
 '''
 
 from app_state import *
+from common_function import *
+
+import sys
 
 
 def measure_app_mobility(lsResult):
@@ -82,4 +85,6 @@ def measure_app_mobility(lsResult):
                     
 
 if __name__ == '__main__':
-    pass
+    lsResult = 0
+    lsResult = deserializeFromFile(sys.argv[1])
+    measure_app_mobility(lsResult)
