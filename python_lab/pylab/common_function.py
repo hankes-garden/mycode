@@ -69,7 +69,7 @@ def getPathInfo(lsPath):
             if info.m_dMinUpSpeed > y.m_dUpSpeed:
                 info.m_dMinUpSpeed = y.m_dUpSpeed
             
-            #downlink
+            # downlink
             info.m_nDownBytes += y.m_nDownBytes
             info.m_nDownPackets += y.m_nDownPackets
             info.m_dAvgDownSpeed += y.m_dDownSpeed

@@ -14,6 +14,9 @@ import multiprocessing
 result_list = []
 
 def log_result(rt):
+    '''
+        merge the paths together
+    '''
     for path in rt.values():
         result_list.append(path)
     print("==> "+len(result_list)+" imeis have been processed.")
@@ -22,6 +25,9 @@ def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
     
 def extractPathinParallel(lsImeis, strInDir, lsCDRFilePaths, strOutDir):
+    '''
+        start multiple processes to extract path in parallel
+    '''
     nImeiCount = len(lsImeis)
     nPoolSize = min(nImeiCount/IMEI_PER_PROC, MAX_PROC_NUM)
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
@@ -46,7 +52,9 @@ def statistic(lsResult):
     return text
         
 def pickIMEI(strDistinctedImeisPath):
-    '''pick some IMEIs from IMEI list'''
+    '''
+        pick some IMEIs from IMEI list randomly
+    '''
     lsImeis = list()
     with open(strDistinctedImeisPath) as hInFile:
         while(1):
@@ -65,6 +73,10 @@ def pickIMEI(strDistinctedImeisPath):
 
         
 def conductMeasurement():
+    '''
+        the main function to conduct all the measurement
+    '''
+    
     print("begin to pick Imeis...")
     lsImeis = pickIMEI("/mnt/disk7/yanglin/data/distinct_imei.txt")
     print("%d IMEIs need to be processed." % (len(lsImeis)))
@@ -90,7 +102,7 @@ def conductMeasurement():
     strOutDir = "/mnt/disk7/yanglin/data/out/"
     lsResult = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
     
-#     save result
+    #save result
     strOutFileName = "ser_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
     
     print("extraction finished, start serialization...")
@@ -109,4 +121,4 @@ def conductMeasurement():
 
 
 if __name__ == '__main__':
-   conductMeasurement()
+    conductMeasurement()
