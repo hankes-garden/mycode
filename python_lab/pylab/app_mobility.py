@@ -11,7 +11,7 @@ from common_function import *
 import sys
 
 
-def measure_app_mobility(lsResult):
+def measureAppMobility(lsResult):
     '''Measure application mobility'''
     dcUserMobility = dict()
     dcCurAppDict = 0
@@ -83,9 +83,15 @@ def measure_app_mobility(lsResult):
     return dcUserMobility
 
                     
+def conductAppMobilityMeasurement(strInPath, strOutPath):
+    lsResult = deserializeFromFile(strInPath)
+    dcUserMobility = measureAppMobility(lsResult)
+    strResult = ""
+    for tp in dcUserMobility.items():
+        for app in tp[1].values():
+            strResult += "%d,%s\n" % (tp[0], app.toString() )
+    write2File(strOutPath)
 
 if __name__ == '__main__':
-    lsResult = 0
-    lsResult = deserializeFromFile(sys.argv[1])
-    measure_app_mobility(lsResult)
+    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
 

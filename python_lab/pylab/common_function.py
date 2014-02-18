@@ -101,6 +101,13 @@ def writePath2File(strIMEI, strOutDir, lsPath):
     else:
         raise NameError("Error: Empty roaming path")
     
+def write2File(strContent, strOutFilePath):
+    if len(strOutFilePath) != 0:
+        with open(strOutFilePath, 'w') as hOutFile:
+            hOutFile.write(strContent)
+    else:
+        raise NameError("Error: invalid output file path")
+    
 
 def serialize2File(strFileName, strOutDir, obj):
     if len(obj) != 0:
