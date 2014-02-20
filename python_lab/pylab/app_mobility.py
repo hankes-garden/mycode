@@ -12,7 +12,9 @@ import sys
 
 
 def measureAppMobility(lsResult):
-    '''Measure application mobility'''
+    '''
+        Measure application mobility
+    '''
     dcUserMobility = dict()
     dcCurAppDict = 0
     curAppState = 0
@@ -20,7 +22,8 @@ def measureAppMobility(lsResult):
     
     for path in lsResult:
         nCurPathLen = len(path)
-        print("Path len:%d, Imei:%s" % (nCurPathLen, path[0].m_strIMEI) )
+        if (nCurPathLen == 0):
+            continue
         
         if(nCurPathLen not in dcUserMobility):
             dcCurAppDict = dict()
@@ -29,20 +32,16 @@ def measureAppMobility(lsResult):
             dcCurAppDict = dcUserMobility[nCurPathLen]
             
         for node in path:
-            print("--CellID:%d, app list length:%d " % (node.m_nCellID, len(node.m_lsApps) ) )
-            
             for app in node.m_lsApps:
-                print("----ServiceType:%d" % (app.m_nServiceType) )
-                
                 if(app.m_nServiceType not in dcCurAppDict):
                     curAppState = CAppState(app.m_nServiceType, app.m_nServiceGroup)
                     dcCurAppDict[app.m_nServiceType] = curAppState
                 else:
                     curAppState = dcCurAppDict[app.m_nServiceType]
                 
-                if(strLastIMEI != node.strIMEI): # count if it's a new user
+                if(strLastIMEI != node.m_strIMEI): # count if it's a new user
                     curAppState.m_nUserNum += 1
-                    strLastIMEI = node.strIMEI
+                    strLastIMEI = node.m_strIMEI
                 
                 curAppState.m_nCellNum += 1
                 
@@ -62,7 +61,7 @@ def measureAppMobility(lsResult):
                 curAppState.m_nMinDownBytes = min(curAppState.m_nMinDownBytes, app.m_nDownBytes) 
                 
 #               downlink_speed
-                curAppState.m_dAvgDonwSpeed += app.m_dDownSpeed
+                curAppState.m_dAvgDownSpeed += app.m_dDownSpeed
                 curAppState.m_dMaxDownSpeed = max(curAppState.m_dMaxDownSpeed, app.m_dDownSpeed)
                 curAppState.m_dMinDownSpeed = min(curAppState.m_dMinDownSpeed, app.m_dDownSpeed)
                 
@@ -90,8 +89,8 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
     for tp in dcUserMobility.items():
         for app in tp[1].values():
             strResult += "%d,%s\n" % (tp[0], app.toString() )
-    write2File(strOutPath)
+    write2File(strResult, strOutPath)
 
 if __name__ == '__main__':
-    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
+    conductAppMobilityMeasurement("D:\\serPath_719_new1_new2.txt", "d:\\am.txt")
 

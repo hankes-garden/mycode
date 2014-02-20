@@ -7,6 +7,7 @@ Created on 2014年1月16日
 
 from common_function import *
 from extract_path import *
+from app_mobility import *
 
 import multiprocessing
 
@@ -17,9 +18,11 @@ def log_result(rt):
     '''
         merge the paths together
     '''
+    
     for path in rt.values():
-        result_list.append(path)
-    print("==> "+len(result_list)+" imeis have been processed.")
+        if len(path) != 0 : # drop all the empty paths
+            result_list.append(path)
+    print("==> %d IMEIs have been processed." % (len(result_list) ) )
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -77,19 +80,23 @@ def conductMeasurement():
         the main function to conduct all the measurement
     '''
     
-    print("begin to pick Imeis...")
+    print("--Start Measurement...--")
+    
+    # pick users
+    print("start user selection...")
     lsImeis = pickIMEI("/mnt/disk7/yanglin/data/distinct_imei.txt")
-    print("%d IMEIs need to be processed." % (len(lsImeis)))
+    print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
 
-    print("begin to extract path for these Imeis...")
+    # extract roaming path in parallel
+    print("start path extraction...")
     strInDir = "/mnt/disk7/yanglin/data/cdr/"
     lsCDR = [\
-            # "new1.dat", \
-            # "new2.dat" \
-             "export-userservice-2013100307.dat", \
-             "export-userservice-2013100308.dat", \
-             "export-userservice-2013100309.dat", \
-             "export-userservice-2013100310.dat", \
+            "new1.dat", \
+            "new2.dat" \
+#              "export-userservice-2013100307.dat", \
+#              "export-userservice-2013100308.dat", \
+#              "export-userservice-2013100309.dat", \
+#              "export-userservice-2013100310.dat", \
             # "export-userservice-2013100314.dat", \
             # "export-userservice-2013100315.dat", \
             # "export-userservice-2013100316.dat", \
@@ -100,24 +107,33 @@ def conductMeasurement():
             ]
 
     strOutDir = "/mnt/disk7/yanglin/data/out/"
-    lsResult = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
+    lsPaths = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
+    print("path extraction is finished")
     
-    #save result
-    strOutFileName = "ser_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    #serialize roaming path
+    print("start serialization of path...")
+    strPathListName = "serPath_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    serialize2File(strPathListName, strOutDir, lsPaths)
+    print("serialization of path is finished.")
     
-    print("extraction finished, start serialization...")
-    serialize2File(strOutFileName, strOutDir, lsResult)
-    print("serialization is finished")
-    
-    print("extraction finished, start doing statistics...")
-    text = statistic(lsResult)
+    # path statistics
+    print("Start path statistics...")
+    strStatisticName = "statistic_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    text = statistic(lsPaths)
     if (text != ""):
-        with open(strOutDir+strOutFileName, 'w') as hRtFile:
+        with open(strOutDir+strStatisticName, 'w') as hRtFile:
             hRtFile.write(text)
     else:
         print("no result, something must be wrong!")
+    print("Path statistics is finished.")
+        
+    # application mobility measurement
+    print("Start application mobility measurement...")
+    strAppMobilityName = "appmob_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName)
+    print("Application mobility measurement is finished")
 
-    print("--measurement done!--")
+    print("--Measurement is finished--")
 
 
 if __name__ == '__main__':

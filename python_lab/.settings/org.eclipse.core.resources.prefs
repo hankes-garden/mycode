@@ -5,6 +5,7 @@ encoding//pylab/app_state.py=utf-8
 encoding//pylab/common_function.py=utf-8
 encoding//pylab/extract_path.py=utf-8
 encoding//pylab/measurement.py=utf-8
+encoding//pylab/node.py=utf-8
 encoding//pylab/pathinfo.py=utf-8
 encoding//pylab/simple_test.py=utf-8
 encoding//pylab/tuple.py=utf-8

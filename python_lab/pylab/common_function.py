@@ -111,7 +111,7 @@ def write2File(strContent, strOutFilePath):
 
 def serialize2File(strFileName, strOutDir, obj):
     if len(obj) != 0:
-        strOutFilePath = "%s%s.txt" % (strOutDir, strFileName)
+        strOutFilePath = "%s%s" % (strOutDir, strFileName)
         with open(strOutFilePath, 'w') as hOutFile:
             cPickle.dump(obj, hOutFile, protocol=0)
         return strOutFilePath

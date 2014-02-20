@@ -10,7 +10,9 @@ from node import *
 from tuple import *
 from common_function import *
 
-
+# NOTE: this function will create an empty list for each given IMEI, this means if
+#       there is no path was extracted for this imei, it will still return an empty
+#       list for this IMEI
 def constructDict(lsImeis):
     dict = {}
     for strImei in lsImeis:
