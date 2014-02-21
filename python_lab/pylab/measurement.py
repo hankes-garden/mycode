@@ -87,6 +87,7 @@ def conductMeasurement():
     lsImeis = pickIMEI("/mnt/disk7/yanglin/data/distinct_imei.txt")
     print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
 
+
     # extract roaming path in parallel
     print("start path extraction...")
     strInDir = "/mnt/disk7/yanglin/data/cdr/"
