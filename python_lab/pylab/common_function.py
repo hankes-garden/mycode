@@ -11,10 +11,10 @@ from pathinfo import *
 import time
 import cPickle
 
-MAX_PROC_MEM = 0
-MAX_PROC_MEM = 1024*1024*1024*1
+MAX_IO_BUF_SIZE = 0
+MAX_IO_BUF_SIZE = 1024*1024*1024*1
 
-SAMPLING_INTERVAL = 100 # there are about 7 million users
+USER_SELECTION_BASE = 100 # there are about 7 million users, #selectedUser=7million\base
 MAX_PROC_NUM = 15
 IMEI_PER_PROC = 300 # how many Imeis should be processed in each process
 
@@ -99,14 +99,14 @@ def writePath2File(strIMEI, strOutDir, lsPath):
         with open(strOutFilePath, 'w') as hOutFile:
             hOutFile.write(text)
     else:
-        raise NameError("Error: Empty roaming path")
+        raise StandardError("Error: Empty roaming path")
     
 def write2File(strContent, strOutFilePath):
     if len(strOutFilePath) != 0:
         with open(strOutFilePath, 'w') as hOutFile:
             hOutFile.write(strContent)
     else:
-        raise NameError("Error: invalid output file path")
+        raise StandardError("Error: invalid output file path")
     
 
 def serialize2File(strFileName, strOutDir, obj):

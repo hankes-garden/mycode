@@ -33,7 +33,7 @@ class CTuple(object):
     def parseFromStr(self, strline):
         lsItems = strline.split(',')
         if len(lsItems) != const_tuple_number:
-            raise NameError("Could NOT parse this line correctly.")
+            raise StandardError("Could NOT parse this line correctly.")
         
         try :
             self.m_firstTime = reformat_time_string(lsItems[0])

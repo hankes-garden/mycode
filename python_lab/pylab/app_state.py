@@ -19,7 +19,7 @@ class CAppState(object):
         self.m_nServiceGroup = nServiceGroup
         
         self.m_nUserNum = 1    # How many users used this application
-        self.m_nCellNum = 0.0  # for now, it's the number of cells, in which this application has been used
+        self.m_nAvgCellNum = 0.0  # for now, it's the number of cells, in which this application has been used
         
 #       uplink
         self.m_nAvgUpBytes = 0 # the average traffic generated(may generated in several cells )
@@ -42,7 +42,7 @@ class CAppState(object):
     def toString(self):
         text = "%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d,%.2f,%.2f,%.2f" % \
         (self.m_nServiceType, self.m_nServiceGroup, \
-         self.m_nUserNum, self.m_nCellNum,\
+         self.m_nUserNum, self.m_nAvgCellNum,\
          self.m_nAvgUpBytes, self.m_nMaxUpBytes,\
          self.m_nMinUpBytes, self.m_dAvgUpSpeed,\
          self.m_dMaxUpSpeed, self.m_dMinUpSpeed, \

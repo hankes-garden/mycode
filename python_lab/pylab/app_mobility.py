@@ -43,7 +43,7 @@ def measureAppMobility(lsResult):
                     curAppState.m_nUserNum += 1
                     strLastIMEI = node.m_strIMEI
                 
-                curAppState.m_nCellNum += 1
+                curAppState.m_nAvgCellNum += 1
                 
 #               uplink_bytes
                 curAppState.m_nAvgUpBytes += app.m_nUpBytes
@@ -74,10 +74,11 @@ def measureAppMobility(lsResult):
     # calculate average
     for appDict in dcUserMobility.values():
         for state in appDict.values(): # NOTE: here, the divisor is different!
+            state.m_nAvgCellNum = state.m_nAvgCellNum/state.m_nUserNum
             state.m_nAvgUpBytes = state.m_nAvgUpBytes/state.m_nUserNum
-            state.m_dAvgUpSpeed = state.m_dAvgUpSpeed/state.m_nCellNum
+            state.m_dAvgUpSpeed = state.m_dAvgUpSpeed/state.m_nAvgCellNum
             state.m_nAvgDownBytes = state.m_nAvgDownBytes/state.m_nUserNum
-            state.m_dAvgDownSpeed = state.m_dAvgDownSpeed/state.m_nCellNum
+            state.m_dAvgDownSpeed = state.m_dAvgDownSpeed/state.m_nAvgCellNum
             
     return dcUserMobility
 

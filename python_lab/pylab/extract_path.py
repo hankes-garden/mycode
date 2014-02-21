@@ -25,14 +25,14 @@ def constructDict(lsImeis):
 def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
     '''extract roaming path of given IMEI from CDR'''
     if len(lsInFiles) == 0 :
-        raise NameError("Error: empty input file list")
+        raise StandardError("Error: empty input file list")
     
     dict = constructDict(lsImeis)
     for strInFileName in lsInFiles:
         print("Begin to scan file: "+strInFileName+"\n")
         with open(strInDir+strInFileName) as hInFile:
             while(1):
-                lsLines = hInFile.readlines(MAX_PROC_MEM)
+                lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
                 if not lsLines:
                     break
                 
@@ -76,7 +76,7 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                             else: # new app
                                 ls[-1].m_lsApps.append(tp.m_app)
                             
-                    except NameError as err:
+                    except StandardError as err:
                         print(err)
                     except IndexError:
                         print "Index error, line=", line
@@ -102,12 +102,12 @@ if __name__ == '__main__':
     strOutDir = "D:\\yanglin\\playground\\"
     rt = extractPath(lsImeis, strInDir, lsCDR, strOutDir)
     
-    result_list = list()
+    g_lsPaths = list()
     for path in rt.values():
-        result_list.append(path)
+        g_lsPaths.append(path)
         
     import measurement
-    text = measurement.statistic(result_list)
+    text = measurement.statistic(g_lsPaths)
     print text
 
     
