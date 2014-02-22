@@ -17,8 +17,9 @@ class CAppState(object):
         '''
         self.m_nServiceType = nServiceType
         self.m_nServiceGroup = nServiceGroup
+        self.m_strLastImei = ""
         
-        self.m_nUserNum = 1    # How many users used this application
+        self.m_nUserNum = 0    # How many users used this application
         self.m_nAvgCellNum = 0.0  # for now, it's the number of cells, in which this application has been used
         
 #       uplink

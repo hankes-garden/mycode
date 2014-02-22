@@ -18,7 +18,6 @@ def log_result(rt):
     '''
         merge the paths together
     '''
-    
     for path in rt.values():
         if len(path) != 0 : # drop all the empty paths
             g_lsPaths.append(path)
@@ -63,7 +62,7 @@ def pickIMEI(strDistinctedImeisPath):
         while(1):
                 lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
                 if not lsLines:
-                    raise StandardError("Error: Empty list")
+                    break
                 
                 for i in xrange(len(lsLines)):
                     if (i%USER_SELECTION_BASE ==0):

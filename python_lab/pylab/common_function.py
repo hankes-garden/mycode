@@ -49,6 +49,7 @@ def get_time_str(tm):
 
 def calcMobility(node1, node2):
     '''calculate moving speed'''
+    # TODO: define the mobility btw nodes
     return 0
 
 

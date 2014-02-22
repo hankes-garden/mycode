@@ -8,7 +8,7 @@ from common_function import *
 from app import *
 import time
 
-const_tuple_number = 31
+ELEMENT_NUM_EACH_LINE = 31
 
 class CTuple(object):
     '''
@@ -32,7 +32,7 @@ class CTuple(object):
         
     def parseFromStr(self, strline):
         lsItems = strline.split(',')
-        if len(lsItems) != const_tuple_number:
+        if len(lsItems) != ELEMENT_NUM_EACH_LINE:
             raise StandardError("Could NOT parse this line correctly.")
         
         try :

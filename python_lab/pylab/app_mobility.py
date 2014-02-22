@@ -22,7 +22,7 @@ def measureAppMobility(lsResult):
     
     for path in lsResult:
         nCurPathLen = len(path)
-        if (nCurPathLen == 0):
+        if (nCurPathLen == 0): # skip those empty paths
             continue
         
         if(nCurPathLen not in dcUserMobility):
@@ -39,9 +39,10 @@ def measureAppMobility(lsResult):
                 else:
                     curAppState = dcCurAppDict[app.m_nServiceType]
                 
-                if(strLastIMEI != node.m_strIMEI): # count if it's a new user
+                # update AppState
+                if(curAppState.m_strLastImei != node.m_strIMEI): # count if it's a new user
                     curAppState.m_nUserNum += 1
-                    strLastIMEI = node.m_strIMEI
+                    curAppState.m_strLastImei = node.m_strIMEI
                 
                 curAppState.m_nAvgCellNum += 1
                 
@@ -64,12 +65,7 @@ def measureAppMobility(lsResult):
                 curAppState.m_dAvgDownSpeed += app.m_dDownSpeed
                 curAppState.m_dMaxDownSpeed = max(curAppState.m_dMaxDownSpeed, app.m_dDownSpeed)
                 curAppState.m_dMinDownSpeed = min(curAppState.m_dMinDownSpeed, app.m_dDownSpeed)
-                
-#                 #update app_dict_per_moblity
-#                 dcCurAppDict[app.m_nServiceType] = curAppState
-#             
-#         #update user_mobility_dict
-#         dcUserMobility[nCurPathLen] = dcCurAppDict
+
 
     # calculate average
     for appDict in dcUserMobility.values():
