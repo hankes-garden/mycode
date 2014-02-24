@@ -12,17 +12,16 @@ from app_mobility import *
 import multiprocessing
 
 
-result_list = []
+g_lsPaths = []
 
 def log_result(rt):
     '''
         merge the paths together
     '''
-    
     for path in rt.values():
         if len(path) != 0 : # drop all the empty paths
-            result_list.append(path)
-    print("==> %d IMEIs have been processed." % (len(result_list) ) )
+            g_lsPaths.append(path)
+    print("==> %d IMEIs have been processed." % (len(g_lsPaths) ) )
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -43,7 +42,7 @@ def extractPathinParallel(lsImeis, strInDir, lsCDRFilePaths, strOutDir):
     pool.close()
     pool.join()
     
-    return result_list
+    return g_lsPaths
         
 def statistic(lsResult):
     text = ""
@@ -61,12 +60,12 @@ def pickIMEI(strDistinctedImeisPath):
     lsImeis = list()
     with open(strDistinctedImeisPath) as hInFile:
         while(1):
-                lsLines = hInFile.readlines(MAX_PROC_MEM)
+                lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
                 if not lsLines:
                     break
                 
                 for i in xrange(len(lsLines)):
-                    if (i%SAMPLING_INTERVAL ==0):
+                    if (i%USER_SELECTION_BASE ==0):
                         strIm = lsLines[i].split(',')[0].strip()
                         if (strIm != "" and strIm.isdigit() ):
                             lsImeis.append(strIm)

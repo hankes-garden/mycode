@@ -23,7 +23,7 @@ def serialize2File(strFileName, strOutDir, obj):
             cPickle.dump(obj, hOutFile, protocol=0)
         return strOutFilePath
     else:
-        raise NameError("Error: Empty roaming path")
+        raise StandardError("Error: Empty roaming path")
     
 def shareReadTest(nMode):
     if(nMode == "0"):
