@@ -79,6 +79,12 @@ def measureAppMobility(lsResult):
 
                     
 def conductAppMobilityMeasurement(strInPath, strOutPath):
+    '''
+        Output format:
+        Mobility, ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, AvgUpBytes, 
+        MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, MinUpSpeed, TotalDownBytes, 
+        AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
+    '''
     lsResult = deserializeFromFile(strInPath)
     dcUserMobility = measureAppMobility(lsResult)
     strResult = ""
@@ -88,5 +94,6 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
     write2File(strResult, strOutPath)
 
 if __name__ == '__main__':
-    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
+    conductAppMobilityMeasurement("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt",\
+                                  "D:\\yanglin\\playground\\appmob_71906_export-userservice-2013100311_export-userservice-2013100315.txt")
 
