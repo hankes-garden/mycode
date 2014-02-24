@@ -125,7 +125,12 @@ def deserializeFromFile(strFilePath):
     with open(strFilePath) as hFile:
         obj = cPickle.load(hFile)
     return obj
+
+def findOutliers(lsPaths):
+    for path in lsPaths:
+        if len(path) >= 1000:
+            print("Abnormal user: imei=%s, #path=%d" % (path[0].m_strIMEI, len(path) ) )
     
 if __name__ == '__main__':
-    print('This is a common module which includes many useful functions')
+    print("this is a common function module")
     

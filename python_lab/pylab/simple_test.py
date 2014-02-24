@@ -8,59 +8,22 @@ import cPickle
 import sys
 
 from app import *
-
-def main():
-    print "Hello~"
-    foo(5)
-
-def foo(n):
-    print "I'm foo, with %d" % (n)
-    
-def serialize2File(strFileName, strOutDir, obj):
-    if len(obj) != 0:
-        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(obj), strFileName)
-        with open(strOutFilePath, 'w') as hOutFile:
-            cPickle.dump(obj, hOutFile, protocol=0)
-        return strOutFilePath
-    else:
-        raise StandardError("Error: Empty roaming path")
-    
-def shareReadTest(nMode):
-    if(nMode == "0"):
-        with open("/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100303.dat") as hFile:
-            print("reading aggressively...")
-            hFile.readlines(1024*1024*1024*5)
-            print("===aggressive reading is done.")
-    else:
-        with open("/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/export-userservice-2013100303.dat") as hFile:
-            print("reading line by line...")
-            while(1):
-                line = hFile.readline()
-                if not line:
-                    break
-                print("line:"+line+"\n")
-            print("===reading line by line is done")
-
-
+from common_function import *
+from extract_path import *
 
 
 if __name__ == '__main__':
-    dict={}
-    for x in range(10):
-        strKey = "k%d" % (x)
-        curApp = CApp(x,x)
-        ls = range(x)
-        dict[strKey] = (curApp, ls)
+    print("start!")
+    lsPaths = deserializeFromFile("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt")
+    for path in lsPaths:
+        if path[0].m_strIMEI == "3551670557119501":
+            for node in path:
+                print("node: lac=%d, cellID=%d, duration=%.2f, %s, %s" % \
+                      (node.m_nLac, node.m_nCellID, node.m_dDuration,\
+                       get_time_str(node.m_firstTime), get_time_str(node.m_endTime)))
+                
+    print("end!")
+    
 
-    rt = dict.get("k5")
-    print rt[0].m_nServiceType
-    for y in rt[1]:
-        print y
-        
-    dict["k5"] = range(100)
-        
-    rt = dict.get("k5")
-    for y in rt[1]:
-        print y
         
     

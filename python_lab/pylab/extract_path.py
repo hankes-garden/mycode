@@ -10,6 +10,8 @@ from node import *
 from tuple import *
 from common_function import *
 
+MIN_CELL_DURATION = 10
+
 # NOTE: this function will create an empty list for each given IMEI, this means if
 #       there is no path was extracted for this imei, it will still return an empty
 #       list for this IMEI
@@ -51,7 +53,11 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                         
                         lsPath = dcPaths.get(tp.m_strIMEI)
                         
-                        if ( (len(lsPath) == 0) or (tp.m_nCellID != lsPath[-1].m_nCellID) ): #enter a new cell
+                        if ( len(lsPath) != 0 and tp.m_nCellID != lsPath[-1].m_nCellID ): # enter a  new cell
+                            if (lsPath[-1].m_dDuration <= MIN_CELL_DURATION ): # delete last node if its duration is short 
+                                lsPath.pop()
+                        
+                        if (len(lsPath) == 0 or tp.m_nCellID != lsPath[-1].m_nCellID ):
                             newNode = CNode(tp.m_strIMEI, tp.m_nLac, tp.m_nCellID)
                             newNode.m_firstTime = tp.m_firstTime
                             newNode.m_endTime = tp.m_endTime
@@ -60,7 +66,7 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                             newNode.m_lsApps.append(tp.m_app)
                             if (len(lsPath)!=0):
                                 newNode.m_dMobility_speed = calcMobility(lsPath[-1], newNode)
-                                
+                            
                             lsPath.append(newNode)
                             
                         else: # still in current cell

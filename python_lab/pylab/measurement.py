@@ -74,7 +74,7 @@ def pickIMEI(strDistinctedImeisPath):
         
 
         
-def conductMeasurement():
+def conductMeasurement(strImeiPath, strInDir, lsCDR, strOutDir):
     '''
         the main function to conduct all the measurement
     '''
@@ -83,30 +83,12 @@ def conductMeasurement():
     
     # pick users
     print("start user selection...")
-    lsImeis = pickIMEI("/mnt/disk7/yanglin/data/distinct_imei.txt")
+    lsImeis = pickIMEI(strImeiPath)
     print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
 
 
     # extract roaming path in parallel
     print("start path extraction...")
-    strInDir = "/mnt/disk7/yanglin/data/cdr/"
-    lsCDR = [\
-#             "new1.dat", \
-#             "new2.dat" \
-#              "export-userservice-2013100307.dat", \
-#              "export-userservice-2013100308.dat", \
-#              "export-userservice-2013100309.dat", \
-#              "export-userservice-2013100310.dat", \
-            "export-userservice-2013100311.dat", \
-            "export-userservice-2013100312.dat", \
-            "export-userservice-2013100313.dat", \
-            "export-userservice-2013100314.dat", \
-            "export-userservice-2013100315.dat" \
-            # "export-userservice-2013100319.dat", \
-            # "export-userservice-2013100320.dat", \
-            ]
-
-    strOutDir = "/mnt/disk7/yanglin/data/out/"
     lsPaths = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
     print("path extraction is finished")
     
@@ -137,4 +119,29 @@ def conductMeasurement():
 
 
 if __name__ == '__main__':
-    conductMeasurement()
+     
+#     # setup for mh1
+#     strImeisPath = "/mnt/disk12/yanglin/data/distinct_imei.txt"
+#     strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
+#     lsCDR = [\
+#             "export-userservice-2013100317.dat", \
+#             "export-userservice-2013100318.dat", \
+#             "export-userservice-2013100319.dat", \
+#             "export-userservice-2013100320.dat", \
+#             "export-userservice-2013100321.dat" \
+#             ]
+#     strOutDir = "/mnt/disk12/yanglin/data/out/"
+    
+    # setup for mh2/mh5
+    strImeisPath = "/mnt/disk7/yanglin/data/distinct_imei.txt"
+    strInDir = "/mnt/disk7/yanglin/data/cdr/"
+    lsCDR = [\
+            "export-userservice-2013100317.dat", \
+            "export-userservice-2013100318.dat", \
+            "export-userservice-2013100319.dat", \
+            "export-userservice-2013100320.dat", \
+            "export-userservice-2013100321.dat" \
+            ]
+    strOutDir = "/mnt/disk7/yanglin/data/out/"
+
+    conductMeasurement(strImeisPath, strInDir, lsCDR, strOutDir)
