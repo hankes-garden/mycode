@@ -18,7 +18,6 @@ def measureAppMobility(lsResult):
     dcUserMobility = dict()
     dcCurAppDict = 0
     curAppState = 0
-    strLastIMEI = 0
     
     for path in lsResult:
         nCurPathLen = len(path)
@@ -46,22 +45,22 @@ def measureAppMobility(lsResult):
                 
                 curAppState.m_nAvgCellNum += 1
                 
-#               uplink_bytes
-                curAppState.m_nAvgUpBytes += app.m_nUpBytes
+                # uplink_bytes
+                curAppState.m_nTotalUpBytes += app.m_nUpBytes
                 curAppState.m_nMaxUpBytes = max(curAppState.m_nMaxUpBytes, app.m_nUpBytes)
                 curAppState.m_nMinUpBytes = min(curAppState.m_nMinUpBytes, app.m_nUpBytes) 
                 
-#               uplink_speed
+                # uplink_speed
                 curAppState.m_dAvgUpSpeed += app.m_dUpSpeed
                 curAppState.m_dMaxUpSpeed = max(curAppState.m_dMaxUpSpeed, app.m_dUpSpeed)
                 curAppState.m_dMinUpSpeed = min(curAppState.m_dMinUpSpeed, app.m_dUpSpeed) 
                 
-#               downlink_bytes
-                curAppState.m_nAvgDownBytes += app.m_nDownBytes
+                # downlink_bytes
+                curAppState.m_nTotalDownBytes += app.m_nDownBytes
                 curAppState.m_nMaxDownBytes = max(curAppState.m_nMaxDownBytes, app.m_nDownBytes)
                 curAppState.m_nMinDownBytes = min(curAppState.m_nMinDownBytes, app.m_nDownBytes) 
                 
-#               downlink_speed
+                # downlink_speed
                 curAppState.m_dAvgDownSpeed += app.m_dDownSpeed
                 curAppState.m_dMaxDownSpeed = max(curAppState.m_dMaxDownSpeed, app.m_dDownSpeed)
                 curAppState.m_dMinDownSpeed = min(curAppState.m_dMinDownSpeed, app.m_dDownSpeed)
@@ -71,9 +70,9 @@ def measureAppMobility(lsResult):
     for appDict in dcUserMobility.values():
         for state in appDict.values(): # NOTE: here, the divisor is different!
             state.m_nAvgCellNum = state.m_nAvgCellNum/state.m_nUserNum
-            state.m_nAvgUpBytes = state.m_nAvgUpBytes/state.m_nUserNum
+            state.m_nAvgUpBytes = state.m_nTotalUpBytes/state.m_nUserNum
             state.m_dAvgUpSpeed = state.m_dAvgUpSpeed/state.m_nAvgCellNum
-            state.m_nAvgDownBytes = state.m_nAvgDownBytes/state.m_nUserNum
+            state.m_nAvgDownBytes = state.m_nTotalDownBytes/state.m_nUserNum
             state.m_dAvgDownSpeed = state.m_dAvgDownSpeed/state.m_nAvgCellNum
             
     return dcUserMobility
@@ -89,5 +88,5 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
     write2File(strResult, strOutPath)
 
 if __name__ == '__main__':
-    conductAppMobilityMeasurement("D:\\serPath_719_new1_new2.txt", "d:\\am.txt")
+    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
 
