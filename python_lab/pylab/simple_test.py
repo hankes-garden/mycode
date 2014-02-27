@@ -14,9 +14,9 @@ from extract_path import *
 
 if __name__ == '__main__':
     strSerializedPath = \
-    "D:\\yanglin\\playground\\serPath_719_export-userservice-2013100312_export-userservice-2013100312.txt"
+    "D:\\yanglin\\playground\\serPath_719_new1_new2.txt"
     lsPaths = deserializeFromFile(strSerializedPath)
-    findOutliers(lsPaths, 10)
+    findOutliers(lsPaths, 2)
     print("done")
 #     traceUser(lsPaths, "3551670557119501")
     

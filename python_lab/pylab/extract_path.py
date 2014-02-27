@@ -112,7 +112,7 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
 
  
 if __name__ == '__main__':
-    lsImeis = ["0127460079774812", "0128480018959912", "8613440243171178"]
+    lsImeis = ["8677470189216800", "0128480018959912", "8613440243171178"]
     lsCDR = ["new2.dat", \
             ]
     strInDir = "D:\\yanglin\\playground\\cdr\\"
