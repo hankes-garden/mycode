@@ -149,6 +149,5 @@ def traceUser(lsPaths, strImei):
                 
     print("--Trace user end--")
     
-if __name__ == '__main__':
-    print("this is a common function module")
+  
     

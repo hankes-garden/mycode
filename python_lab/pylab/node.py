@@ -36,6 +36,18 @@ class CNode(object):
         
         return index
     
+    def updateAppList(self, app):
+        index = self.findAppIndex(app)
+        if (index != -1):  # already exists in the app list
+            self.m_lsApps[index].m_nUpPackets += app.m_nUpPackets
+            self.m_lsApps[index].m_nDownPackets += app.m_nDownPackets
+            self.m_lsApps[index].m_nUpBytes += app.m_nUpBytes
+            self.m_lsApps[index].m_dUpSpeed = max(self.m_lsApps[index].m_dUpSpeed, app.m_dUpSpeed)
+            self.m_lsApps[index].m_dDowSpeed = \
+            max(self.m_lsApps[index].m_dDownSpeed, app.m_dDownSpeed)
+        else: # new app
+            self.m_lsApps.append(app)
+    
     def updateDuration(self):
         self.m_dDuration = time.mktime(self.m_endTime) - time.mktime(self.m_firstTime)
         
@@ -67,4 +79,30 @@ class CNode(object):
         text = text + ", " + strApp
         return text
         
-            
+        
+def mergeNodes(lsNodes):
+    '''
+        this function merge a list of nodes to a single node
+    '''
+    if len(lsNodes) == 0:
+        raise StandardError("Error: try to merge empty node list.")
+    
+    if len(lsNodes) == 1:
+        return lsNodes[0]
+    
+    mergedNode = CNode(lsNodes[0].m_strIMEI, lsNodes[0].m_nLac, lsNodes[0].m_nCellID)
+    mergedNode.m_firstTime = min(lsNodes, key=lambda node: node.m_firstTime)
+    mergedNode.m_endTime = max(lsNodes, key=lambda node: node.m_endTime)
+    mergedNode.updateDuration()
+    
+    for node in lsNodes:
+        for app in node.m_lsApps:
+            mergedNode.updateAppList(app)
+    
+    # TODO: this might be a bug: 
+    #       1. if user switches btw 2G/3G in a single cell
+    #       2. mobile speed of merged node 
+    mergedNode.m_nRat = lsNodes[0].m_nRat
+    mergedNode.m_nRat = max(lsNodes, key=lambda node:node.m_dMobility_speed)
+    
+    return mergedNode

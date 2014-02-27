@@ -21,8 +21,29 @@ def constructDict(lsImeis):
         lsPath = list()
         dict[strImei.strip()] = lsPath
     return dict
-    
 
+def refinePath(lsPath):
+    '''
+        this function will first sort the path by first_time,
+        and then merge the adjacent cells which have same lac and cell_id
+    '''
+    lsRefinedPath = []
+    lsPath.sort(key=lambda node:node.m_firstTime)
+    
+    startIndex = 0
+    endIndex = 0
+    while(startIndex < len(lsPath) ):
+        while(endIndex < len(lsPath) ):
+            if(lsPath[startIndex].m_nLac == lsPath[endIndex].m_nLac and \
+               lsPath[startIndex].m_nCellID == lsPath[endIndex].m_nCellID):
+                endIndex += 1
+            else:
+                break
+        merNode = mergeNodes(lsPath[startIndex:endIndex])
+        lsRefinedPath.append(merNode)
+        startIndex = endIndex
+        
+    return lsRefinedPath
 
 def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
     '''
@@ -73,22 +94,17 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                             lsPath[-1].m_firstTime = min(lsPath[-1].m_firstTime, tp.m_firstTime)
                             lsPath[-1].m_endTime = max(lsPath[-1].m_firstTime, tp.m_endTime)
                             lsPath[-1].updateDuration()
-                            
-                            index = lsPath[-1].findAppIndex(tp.m_app)
-                            if (index != -1):  # already exists in the app list
-                                lsPath[-1].m_lsApps[index].m_nUpPackets += tp.m_app.m_nUpPackets
-                                lsPath[-1].m_lsApps[index].m_nDownPackets += tp.m_app.m_nDownPackets
-                                lsPath[-1].m_lsApps[index].m_nUpBytes += tp.m_app.m_nUpBytes
-                                lsPath[-1].m_lsApps[index].m_dUpSpeed = max(lsPath[-1].m_lsApps[index].m_dUpSpeed, tp.m_app.m_dUpSpeed)
-                                lsPath[-1].m_lsApps[index].m_dDowSpeed = \
-                                max(lsPath[-1].m_lsApps[index].m_dDownSpeed, tp.m_app.m_dDownSpeed)
-                            else: # new app
-                                lsPath[-1].m_lsApps.append(tp.m_app)
-                            
+                            lsPath[-1].updateAppList(tp.m_app)
+
                     except StandardError as err:
                         print(err)
 
-    return dcPaths
+    # refine the path
+    dcRefinedPaths = {}
+    for tp in dcPaths.items():
+        dcRefinedPaths[tp[0]] = refinePath(tp[1])
+    
+    return dcRefinedPaths
 
  
 if __name__ == '__main__':
