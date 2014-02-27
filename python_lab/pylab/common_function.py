@@ -128,8 +128,26 @@ def deserializeFromFile(strFilePath):
 
 def findOutliers(lsPaths):
     for path in lsPaths:
-        if len(path) >= 1000:
+        if len(path) >= 100:
             print("Abnormal user: imei=%s, #path=%d" % (path[0].m_strIMEI, len(path) ) )
+            
+def traceUser(lsPaths, strImei):
+    print("--Trace user:%s start--" % strImei)
+    for path in lsPaths:
+        if path[0].m_strIMEI == strImei:
+            for node in path:
+                nUpBytes = 0
+                nDownBytes = 0
+                strApp = ""
+                for app in node.m_lsApps:
+                    nUpBytes += app.m_nUpBytes
+                    nDownBytes += app.m_nDownBytes
+                print("node: lac=%d, cellID=%d, duration=%.2f, upBytes=%d, downBytes=%d, %s, %s" % \
+                      (node.m_nLac, node.m_nCellID, node.m_dDuration,\
+                       nUpBytes, nDownBytes,\
+                       get_time_str(node.m_firstTime), get_time_str(node.m_endTime)))
+                
+    print("--Trace user end--")
     
 if __name__ == '__main__':
     print("this is a common function module")
