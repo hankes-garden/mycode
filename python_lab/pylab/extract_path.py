@@ -10,7 +10,10 @@ from node import *
 from tuple import *
 from common_function import *
 
-MIN_CELL_DURATION = 10
+MIN_NODE_DURATION = 10
+MIN_NODE_UP_BYTES = 100
+MIN_NODE_DOWN_BYTES = 100
+
 
 # NOTE: this function will create an empty list for each given IMEI, this means if
 #       there is no path was extracted for this imei, it will still return an empty
@@ -24,8 +27,9 @@ def constructDict(lsImeis):
 
 def refinePath(lsPath):
     '''
-        this function will first sort the path by first_time,
-        and then merge the adjacent cells which have same lac and cell_id
+        this function will:
+        1. sort the path by first_time,
+        2. merge the adjacent cells which have same lac and cell_id
     '''
     lsRefinedPath = []
     lsPath.sort(key=lambda node:node.m_firstTime)
@@ -75,7 +79,7 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                         lsPath = dcPaths.get(tp.m_strIMEI)
                         
                         if ( len(lsPath) != 0 and tp.m_nCellID != lsPath[-1].m_nCellID ): # enter a  new cell
-                            if (lsPath[-1].m_dDuration <= MIN_CELL_DURATION ): # delete last node if its duration is short 
+                            if (lsPath[-1].m_dDuration < MIN_NODE_DURATION ): # delete last node if its duration is short 
                                 lsPath.pop()
                         
                         if (len(lsPath) == 0 or tp.m_nCellID != lsPath[-1].m_nCellID ):
