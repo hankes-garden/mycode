@@ -113,18 +113,11 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
  
 if __name__ == '__main__':
     lsImeis = ["0127460079774812", "0128480018959912", "8613440243171178"]
-    lsCDR = ["export-userservice-2013100310-sample.dat", \
+    lsCDR = ["new2.dat", \
             ]
-    strInDir = "D:\\yanglin\\mbb_mobility_measurement\\gz_xdr\\sample_data\\"
-    strOutDir = "D:\\yanglin\\playground\\"
+    strInDir = "D:\\yanglin\\playground\\cdr\\"
+    strOutDir = "D:\\yanglin\\playground\\out\\"
     rt = extractPath(lsImeis, strInDir, lsCDR, strOutDir)
-    
-    g_lsPaths = list()
-    for path in rt.values():
-        g_lsPaths.append(path)
-        
-    import measurement
-    text = measurement.statistic(g_lsPaths)
-    print text
+    print("dd")
 
     

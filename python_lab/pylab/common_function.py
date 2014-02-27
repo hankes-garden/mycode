@@ -126,9 +126,9 @@ def deserializeFromFile(strFilePath):
         obj = cPickle.load(hFile)
     return obj
 
-def findOutliers(lsPaths):
+def findOutliers(lsPaths, nCriterion):
     for path in lsPaths:
-        if len(path) >= 100:
+        if len(path) >= nCriterion:
             print("Abnormal user: imei=%s, #path=%d" % (path[0].m_strIMEI, len(path) ) )
             
 def traceUser(lsPaths, strImei):
