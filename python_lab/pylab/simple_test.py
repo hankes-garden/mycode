@@ -13,16 +13,11 @@ from extract_path import *
 
 
 if __name__ == '__main__':
-    print("start!")
-    lsPaths = deserializeFromFile("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt")
-    for path in lsPaths:
-        if path[0].m_strIMEI == "3551670557119501":
-            for node in path:
-                print("node: lac=%d, cellID=%d, duration=%.2f, %s, %s" % \
-                      (node.m_nLac, node.m_nCellID, node.m_dDuration,\
-                       get_time_str(node.m_firstTime), get_time_str(node.m_endTime)))
-                
-    print("end!")
+    strSerializedPath = \
+    "D:\\yanglin\\mbb_mobility_measurement\\gz_xdr\\mobility\\app_mobility\\serPath_71906_export-userservice-2013100318_export-userservice-2013100321.txt"
+    lsPaths = deserializeFromFile(strSerializedPath)
+#     findOutliers(lsPaths)
+    traceUser(lsPaths, "3551670557119501")
     
 
         
