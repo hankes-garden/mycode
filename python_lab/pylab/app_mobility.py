@@ -33,7 +33,8 @@ def measureAppMobility(lsResult):
         for node in path:
             for app in node.m_lsApps:
                 if(app.m_nServiceType not in dcCurAppDict):
-                    curAppState = CAppState(app.m_nServiceType, app.m_nServiceGroup)
+                    curAppState = CAppState(app.m_nServiceType, app.m_nServiceGroup, app.m_nUserPort,\
+                                            app.m_nDstPort, app.m_nProtocol)
                     dcCurAppDict[app.m_nServiceType] = curAppState
                 else:
                     curAppState = dcCurAppDict[app.m_nServiceType]
