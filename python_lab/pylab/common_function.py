@@ -48,9 +48,19 @@ def get_time_str(tm):
     return time.strftime('%Y%m%d %H:%M:%S', tm)
 
 def calcMobility(node1, node2):
-    '''calculate moving speed'''
+    '''
+        Calculate moving speed
+        
+    '''
     # TODO: define the mobility btw nodes
-    return 0
+    if(node1.m_dLat == 0.0 or node2.m_dLat == 0.0):
+        return 0
+    nDistance = calculateDistance(node1.m_dLat, node1.m_dLong, node2.m_dLat, node2.m_dLong)
+    dDuration = time.mktime(node2.m_endTime) - time.mktime(node1.m_firstTime)
+    dMob = 2*nDistance / dDuration
+    
+    return dMob
+    
 
 
 def getPathInfo(lsPath):
@@ -149,5 +159,87 @@ def traceUser(lsPaths, strImei):
                 
     print("--Trace user end--")
     
+    
+def constructCellLocDict(strLocationDictPath):
+    ''''
+        construction a dictionary for cell-location mapping
+    '''
+    dcCellLoc = {}
+    with open(strLocationDictPath) as hLocDict:
+        while(1):
+            hLocDict.readline() # skip head
+            lsLines = hLocDict.readlines(MAX_IO_BUF_SIZE)
+            if not lsLines:
+                break
+            try:
+                for line in lsLines:
+                    items = line.split(',')
+                    key = items[2]
+                    value = (float(items[3]), float(items[4]) )
+                    dcCellLoc[key] = value
+            except ValueError:
+                pass
+    return dcCellLoc
+
+
+import math
+def calculateDistance(lat1, long1, lat2, long2):
+
+    if (lat1==lat2 and long1==long2):
+        return 0
+    
+    # Convert latitude and longitude to 
+    # spherical coordinates in radians.
+    degrees_to_radians = math.pi/180.0
+        
+    # phi = 90 - latitude
+    phi1 = (90.0 - lat1)*degrees_to_radians
+    phi2 = (90.0 - lat2)*degrees_to_radians
+        
+    # theta = longitude
+    theta1 = long1*degrees_to_radians
+    theta2 = long2*degrees_to_radians
+        
+    # Compute spherical distance from spherical coordinates.
+        
+    # For two locations in spherical coordinates 
+    # (1, theta, phi) and (1, theta, phi)
+    # cosine( arc length ) = 
+    #    sin phi sin phi' cos(theta-theta') + cos phi cos phi'
+    # distance = rho * arc length
+    
+    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) + 
+           math.cos(phi1)*math.cos(phi2))
+    arc = math.acos( cos )
+
+    # Remember to multiply arc by the radius of the earth 
+    # in your favorite set of units to get length.
+    return arc * 6373 * 1000 # get distance in meters
+            
+            
+            
+                
+if __name__ == '__main__':
+    dc = constructCellLocDict("d:\\playground\\dict.csv")
+    
+    try:
+        maxPair = (("dd",(0,0)), ("ee", (0,0)))
+        dMaxDistance = 0.0
+        for i in dc.items():
+            for j in dc.items():
+                if i[0] != j[0]:
+                    dis = calculateDistance(i[1][0], i[1][1], j[1][0], j[1][1])
+                    if (dis > dMaxDistance):
+                        dMaxDistance = dis
+                        maxPair = (i,j)
+                    
+                    print("max=%.2f, from (%.6f, %.6f) to (%.6f, %.6f)" % \
+                          (dMaxDistance/1000, maxPair[0][1][0], maxPair[0][1][1],\
+                           maxPair[1][1][0],maxPair[1][1][1]\
+                                                       ) )
+    
+    except ValueError:
+        pass
+                    
   
     

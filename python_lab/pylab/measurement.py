@@ -26,7 +26,7 @@ def log_result(rt):
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
     
-def extractPathinParallel(lsImeis, strInDir, lsCDRFilePaths, strOutDir):
+def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDir):
     '''
         start multiple processes to extract path in parallel
     '''
@@ -37,7 +37,7 @@ def extractPathinParallel(lsImeis, strInDir, lsCDRFilePaths, strOutDir):
     nStartIndex = 0
     while nStartIndex < nImeiCount:
         nEndIndex = min(nStartIndex+IMEI_PER_PROC, nImeiCount)
-        pool.apply_async(extractPath, args=(lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
+        pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
         nStartIndex = nEndIndex
     pool.close()
     pool.join()
@@ -74,7 +74,7 @@ def pickIMEI(strDistinctedImeisPath):
         
 
         
-def conductMeasurement(strImeiPath, strInDir, lsCDR, strOutDir):
+def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDir):
     '''
         the main function to conduct all the measurement
     '''
@@ -86,13 +86,18 @@ def conductMeasurement(strImeiPath, strInDir, lsCDR, strOutDir):
     lsImeis = pickIMEI(strImeiPath)
     print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
 
+    # contruct cell-location mapping
+    print("start building cell-location dict...")
+    dcCellLoc = constructCellLocDict(strCellLocRefPath)
+    print("cell-location dict is finished, #cell-location=%d" % (len(dcCellLoc)))
 
     # extract roaming path in parallel
     print("start path extraction...")
-    lsPaths = extractPathinParallel(lsImeis, strInDir, lsCDR, strOutDir)
+    lsPaths = extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
     print("path extraction is finished")
     
-    #serialize roaming path
+    # serialize roaming path
+    # TODO: change the file name
     print("start serialization of path...")
     strPathListName = "serPath_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
     serialize2File(strPathListName, strOutDir, lsPaths)
@@ -106,7 +111,7 @@ def conductMeasurement(strImeiPath, strInDir, lsCDR, strOutDir):
         with open(strOutDir+strStatisticName, 'w') as hRtFile:
             hRtFile.write(text)
     else:
-        print("no result, something must be wrong!")
+        raise StandardError("empty statistic.")
     print("Path statistics is finished.")
         
     # application mobility measurement
@@ -115,13 +120,14 @@ def conductMeasurement(strImeiPath, strInDir, lsCDR, strOutDir):
     conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName)
     print("Application mobility measurement is finished")
 
-    print("--Measurement is finished--")
+    print("--All measurements are finished--")
 
 
 if __name__ == '__main__':
      
     # setup for mh1
     strImeisPath = "/mnt/disk12/yanglin/data/distinct_imei.txt"
+    strCellLocRefPath = "/mnt/disk12/yanglin/data/dict.csv"
     strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
     lsCDR = [\
             "export-userservice-2013100318.dat", \
@@ -133,6 +139,7 @@ if __name__ == '__main__':
     
 #     # setup for mh2/mh5
 #     strImeisPath = "/mnt/disk7/yanglin/data/distinct_imei.txt"
+#     strCellLocRefPath = "/mnt/disk7/yanglin/data/dict.csv"
 #     strInDir = "/mnt/disk7/yanglin/data/cdr/"
 #     lsCDR = [\
 #             "export-userservice-2013100308.dat", \
@@ -141,4 +148,4 @@ if __name__ == '__main__':
 #             ]
 #     strOutDir = "/mnt/disk7/yanglin/data/out/"
 
-    conductMeasurement(strImeisPath, strInDir, lsCDR, strOutDir)
+    conductMeasurement(strCellLocRefPath, strImeisPath, strInDir, lsCDR, strOutDir)

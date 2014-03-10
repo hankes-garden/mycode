@@ -18,7 +18,7 @@ MIN_NODE_DOWN_BYTES = 100
 # NOTE: this function will create an empty list for each given IMEI, this means if
 #       there is no path was extracted for this imei, it will still return an empty
 #       list for this IMEI
-def constructDict(lsImeis):
+def constructUserDict(lsImeis):
     dict = {}
     for strImei in lsImeis:
         lsPath = list()
@@ -49,14 +49,14 @@ def refinePath(lsPath):
         
     return lsRefinedPath
 
-def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
+def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     '''
-        extract roaming path of given IMEI from CDR
+        extract roaming path for given IMEI from CDR
     '''
     if len(lsInFiles) == 0 :
         raise StandardError("Error: empty input file list")
-    
-    dcPaths = constructDict(lsImeis)
+      
+    dcPaths = constructUserDict(lsImeis)
     for strInFileName in lsInFiles:
         print("Begin to scan file: "+strInFileName)
         
@@ -84,13 +84,15 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
                         
                         if (len(lsPath) == 0 or tp.m_nCellID != lsPath[-1].m_nCellID ):
                             newNode = CNode(tp.m_strIMEI, tp.m_nLac, tp.m_nCellID)
+                            newNode.m_dLat = dcCellLoc.get("%d-%d"%(tp.m_nLac, tp.m_nCellID), (0.0, 0.0))[0]
+                            newNode.m_dLong = dcCellLoc.get("%d-%d"%(tp.m_nLac, tp.m_nCellID), (0.0, 0.0))[1]
                             newNode.m_firstTime = tp.m_firstTime
                             newNode.m_endTime = tp.m_endTime
                             newNode.updateDuration()
                             newNode.m_nRat = tp.m_nRat
                             newNode.m_lsApps.append(tp.m_app)
                             if (len(lsPath)!=0):
-                                newNode.m_dMobility_speed = calcMobility(lsPath[-1], newNode)
+                                lsPath[-1].m_dMobility_speed = calcMobility(lsPath[-2], lsPath[-1])
                             
                             lsPath.append(newNode)
                             
@@ -102,10 +104,12 @@ def extractPath(lsImeis, strInDir, lsInFiles, strOutDir):
 
                     except StandardError as err:
                         print(err)
-
+    
     # refine the path
     dcRefinedPaths = {}
     for tp in dcPaths.items():
+        if(len(tp[1]) != 0 ):#calculate mobility for last node
+            tp[1][-1].m_dMobility_speed = calcMobility(tp[1][-2], tp[1][-1]) 
         dcRefinedPaths[tp[0]] = refinePath(tp[1])
     
     return dcRefinedPaths

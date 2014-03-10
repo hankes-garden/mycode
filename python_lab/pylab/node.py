@@ -21,6 +21,8 @@ class CNode(object):
         self.m_strIMEI = strIMEI
         self.m_nLac = nLac
         self.m_nCellID = nCellID
+        self.m_dLat = 0.0
+        self.m_dLong = 0.0
         
         self.m_firstTime = time.localtime(0)
         self.m_endTime = time.localtime(0)
@@ -54,10 +56,12 @@ class CNode(object):
         self.m_dDuration = time.mktime(self.m_endTime) - time.mktime(self.m_firstTime)
         
     def toString(self):
-        text = "%s, %d, %d, %s, %s, %d, %d, %.3f" % \
+        text = "%s, %d, %d, %.6f, %.6f, %s, %s, %d, %d, %.3f" % \
                     (self.m_strIMEI, \
                      self.m_nLac, \
                      self.m_nCellID, \
+                     self.m_dLat, \
+                     self.m_dLong, \
                      get_time_str(self.m_firstTime), \
                      get_time_str(self.m_endTime), \
                      self.m_dDuration, \
@@ -93,6 +97,8 @@ def mergeNodes(lsNodes):
         return lsNodes[0]
     
     mergedNode = CNode(lsNodes[0].m_strIMEI, lsNodes[0].m_nLac, lsNodes[0].m_nCellID)
+    mergedNode.m_dLat = lsNodes[0].m_dLat
+    mergedNode.m_dLong = lsNodes[0].m_dLong
     mergedNode.m_firstTime = min(lsNodes, key=lambda node: node.m_firstTime).m_firstTime
     mergedNode.m_endTime = max(lsNodes, key=lambda node: node.m_endTime).m_endTime
     mergedNode.updateDuration()
