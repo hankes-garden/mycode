@@ -30,6 +30,7 @@ def refinePath(lsPath):
         this function will:
         1. sort the path by first_time,
         2. merge the adjacent cells which have same lac and cell_id
+        3. calculate the moving speed btw nodes
     '''
     lsRefinedPath = []
     lsPath.sort(key=lambda node:node.m_firstTime)
@@ -47,6 +48,20 @@ def refinePath(lsPath):
         lsRefinedPath.append(merNode)
         startIndex = endIndex
         
+    # re-calculate moving speed btw nodes    
+    i = 1
+    while(i < len(lsRefinedPath) ):
+        lsRefinedPath[i].m_dMobility_speed = calcMobility(lsPath[i-1], lsPath[i])
+    if(len(lsRefinedPath) >= 2):
+        lsRefinedPath[0].m_dMobility_speed = lsRefinedPath[1].m_dMobility_speed
+
+    if(len(lsRefinedPath) != 0):
+        print("**")    
+        for i in xrange(len(lsRefinedPath)):
+            print("  n%d: %.6f,%.6f -- %.2f" % (i, lsRefinedPath[i].m_dLat,lsRefinedPath[i].m_dLong, lsRefinedPath[i].m_dMobility_speed) )
+        print("**\n\n")
+           
+                    
     return lsRefinedPath
 
 def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
@@ -91,8 +106,7 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                             newNode.updateDuration()
                             newNode.m_nRat = tp.m_nRat
                             newNode.m_lsApps.append(tp.m_app)
-                            if (len(lsPath)!=0):
-                                lsPath[-1].m_dMobility_speed = calcMobility(lsPath[-2], lsPath[-1])
+                            
                             
                             lsPath.append(newNode)
                             
@@ -105,11 +119,10 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                     except StandardError as err:
                         print(err)
     
+       
     # refine the path
     dcRefinedPaths = {}
     for tp in dcPaths.items():
-        if(len(tp[1]) != 0 ):#calculate mobility for last node
-            tp[1][-1].m_dMobility_speed = calcMobility(tp[1][-2], tp[1][-1]) 
         dcRefinedPaths[tp[0]] = refinePath(tp[1])
     
     return dcRefinedPaths
@@ -121,7 +134,8 @@ if __name__ == '__main__':
             ]
     strInDir = "D:\\yanglin\\playground\\cdr\\"
     strOutDir = "D:\\yanglin\\playground\\out\\"
-    rt = extractPath(lsImeis, strInDir, lsCDR, strOutDir)
+    dcCellLoc = constructCellLocDict("D:\\yanglin\\playground\\dict.csv")
+    rt = extractPath(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
     print("dd")
 
     

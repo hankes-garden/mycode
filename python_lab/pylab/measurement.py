@@ -125,27 +125,26 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
 
 if __name__ == '__main__':
      
-    # setup for mh1
-    strImeisPath = "/mnt/disk12/yanglin/data/distinct_imei.txt"
-    strCellLocRefPath = "/mnt/disk12/yanglin/data/dict.csv"
-    strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
-    lsCDR = [\
-            "export-userservice-2013100318.dat", \
-            "export-userservice-2013100319.dat", \
-            "export-userservice-2013100320.dat", \
-            "export-userservice-2013100321.dat" \
-            ]
-    strOutDir = "/mnt/disk12/yanglin/data/out/"
-    
-#     # setup for mh2/mh5
-#     strImeisPath = "/mnt/disk7/yanglin/data/distinct_imei.txt"
-#     strCellLocRefPath = "/mnt/disk7/yanglin/data/dict.csv"
-#     strInDir = "/mnt/disk7/yanglin/data/cdr/"
+#     # setup for mh1
+#     strImeisPath = "/mnt/disk12/yanglin/data/distinct_imei.txt"
+#     strCellLocRefPath = "/mnt/disk12/yanglin/data/dict.csv"
+#     strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
 #     lsCDR = [\
-#             "export-userservice-2013100308.dat", \
-#             "export-userservice-2013100309.dat", \
-#             "export-userservice-2013100310.dat" \
+#             "export-userservice-2013100318.dat", \
+#             "export-userservice-2013100319.dat", \
+#             "export-userservice-2013100320.dat", \
+#             "export-userservice-2013100321.dat" \
 #             ]
-#     strOutDir = "/mnt/disk7/yanglin/data/out/"
+#     strOutDir = "/mnt/disk12/yanglin/data/out/"
+    
+    # setup for mh2/mh5
+    strImeisPath = "/mnt/disk7/yanglin/data/distinct_imei.txt"
+    strCellLocRefPath = "/mnt/disk7/yanglin/data/dict.csv"
+    strInDir = "/mnt/disk7/yanglin/data/cdr/"
+    lsCDR = [\
+            "new1.dat", \
+            "new2.dat" \
+            ]
+    strOutDir = "/mnt/disk7/yanglin/data/out/"
 
     conductMeasurement(strCellLocRefPath, strImeisPath, strInDir, lsCDR, strOutDir)

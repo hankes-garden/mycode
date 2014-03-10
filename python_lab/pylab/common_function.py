@@ -57,8 +57,10 @@ def calcMobility(node1, node2):
         return 0
     nDistance = calculateDistance(node1.m_dLat, node1.m_dLong, node2.m_dLat, node2.m_dLong)
     dDuration = time.mktime(node2.m_endTime) - time.mktime(node1.m_firstTime)
-    dMob = 2*nDistance / dDuration
-    
+    dMob = 2.0*nDistance//dDuration
+    if dMob < 0:
+        raise StandardError("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
+                            (dDuration, nDistance, get_time_str(node1.m_firstTime), get_time_str(node2.m_endTime) ) )
     return dMob
     
 
