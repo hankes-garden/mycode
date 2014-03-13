@@ -14,7 +14,7 @@ import cPickle
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
 
-USER_SELECTION_BASE = 100 # there are about 7 million users, #selectedUser=7million\base
+USER_SELECTION_BASE = 10 # there are about 7 million users, #selectedUser=7million\base
 MAX_PROC_NUM = 15
 IMEI_PER_PROC = 300 # how many Imeis should be processed in each process
 
@@ -47,21 +47,21 @@ def reformat_time_string(str_time):
 def get_time_str(tm):
     return time.strftime('%Y%m%d %H:%M:%S', tm)
 
-def calcMobility(node1, node2):
+def calculateMobilitySpeed(node1, node2):
     '''
         Calculate moving speed
-        
+        Unit: m/s
     '''
-    # TODO: define the mobility btw nodes
-    if(node1.m_dLat == 0.0 or node2.m_dLat == 0.0):
+    if(node1.m_dLat == 0.0 or node1.m_dLong == 0.0 or node2.m_dLat == 0.0 or node2.m_dLong == 0.0 ):
         return 0
+    
     nDistance = calculateDistance(node1.m_dLat, node1.m_dLong, node2.m_dLat, node2.m_dLong)
-    dDuration = time.mktime(node2.m_endTime) - time.mktime(node1.m_firstTime)
-    dMob = 2.0*nDistance//dDuration
-    if dMob < 0:
+    dDuration = node1.m_dDuration + node2.m_dDuration
+    dSpeed = 2.0*nDistance//dDuration
+    if dSpeed < 0:
         raise StandardError("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
                             (dDuration, nDistance, get_time_str(node1.m_firstTime), get_time_str(node2.m_endTime) ) )
-    return dMob
+    return dSpeed
     
 
 

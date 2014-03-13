@@ -51,17 +51,10 @@ def refinePath(lsPath):
     # re-calculate moving speed btw nodes    
     i = 1
     while(i < len(lsRefinedPath) ):
-        lsRefinedPath[i].m_dMobility_speed = calcMobility(lsPath[i-1], lsPath[i])
+        lsRefinedPath[i].m_dMobility_speed = calculateMobilitySpeed(lsPath[i-1], lsPath[i])
     if(len(lsRefinedPath) >= 2):
         lsRefinedPath[0].m_dMobility_speed = lsRefinedPath[1].m_dMobility_speed
 
-    if(len(lsRefinedPath) != 0):
-        print("**")    
-        for i in xrange(len(lsRefinedPath)):
-            print("  n%d: %.6f,%.6f -- %.2f" % (i, lsRefinedPath[i].m_dLat,lsRefinedPath[i].m_dLong, lsRefinedPath[i].m_dMobility_speed) )
-        print("**\n\n")
-           
-                    
     return lsRefinedPath
 
 def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
@@ -106,7 +99,6 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                             newNode.updateDuration()
                             newNode.m_nRat = tp.m_nRat
                             newNode.m_lsApps.append(tp.m_app)
-                            
                             
                             lsPath.append(newNode)
                             

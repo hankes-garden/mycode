@@ -21,7 +21,7 @@ def log_result(rt):
     for path in rt.values():
         if len(path) != 0 : # drop all the empty paths
             g_lsPaths.append(path)
-    print("==> %d IMEIs have been processed." % (len(g_lsPaths) ) )
+    print("==> %d users have been processed." % (len(g_lsPaths) ) )
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -86,7 +86,7 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
     lsImeis = pickIMEI(strImeiPath)
     print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
 
-    # contruct cell-location mapping
+    # construct cell-location mapping
     print("start building cell-location dict...")
     dcCellLoc = constructCellLocDict(strCellLocRefPath)
     print("cell-location dict is finished, #cell-location=%d" % (len(dcCellLoc)))
@@ -142,8 +142,10 @@ if __name__ == '__main__':
     strCellLocRefPath = "/mnt/disk7/yanglin/data/dict.csv"
     strInDir = "/mnt/disk7/yanglin/data/cdr/"
     lsCDR = [\
-            "new1.dat", \
-            "new2.dat" \
+            "export-userservice-2013100312.dat", \
+            "export-userservice-2013100313.dat", \
+            "export-userservice-2013100314.dat", \
+            "export-userservice-2013100315.dat" \
             ]
     strOutDir = "/mnt/disk7/yanglin/data/out/"
 
