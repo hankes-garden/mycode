@@ -138,15 +138,15 @@ if __name__ == '__main__':
 #     strOutDir = "/mnt/disk12/yanglin/data/out/"
     
     # setup for mh2/mh5
-    strImeisPath = "/mnt/disk7/yanglin/data/distinct_imei.txt"
-    strCellLocRefPath = "/mnt/disk7/yanglin/data/dict.csv"
-    strInDir = "/mnt/disk7/yanglin/data/cdr/"
+    strImeisPath = "/mnt/disk8/yanglin/data/distinct_imei.txt"
+    strCellLocRefPath = "/mnt/disk8/yanglin/data/dict.csv"
+    strInDir = "/mnt/disk8/yanglin/data/cdr/"
     lsCDR = [\
-            "export-userservice-2013100312.dat", \
-            "export-userservice-2013100313.dat", \
-            "export-userservice-2013100314.dat", \
-            "export-userservice-2013100315.dat" \
+            "export-userservice-2013090918.dat", \
+            "export-userservice-2013090919.dat", \
+            "export-userservice-2013090920.dat", \
+            "export-userservice-2013090921.dat" \
             ]
-    strOutDir = "/mnt/disk7/yanglin/data/out/"
+    strOutDir = "/mnt/disk8/yanglin/data/out/"
 
     conductMeasurement(strCellLocRefPath, strImeisPath, strInDir, lsCDR, strOutDir)
