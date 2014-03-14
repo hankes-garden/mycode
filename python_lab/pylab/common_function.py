@@ -65,13 +65,13 @@ def calculateMobilitySpeed(node1, node2):
     
 
 
-def getPathInfo(lsPath):
+def getPathInfo(path):
     '''compute statistic for each roaming path'''
     info = CPathInfo()
-    info.m_nPathLen = len(lsPath)
-    info.m_strIMEI = lsPath[0].m_strIMEI
-    for x in lsPath:
-        info.m_dMobility += x.m_dMobility_speed
+    info.m_nPathLen = len(path.m_lsNodes)
+    info.m_strIMEI = path.m_strIMEI
+    for x in path.m_lsNodes:
+        info.m_dMobility += x.m_dSpeed
         for y in x.m_lsApps:
             # uplink
             info.m_nUpBytes += y.m_nUpBytes
@@ -91,29 +91,14 @@ def getPathInfo(lsPath):
             if info.m_dMinDownSpeed > y.m_dDownSpeed:
                 info.m_dMinDownSpeed = y.m_dDownSpeed
     
-    if (len(lsPath) != 0):
-        info.m_dAvgUpSpeed = info.m_dAvgUpSpeed / len(lsPath)
-        info.m_dAvgDownSpeed = info.m_dAvgDownSpeed / len(lsPath)
-        info.m_dMobility = info.m_dMobility / len(lsPath) # overall mobility = average of mobility of each node
+    if (len(path.m_lsNodes) != 0):
+        info.m_dAvgUpSpeed = info.m_dAvgUpSpeed / len(path.m_lsNodes)
+        info.m_dAvgDownSpeed = info.m_dAvgDownSpeed / len(path.m_lsNodes)
+        info.m_dMobility = info.m_dMobility / len(path.m_lsNodes) # overall mobility = average of mobility of each node
         
     return info
 
-def writePath2File(strIMEI, strOutDir, lsPath):
-    if len(lsPath) != 0:
-        text = ""
-        for x in lsPath:
-            text += x.toString()
-            text += "\n"
-         
-        # get path info
-        info = getPathInfo(lsPath)
-        text += info.toString()
-        strOutFilePath = "%s%d_%s.txt" % (strOutDir, len(lsPath), strIMEI)
-        with open(strOutFilePath, 'w') as hOutFile:
-            hOutFile.write(text)
-    else:
-        raise StandardError("Error: Empty roaming path")
-    
+  
 def write2File(strContent, strOutFilePath):
     if len(strOutFilePath) != 0:
         with open(strOutFilePath, 'w') as hOutFile:
@@ -140,14 +125,14 @@ def deserializeFromFile(strFilePath):
 
 def findOutliers(lsPaths, nCriterion):
     for path in lsPaths:
-        if len(path) >= nCriterion:
-            print("Abnormal user: imei=%s, #path=%d" % (path[0].m_strIMEI, len(path) ) )
+        if len(path.m_lsNodes) >= nCriterion:
+            print("Abnormal user: imei=%s, #path=%d" % (path.m_strIMEI, len(path.m_lsNodes) ) )
             
 def traceUser(lsPaths, strImei):
     print("--Trace user:%s start--" % strImei)
     for path in lsPaths:
-        if path[0].m_strIMEI == strImei:
-            for node in path:
+        if path.m_strIMEI == strImei:
+            for node in path.m_lsNodes:
                 nUpBytes = 0
                 nDownBytes = 0
                 strApp = ""

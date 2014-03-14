@@ -11,7 +11,7 @@ from common_function import *
 import sys
 
 
-def measureAppMobility(lsResult):
+def measureAppMobility(dcResult):
     '''
         Measure application mobility
     '''
@@ -19,8 +19,8 @@ def measureAppMobility(lsResult):
     dcCurAppDict = 0
     curAppState = 0
     
-    for path in lsResult:
-        nCurPathLen = len(path)
+    for path in dcResult.values():
+        nCurPathLen = len(path.m_lsNodes)
         if (nCurPathLen == 0): # skip those empty paths
             continue
         
@@ -30,7 +30,7 @@ def measureAppMobility(lsResult):
         else:
             dcCurAppDict = dcUserMobility[nCurPathLen]
             
-        for node in path:
+        for node in path.m_lsNodes:
             for app in node.m_lsApps:
                 if(app.m_nServiceType not in dcCurAppDict):
                     curAppState = CAppState(app.m_nServiceType, app.m_nServiceGroup, app.m_nUserPort,\
@@ -86,8 +86,8 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
         MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, MinUpSpeed, TotalDownBytes, 
         AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
     '''
-    lsResult = deserializeFromFile(strInPath)
-    dcUserMobility = measureAppMobility(lsResult)
+    dcResult = deserializeFromFile(strInPath)
+    dcUserMobility = measureAppMobility(dcResult)
     strResult = ""
     for tp in dcUserMobility.items():
         for app in tp[1].values():
