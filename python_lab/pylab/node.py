@@ -28,7 +28,7 @@ class CNode(object):
         self.m_endTime = time.localtime(0)
         self.m_nRat = 0
         self.m_dDuration = 0
-        self.m_dMobility_speed = 0.0
+        self.m_dSpeed = 0.0
         self.m_lsApps = list() # here is an empty list
         
     def findAppIndex(self, app):
@@ -66,7 +66,7 @@ class CNode(object):
                      get_time_str(self.m_endTime), \
                      self.m_dDuration, \
                      self.m_nRat, \
-                     self.m_dMobility_speed)
+                     self.m_dSpeed)
         strApp = ""
         for x in self.m_lsApps:
             strApp += "%d; %d; %d; %d; %d; %d; %.3f; %.3f; %d; %d; %d" % \
@@ -111,6 +111,6 @@ def mergeNodes(lsNodes):
     #       1. if user switches btw 2G/3G in a single cell
     #       2. mobile speed of merged node 
     mergedNode.m_nRat = lsNodes[0].m_nRat
-    mergedNode.m_dMobility_speed = max(lsNodes, key=lambda node:node.m_dMobility_speed).m_dMobility_speed
+    mergedNode.m_dSpeed = max(lsNodes, key=lambda node:node.m_dSpeed).m_dSpeed
     
     return mergedNode

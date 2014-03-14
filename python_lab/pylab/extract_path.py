@@ -9,6 +9,7 @@ from app import *
 from node import *
 from tuple import *
 from common_function import *
+from path import *
 
 MIN_NODE_DURATION = 10
 MIN_NODE_UP_BYTES = 100
@@ -21,11 +22,11 @@ MIN_NODE_DOWN_BYTES = 100
 def constructUserDict(lsImeis):
     dict = {}
     for strImei in lsImeis:
-        lsPath = list()
-        dict[strImei.strip()] = lsPath
+        path = CPath(strImei)
+        dict[strImei] = path
     return dict
 
-def refinePath(lsPath):
+def refinePath(lsNodes):
     '''
         this function will:
         1. sort the path by first_time,
@@ -33,27 +34,27 @@ def refinePath(lsPath):
         3. calculate the moving speed btw nodes
     '''
     lsRefinedPath = []
-    lsPath.sort(key=lambda node:node.m_firstTime)
+    lsNodes.sort(key=lambda node:node.m_firstTime)
     
     startIndex = 0
     endIndex = 0
-    while(startIndex < len(lsPath) ):
-        while(endIndex < len(lsPath) ):
-            if(lsPath[startIndex].m_nLac == lsPath[endIndex].m_nLac and \
-               lsPath[startIndex].m_nCellID == lsPath[endIndex].m_nCellID):
+    while(startIndex < len(lsNodes) ):
+        while(endIndex < len(lsNodes) ):
+            if(lsNodes[startIndex].m_nLac == lsNodes[endIndex].m_nLac and \
+               lsNodes[startIndex].m_nCellID == lsNodes[endIndex].m_nCellID):
                 endIndex += 1
             else:
                 break
-        merNode = mergeNodes(lsPath[startIndex:endIndex])
+        merNode = mergeNodes(lsNodes[startIndex:endIndex])
         lsRefinedPath.append(merNode)
         startIndex = endIndex
         
     # re-calculate moving speed btw nodes    
     i = 1
     while(i < len(lsRefinedPath) ):
-        lsRefinedPath[i].m_dMobility_speed = calculateMobilitySpeed(lsPath[i-1], lsPath[i])
+        lsRefinedPath[i].m_dSpeed = calculateMobilitySpeed(lsNodes[i-1], lsNodes[i])
     if(len(lsRefinedPath) >= 2):
-        lsRefinedPath[0].m_dMobility_speed = lsRefinedPath[1].m_dMobility_speed
+        lsRefinedPath[0].m_dSpeed = lsRefinedPath[1].m_dSpeed
 
     return lsRefinedPath
 
@@ -81,32 +82,32 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                             continue # unqualified line(invalid formated or not we want), skip it !
                         
                         # parse line
-                        tp = CTuple()
-                        tp.parseFromStr(line)
+                        tuple = CTuple()
+                        tuple.parseFromStr(line)
                         
-                        lsPath = dcPaths.get(tp.m_strIMEI)
+                        path = dcPaths.get(tuple.m_strIMEI)
                         
-                        if ( len(lsPath) != 0 and tp.m_nCellID != lsPath[-1].m_nCellID ): # enter a  new cell
-                            if (lsPath[-1].m_dDuration < MIN_NODE_DURATION ): # delete last node if its duration is short 
-                                lsPath.pop()
+                        if ( len(path.m_lsNodes) != 0 and tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ): # enter a  new cell
+                            if (path.m_lsNodes[-1].m_dDuration < MIN_NODE_DURATION ): # delete last node if its duration is short 
+                                path.m_lsNodes.pop()
                         
-                        if (len(lsPath) == 0 or tp.m_nCellID != lsPath[-1].m_nCellID ):
-                            newNode = CNode(tp.m_strIMEI, tp.m_nLac, tp.m_nCellID)
-                            newNode.m_dLat = dcCellLoc.get("%d-%d"%(tp.m_nLac, tp.m_nCellID), (0.0, 0.0))[0]
-                            newNode.m_dLong = dcCellLoc.get("%d-%d"%(tp.m_nLac, tp.m_nCellID), (0.0, 0.0))[1]
-                            newNode.m_firstTime = tp.m_firstTime
-                            newNode.m_endTime = tp.m_endTime
+                        if (len(path.m_lsNodes) == 0 or tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ):
+                            newNode = CNode(tuple.m_strIMEI, tuple.m_nLac, tuple.m_nCellID)
+                            newNode.m_dLat = dcCellLoc.get("%d-%d"%(tuple.m_nLac, tuple.m_nCellID), (0.0, 0.0))[0]
+                            newNode.m_dLong = dcCellLoc.get("%d-%d"%(tuple.m_nLac, tuple.m_nCellID), (0.0, 0.0))[1]
+                            newNode.m_firstTime = tuple.m_firstTime
+                            newNode.m_endTime = tuple.m_endTime
                             newNode.updateDuration()
-                            newNode.m_nRat = tp.m_nRat
-                            newNode.m_lsApps.append(tp.m_app)
+                            newNode.m_nRat = tuple.m_nRat
+                            newNode.m_lsApps.append(tuple.m_app)
                             
-                            lsPath.append(newNode)
+                            path.m_lsNodes.append(newNode)
                             
                         else: # still in current cell
-                            lsPath[-1].m_firstTime = min(lsPath[-1].m_firstTime, tp.m_firstTime)
-                            lsPath[-1].m_endTime = max(lsPath[-1].m_firstTime, tp.m_endTime)
-                            lsPath[-1].updateDuration()
-                            lsPath[-1].updateAppList(tp.m_app)
+                            path.m_lsNodes[-1].m_firstTime = min(path.m_lsNodes[-1].m_firstTime, tuple.m_firstTime)
+                            path.m_lsNodes[-1].m_endTime = max(path.m_lsNodes[-1].m_firstTime, tuple.m_endTime)
+                            path.m_lsNodes[-1].updateDuration()
+                            path.m_lsNodes[-1].updateAppList(tuple.m_app)
 
                     except StandardError as err:
                         print(err)
@@ -114,8 +115,10 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
        
     # refine the path
     dcRefinedPaths = {}
-    for tp in dcPaths.items():
-        dcRefinedPaths[tp[0]] = refinePath(tp[1])
+    for tuple in dcPaths.items():
+        tuple[1].m_lsNodes = refinePath(tuple[1])
+        tuple[1].updatePathInfo() # update path info
+        dcRefinedPaths[tuple[0]] = tuple[1]
     
     return dcRefinedPaths
 

@@ -12,16 +12,15 @@ from app_mobility import *
 import multiprocessing
 
 
-g_lsPaths = []
+g_dcPaths = {}
+g_nUser2Process = 0
 
 def log_result(rt):
     '''
         merge the paths together
     '''
-    for path in rt.values():
-        if len(path) != 0 : # drop all the empty paths
-            g_lsPaths.append(path)
-    print("==> %d users have been processed." % (len(g_lsPaths) ) )
+    g_dcPaths.update(rt)
+    print("==> path extraction progress: %.2f" % (len(g_dcPaths)/g_nUser2Process ) )
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -42,11 +41,11 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
     pool.close()
     pool.join()
     
-    return g_lsPaths
+    return g_dcPaths
         
-def statistic(lsResult):
+def statistic(dcResult):
     text = ""
-    for path in lsResult:
+    for path in dcResult.values():
         if len(path) != 0:
             info = getPathInfo(path)
             text += info.toString()
@@ -85,6 +84,7 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
     print("start user selection...")
     lsImeis = pickIMEI(strImeiPath)
     print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
+    g_nUser2Process = len(lsImeis)
 
     # construct cell-location mapping
     print("start building cell-location dict...")
@@ -93,20 +93,20 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
 
     # extract roaming path in parallel
     print("start path extraction...")
-    lsPaths = extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
+    dcPaths = extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
     print("path extraction is finished")
     
     # serialize roaming path
     # TODO: change the file name
     print("start serialization of path...")
     strPathListName = "serPath_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
-    serialize2File(strPathListName, strOutDir, lsPaths)
+    serialize2File(strPathListName, strOutDir, dcPaths)
     print("serialization of path is finished.")
     
     # path statistics
     print("Start path statistics...")
     strStatisticName = "statistic_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
-    text = statistic(lsPaths)
+    text = statistic(dcPaths)
     if (text != ""):
         with open(strOutDir+strStatisticName, 'w') as hRtFile:
             hRtFile.write(text)
