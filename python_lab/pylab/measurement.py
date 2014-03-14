@@ -9,11 +9,16 @@ from common_function import *
 from extract_path import *
 from app_mobility import *
 
+
 import multiprocessing
+import math
 
 
-g_dcPaths = {}
-g_nUser2Process = 0
+g_dcPaths = {}              # extracted paths
+g_nUser2Process = 0         # Total User to be processed
+g_nUserSelectionBase = 1    # User selection Freq
+g_nMaxProcessNum = 20       # number of processes running in parallel
+g_nUserPerProcess = 100     # how many Imeis should be processed in each process
 
 def log_result(rt):
     '''
@@ -30,12 +35,12 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
         start multiple processes to extract path in parallel
     '''
     nImeiCount = len(lsImeis)
-    nPoolSize = min(nImeiCount/IMEI_PER_PROC, MAX_PROC_NUM)
+    nPoolSize = min(nImeiCount/g_nUserPerProcess, g_nMaxProcessNum)
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
     
     nStartIndex = 0
     while nStartIndex < nImeiCount:
-        nEndIndex = min(nStartIndex+IMEI_PER_PROC, nImeiCount)
+        nEndIndex = min(nStartIndex+g_nUserPerProcess, nImeiCount)
         pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
         nStartIndex = nEndIndex
     pool.close()
@@ -64,7 +69,7 @@ def pickIMEI(strDistinctedImeisPath):
                     break
                 
                 for i in xrange(len(lsLines)):
-                    if (i%USER_SELECTION_BASE ==0):
+                    if (i%g_nUserSelectionBase ==0):
                         strIm = lsLines[i].split(',')[0].strip()
                         if (strIm != "" and strIm.isdigit() ):
                             lsImeis.append(strIm)
@@ -124,28 +129,24 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
 
 
 if __name__ == '__main__':
-     
-#     # setup for mh1
-#     strImeisPath = "/mnt/disk12/yanglin/data/distinct_imei.txt"
-#     strCellLocRefPath = "/mnt/disk12/yanglin/data/dict.csv"
-#     strInDir = "/mnt/disk12/yanglin/mnt/d1/USERSERVICE/20131003/"
-#     lsCDR = [\
-#             "export-userservice-2013100318.dat", \
-#             "export-userservice-2013100319.dat", \
-#             "export-userservice-2013100320.dat", \
-#             "export-userservice-2013100321.dat" \
-#             ]
-#     strOutDir = "/mnt/disk12/yanglin/data/out/"
+    # running config
+    g_nUser2Process = int(sys.argv[1])
+    if(g_nUser2Process > TOTAL_USER_NUMBER or g_nUser2Process == 0):
+        raise StandardError("Error: trying to extrac %d user from all 7,000,000 users" % (g_nUser2Process) )
+    g_nUserSelectionBase = math.ceil(float(TOTAL_USER_NUMBER)/float(g_nUser2Process))
     
-    # setup for mh2/mh5
+    g_nMaxProcessNum = int(sys.argv[2])
+    g_nUserPerProcess = int(sys.argv[3])
+   
+    # data setup
     strImeisPath = "/mnt/disk8/yanglin/data/distinct_imei.txt"
     strCellLocRefPath = "/mnt/disk8/yanglin/data/dict.csv"
     strInDir = "/mnt/disk8/yanglin/data/cdr/"
     lsCDR = [\
-            "export-userservice-2013090918.dat", \
-            "export-userservice-2013090919.dat", \
-            "export-userservice-2013090920.dat", \
-            "export-userservice-2013090921.dat" \
+            "export-userservice-2013090922.dat", \
+#             "export-userservice-2013090919.dat", \
+#             "export-userservice-2013090920.dat", \
+#             "export-userservice-2013090921.dat" \
             ]
     strOutDir = "/mnt/disk8/yanglin/data/out/"
 

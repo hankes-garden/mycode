@@ -13,10 +13,8 @@ import cPickle
 
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
+TOTAL_USER_NUMBER = 7000000
 
-USER_SELECTION_BASE = 1 # there are about 7 million users, #selectedUser=7million\base
-MAX_PROC_NUM = 15
-IMEI_PER_PROC = 3000 # how many Imeis should be processed in each process
 
 def exeTime(func):
     '''
