@@ -11,15 +11,20 @@ from app import *
 from common_function import *
 from extract_path import *
 
+g_nMax = 10
+
+def test():
+    print g_nMax
 
 if __name__ == '__main__':
-    strSerializedPath = \
-    "D:\\yanglin\\playground\\serPath_719_new1_new2.txt"
-    lsPaths = deserializeFromFile(strSerializedPath)
-    findOutliers(lsPaths, 2)
-    print("done")
-#     traceUser(lsPaths, "3551670557119501")
-    
+#     strSerializedPath = \
+#     "D:\\yanglin\\playground\\serPath_719_new1_new2.txt"
+#     lsPaths = deserializeFromFile(strSerializedPath)
+#     findOutliers(lsPaths, 2)
+#     print("done")
+# #     traceUser(lsPaths, "3551670557119501")
+    g_nMax= 99
+    test()
 
         
     

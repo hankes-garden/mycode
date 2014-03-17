@@ -67,7 +67,7 @@ def pickIMEI(strDistinctedImeisPath):
                 lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
                 if not lsLines:
                     break
-                
+                                                           
                 for i in xrange(len(lsLines)):
                     if (i%g_nUserSelectionBase ==0):
                         strIm = lsLines[i].split(',')[0].strip()
@@ -107,26 +107,16 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
     print("path extraction is finished")
     
     # serialize roaming path
-    # TODO: change the file name
     print("start serialization of path...")
-    strPathListName = "serPath_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    strPathListName = "serPath_%d_%s_%s.txt" % \
+    (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
     serialize2File(strPathListName, strOutDir, dcPaths)
     print("serialization of path is finished.")
     
-    # path statistics
-    print("Start path statistics...")
-    strStatisticName = "statistic_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
-    text = statistic(dcPaths)
-    if (text != ""):
-        with open(strOutDir+strStatisticName, 'w') as hRtFile:
-            hRtFile.write(text)
-    else:
-        raise StandardError("empty statistic.")
-    print("Path statistics is finished.")
-        
     # application mobility measurement
     print("Start application mobility measurement...")
-    strAppMobilityName = "appmob_%d_%s_%s.txt" % (len(lsImeis), lsCDR[0].split('.')[0], lsCDR[-1].split('.')[0])
+    strAppMobilityName = "appmob_%d_%s_%s.txt" % \
+    (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
     conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName)
     print("Application mobility measurement is finished")
 

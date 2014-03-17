@@ -11,7 +11,7 @@ from common_function import *
 import sys
 
 
-def measureAppMobility(dcResult):
+def measureAppMobility(dcPaths):
     '''
         Measure application mobility
     '''
@@ -19,7 +19,7 @@ def measureAppMobility(dcResult):
     dcCurAppDict = 0
     curAppState = 0
     
-    for path in dcResult.values():
+    for path in dcPaths.values():
         nCurPathLen = len(path.m_lsNodes)
         if (nCurPathLen == 0): # skip those empty paths
             continue

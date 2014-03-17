@@ -19,12 +19,14 @@ class CPathInfo(object):
         self.m_strIMEI = ""
         self.m_nPathLen = 0;
         self.m_dMobility = 0.0
+        
         # uplink
         self.m_nUpBytes = 0
         self.m_nUpPackets = 0
         self.m_dMaxUpSpeed = 0
         self.m_dMinUpSpeed = 1000000000000000000000.0
         self.m_dAvgUpSpeed = 0.0
+        
         # downlink
         self.m_nDownBytes = 0
         self.m_nDownPackets = 0
