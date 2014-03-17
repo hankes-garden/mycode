@@ -17,8 +17,8 @@ MIN_NODE_DOWN_BYTES = 100
 
 
 # NOTE: this function will create an empty list for each given IMEI, this means if
-#       there is no path was extracted for this imei, it will still return an empty
-#       list for this IMEI
+#       there is no path was extracted for this imei, it will still return an CPath
+#       instance with an empty list for this IMEI
 def constructUserDict(lsImeis):
     dict = {}
     for strImei in lsImeis:
@@ -26,41 +26,42 @@ def constructUserDict(lsImeis):
         dict[strImei] = path
     return dict
 
-def refinePath(lsNodes):
+def refinePath(path):
     '''
         this function will:
         1. sort the path by first_time,
         2. merge the adjacent cells which have same lac and cell_id
-        3. calculate the moving speed btw nodes
+        3. calculate the moving speed btw nodes if there is location info
     '''
-    lsRefinedPath = []
-    lsNodes.sort(key=lambda node:node.m_firstTime)
+    lsRefinedNodes = []
+    path.m_lsNodes.sort(key=lambda node:node.m_firstTime)
     
     startIndex = 0
     endIndex = 0
-    while(startIndex < len(lsNodes) ):
-        while(endIndex < len(lsNodes) ):
-            if(lsNodes[startIndex].m_nLac == lsNodes[endIndex].m_nLac and \
-               lsNodes[startIndex].m_nCellID == lsNodes[endIndex].m_nCellID):
+    while(startIndex < len(path.m_lsNodes) ):
+        while(endIndex < len(path.m_lsNodes) ):
+            if(path.m_lsNodes[startIndex].m_nLac == path.m_lsNodes[endIndex].m_nLac and \
+               path.m_lsNodes[startIndex].m_nCellID == path.m_lsNodes[endIndex].m_nCellID):
                 endIndex += 1
             else:
                 break
-        merNode = mergeNodes(lsNodes[startIndex:endIndex])
-        lsRefinedPath.append(merNode)
+        merNode = mergeNodes(path.m_lsNodes[startIndex:endIndex])
+        lsRefinedNodes.append(merNode)
         startIndex = endIndex
         
     # re-calculate moving speed btw nodes    
     i = 1
-    while(i < len(lsRefinedPath) ):
-        lsRefinedPath[i].m_dSpeed = calculateMobilitySpeed(lsNodes[i-1], lsNodes[i])
-    if(len(lsRefinedPath) >= 2):
-        lsRefinedPath[0].m_dSpeed = lsRefinedPath[1].m_dSpeed
+    while(i < len(lsRefinedNodes) ):
+        lsRefinedNodes[i].m_dSpeed = calculateMobilitySpeed(lsRefinedNodes[i-1], lsRefinedNodes[i])
+    if(len(lsRefinedNodes) >= 2):
+        lsRefinedNodes[0].m_dSpeed = lsRefinedNodes[1].m_dSpeed
 
-    return lsRefinedPath
+    path.m_lsNodes = lsRefinedNodes
+
 
 def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     '''
-        extract roaming path for given IMEI from CDR
+        extract roaming path of given IMEIs from CDR
     '''
     if len(lsInFiles) == 0 :
         raise StandardError("Error: empty input file list")
@@ -78,20 +79,21 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                 for line in lsLines:
                     try:
                         it = line.split(',')
-                        if (len(it) != ELEMENT_NUM_EACH_LINE or it[4].strip() not in dcPaths): 
-                            continue # unqualified line(invalid formated or not we want), skip it !
+                        if (len(it) != ELEMENT_NUM_EACH_LINE): # unqualified line(invalid formated), skip it !
+                            continue 
+                        path = dcPaths.get(it[4].strip())
+                        if(None == path):
+                            continue
                         
                         # parse line
                         tuple = CTuple()
                         tuple.parseFromStr(line)
                         
-                        path = dcPaths.get(tuple.m_strIMEI)
-                        
-                        if ( len(path.m_lsNodes) != 0 and tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ): # enter a  new cell
-                            if (path.m_lsNodes[-1].m_dDuration < MIN_NODE_DURATION ): # delete last node if its duration is short 
+                        if ( len(path.m_lsNodes) != 0 and tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ):# delete last node if its duration is too short
+                            if (path.m_lsNodes[-1].m_dDuration < MIN_NODE_DURATION ):  
                                 path.m_lsNodes.pop()
                         
-                        if (len(path.m_lsNodes) == 0 or tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ):
+                        if (len(path.m_lsNodes) == 0 or tuple.m_nCellID != path.m_lsNodes[-1].m_nCellID ): # enter a  new cell
                             newNode = CNode(tuple.m_strIMEI, tuple.m_nLac, tuple.m_nCellID)
                             newNode.m_dLat = dcCellLoc.get("%d-%d"%(tuple.m_nLac, tuple.m_nCellID), (0.0, 0.0))[0]
                             newNode.m_dLong = dcCellLoc.get("%d-%d"%(tuple.m_nLac, tuple.m_nCellID), (0.0, 0.0))[1]
@@ -100,7 +102,6 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                             newNode.updateDuration()
                             newNode.m_nRat = tuple.m_nRat
                             newNode.m_lsApps.append(tuple.m_app)
-                            
                             path.m_lsNodes.append(newNode)
                             
                         else: # still in current cell
@@ -116,7 +117,7 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     # refine the path
     dcRefinedPaths = {}
     for tuple in dcPaths.items():
-        tuple[1].m_lsNodes = refinePath(tuple[1])
+        refinePath(tuple[1])
         tuple[1].updatePathInfo() # update path info
         dcRefinedPaths[tuple[0]] = tuple[1]
     

@@ -14,13 +14,13 @@ import multiprocessing
 import math
 
 
-g_dcPaths = {}              # extracted paths
+g_dcPaths = {}              # global extracted paths
 g_nUser2Process = 0         # Total User to be processed
 g_nUserSelectionBase = 1    # User selection Freq
 g_nMaxProcessNum = 20       # number of processes running in parallel
 g_nUserPerProcess = 100     # how many Imeis should be processed in each process
 
-def log_result(rt):
+def extractPathCallback(rt):
     '''
         merge the paths together
     '''
@@ -41,7 +41,7 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
     nStartIndex = 0
     while nStartIndex < nImeiCount:
         nEndIndex = min(nStartIndex+g_nUserPerProcess, nImeiCount)
-        pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = log_result)
+        pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = extractPathCallback)
         nStartIndex = nEndIndex
     pool.close()
     pool.join()
@@ -78,9 +78,14 @@ def pickIMEI(strDistinctedImeisPath):
         
 
         
-def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDir):
+def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
     '''
-        the main function to conduct all the measurement
+        The main function to conduct all the measurement, including:
+        1. select users
+        2. prepare the cell-location mapping
+        3. extract path in parallel
+        4. serialize path to disk
+        5. conduct statistic or sub-domain measurement
     '''
     
     print("--Start Measurement...--")
@@ -93,7 +98,7 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
 
     # construct cell-location mapping
     print("start building cell-location dict...")
-    dcCellLoc = constructCellLocDict(strCellLocRefPath)
+    dcCellLoc = constructCellLocDict(strCellLocPath)
     print("cell-location dict is finished, #cell-location=%d" % (len(dcCellLoc)))
 
     # extract roaming path in parallel
@@ -130,6 +135,12 @@ def conductMeasurement(strCellLocRefPath, strImeiPath, strInDir, lsCDR, strOutDi
 
 if __name__ == '__main__':
     # running config
+    # sys.argv[1] - #user to process
+    # sys.argv[2] - Max number of sub-process
+    # sys.argv[3] - #user to process in each process
+    if(len(sys.argv)!=4):
+        print("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc")
+    
     g_nUser2Process = int(sys.argv[1])
     if(g_nUser2Process > TOTAL_USER_NUMBER or g_nUser2Process == 0):
         raise StandardError("Error: trying to extrac %d user from all 7,000,000 users" % (g_nUser2Process) )
@@ -140,14 +151,14 @@ if __name__ == '__main__':
    
     # data setup
     strImeisPath = "/mnt/disk8/yanglin/data/distinct_imei.txt"
-    strCellLocRefPath = "/mnt/disk8/yanglin/data/dict.csv"
+    strCellLocPath = "/mnt/disk8/yanglin/data/dict.csv"
     strInDir = "/mnt/disk8/yanglin/data/cdr/"
     lsCDR = [\
             "export-userservice-2013090922.dat", \
-#             "export-userservice-2013090919.dat", \
-#             "export-userservice-2013090920.dat", \
-#             "export-userservice-2013090921.dat" \
+             "export-userservice-2013090919.dat", \
+             "export-userservice-2013090920.dat", \
+             "export-userservice-2013090921.dat" \
             ]
     strOutDir = "/mnt/disk8/yanglin/data/out/"
 
-    conductMeasurement(strCellLocRefPath, strImeisPath, strInDir, lsCDR, strOutDir)
+    conductMeasurement(strCellLocPath, strImeisPath, strInDir, lsCDR, strOutDir)

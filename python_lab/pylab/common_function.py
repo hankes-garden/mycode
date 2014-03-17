@@ -156,14 +156,14 @@ def constructCellLocDict(strLocationDictPath):
             lsLines = hLocDict.readlines(MAX_IO_BUF_SIZE)
             if not lsLines:
                 break
-            try:
-                for line in lsLines:
-                    items = line.split(',')
-                    key = items[2]
+            
+            for line in lsLines:
+                items = line.split(',')
+                key = items[2]
+                if(key!="" and items[3]!="" and items[4]!=""):
                     value = (float(items[3]), float(items[4]) )
                     dcCellLoc[key] = value
-            except ValueError:
-                pass
+
     return dcCellLoc
 
 
