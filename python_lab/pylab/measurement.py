@@ -130,6 +130,7 @@ if __name__ == '__main__':
     # sys.argv[3] - #user to process in each process
     if(len(sys.argv)!=4):
         print("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc")
+        return
     
     g_nUser2Process = int(sys.argv[1])
     if(g_nUser2Process > TOTAL_USER_NUMBER or g_nUser2Process == 0):
