@@ -144,7 +144,7 @@ if __name__ == '__main__':
     strCellLocPath = "/mnt/disk8/yanglin/data/dict.csv"
     strInDir = "/mnt/disk8/yanglin/data/cdr/"
     lsCDR = [\
-            "export-userservice-2013090922.dat", \
+             "export-userservice-2013090918.dat", \
              "export-userservice-2013090919.dat", \
              "export-userservice-2013090920.dat", \
              "export-userservice-2013090921.dat" \
