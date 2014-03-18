@@ -35,7 +35,7 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
         start multiple processes to extract path in parallel
     '''
     nImeiCount = len(lsImeis)
-    nPoolSize = min(nImeiCount/g_nUserPerProcess, g_nMaxProcessNum)
+    nPoolSize = int(min(math.ceil(float(nImeiCount)/g_nUserPerProcess), g_nMaxProcessNum))
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
     
     nStartIndex = 0
