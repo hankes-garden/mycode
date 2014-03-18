@@ -122,9 +122,9 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
     
     # application mobility measurement
     print("Start application mobility measurement...")
-    strAppMobilityName = "appmob_%d_%s_%s.txt" % \
+    strAppMobilityName = "appmob_%d_%s_%s" % \
     (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
-    conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName)
+    conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName, dcPaths)
     print("Application mobility measurement is finished")
 
     print("--All measurements are finished--")
