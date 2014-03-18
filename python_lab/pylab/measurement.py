@@ -126,8 +126,8 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
 if __name__ == '__main__':
     # running config
     # sys.argv[1] - #user to process
-    # sys.argv[2] - Max number of sub-process
-    # sys.argv[3] - #user to process in each process
+    # sys.argv[2] - Max number of sub-process, 20 would be better
+    # sys.argv[3] - #user to process in each process, 5000 would be better
     if(len(sys.argv)!=4):
         raise StandardError("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc")
         
