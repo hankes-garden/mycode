@@ -25,7 +25,7 @@ def extractPathCallback(rt):
         merge the paths together
     '''
     g_dcPaths.update(rt)
-    print("==> path extraction progress: %.2f" % (len(g_dcPaths)/g_nUser2Process ) )
+    print("==> Progress of path extraction: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process ) )
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -88,8 +88,12 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
         5. conduct statistic or sub-domain measurement
     '''
     
-    print("--Start Measurement...--")
+    print("--Measurement configuration--")
+    print("cell_Loc_path: %s\n IMEI_path: %s\n input_path: %s\n output_path:%s\n #user:%s\n max_proc: %d\n #user_per_proc: %s\n" % \
+          (strCellLocPath, strImeiPath, strInDir, strOutDir, \
+           g_nUser2Process, g_nMaxProcessNum, g_nUserPerProcess) )
     
+    print("--Start Measurement...--")
     # pick users
     print("start user selection...")
     lsImeis = pickIMEI(strImeiPath)
@@ -128,28 +132,28 @@ if __name__ == '__main__':
     # sys.argv[1] - #user to process
     # sys.argv[2] - Max number of sub-process, 20 would be better
     # sys.argv[3] - #user to process in each process, 5000 would be better
-    if(len(sys.argv)!=4):
-        raise StandardError("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc")
+    if(len(sys.argv)!=5):
+        raise StandardError("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc working_dir")
         
     
     g_nUser2Process = int(sys.argv[1])
     if(g_nUser2Process > TOTAL_USER_NUMBER or g_nUser2Process == 0):
         raise StandardError("Error: trying to extrac %d user from all 7,000,000 users" % (g_nUser2Process) )
     g_nUserSelectionBase = math.ceil(float(TOTAL_USER_NUMBER)/float(g_nUser2Process))
-    
     g_nMaxProcessNum = int(sys.argv[2])
     g_nUserPerProcess = int(sys.argv[3])
+    strWorkingDir = sys.argv[4] if sys.argv[4].endswith("/") else sys.argv[4]+"/"
    
     # data setup
-    strImeisPath = "/mnt/disk8/yanglin/data/distinct_imei.txt"
-    strCellLocPath = "/mnt/disk8/yanglin/data/dict.csv"
-    strInDir = "/mnt/disk8/yanglin/data/cdr/"
+    strImeisPath = strWorkingDir + "data/distinct_imei.txt"
+    strCellLocPath = strWorkingDir + "data/dict.csv"
+    strInDir = strWorkingDir + "data/cdr/"
     lsCDR = [\
              "export-userservice-2013090918.dat", \
              "export-userservice-2013090919.dat", \
              "export-userservice-2013090920.dat", \
              "export-userservice-2013090921.dat" \
             ]
-    strOutDir = "/mnt/disk8/yanglin/data/out/"
+    strOutDir = strWorkingDir + "data/out/"
 
     conductMeasurement(strCellLocPath, strImeisPath, strInDir, lsCDR, strOutDir)
