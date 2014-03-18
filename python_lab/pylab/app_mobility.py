@@ -120,7 +120,8 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
             strSpeedResult += "%d,%s\n" % (tp[0], app.toString() )
     write2File(strSpeedResult, strOutPath+"_speed.txt")
 
+import sys
 if __name__ == '__main__':
-    conductAppMobilityMeasurement("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt",\
-                                  "D:\\yanglin\\playground\\appmob_71906_export-userservice-2013100311_export-userservice-2013100315")
+    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
+    print("done!")
 
