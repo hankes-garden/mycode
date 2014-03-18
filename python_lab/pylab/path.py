@@ -52,7 +52,7 @@ class CPath(object):
             if (self.m_dMinSpeed == 0.0):
                 self.m_dMinSpeed = node.m_dSpeed
             elif (node.m_dSpeed != 0.0):
-                self.m_dMinSpeed = min(self.m_dMinSpeed, node.dSpeed)
+                self.m_dMinSpeed = min(self.m_dMinSpeed, node.m_dSpeed)
             
             # distance
             self.m_nCellNum = len(self.m_lsNodes)
@@ -60,19 +60,19 @@ class CPath(object):
                 if(dLastLat!=0.0 and dLastLong!=0.0):
                     self.m_nDistance += calculateDistance(dLastLat, dLastLong, node.m_dLat, node.m_dLong)
                     
-                dLastLat = node.dLat
-                dLastLong = node.dLastLong
+                dLastLat = node.m_dLat
+                dLastLong = node.m_dLong
                 
             # traffic
             for app in node.m_lsApps:
-                self.m_nTotalUpBytes += app.nUpBytes
-                self.m_nTotalDownBytes += app.nDownBytes
+                self.m_nTotalUpBytes += app.m_nUpBytes
+                self.m_nTotalDownBytes += app.m_nDownBytes
         
-        self.m_dAvgSpeed = self.m_dAvgSpeed/len(self.m_lsNodes)
-        
-        # time
         if(len(self.m_lsNodes) >=1 ):
-            self.m_startTime = self.m_lsNodes[0].m_startTime
+            # avg speed
+            self.m_dAvgSpeed = self.m_dAvgSpeed/len(self.m_lsNodes)
+            # time
+            self.m_startTime = self.m_lsNodes[0].m_firstTime
             self.m_endTime = self.m_lsNodes[-1].m_endTime
             
             
