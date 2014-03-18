@@ -94,17 +94,18 @@ def measureAppMobility(dcPaths, bySpeed=False):
     return dcUserMobility
 
                     
-def conductAppMobilityMeasurement(strInPath, strOutPath):
+def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
     '''
         Output format:
         Mobility, ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, AvgUpBytes, 
         MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, MinUpSpeed, TotalDownBytes, 
         AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
     '''
-    dcResult = deserializeFromFile(strInPath)
+    if (dcPaths == None):
+        dcPaths = deserializeFromFile(strInPath)
     
     # based on #cell_visited
-    dcCellMobility = measureAppMobility(dcResult, False)
+    dcCellMobility = measureAppMobility(dcPaths, False)
     strCellResult = ""
     for tp in dcCellMobility.items():
         for app in tp[1].values():
@@ -112,7 +113,7 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
     write2File(strCellResult, strOutPath+"_cell.txt")
 
     # based on moving speed
-    dcSpeedMobility = measureAppMobility(dcResult, True)
+    dcSpeedMobility = measureAppMobility(dcPaths, True)
     strSpeedResult = ""
     for tp in dcSpeedMobility.items():
         for app in tp[1].values():
