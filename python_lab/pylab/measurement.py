@@ -24,6 +24,8 @@ def extractPathCallback(rt):
     '''
         merge the paths together
     '''
+    global g_nUserPerProcess
+    
     g_dcPaths.update(rt)
     print("==> Progress of path extraction: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process ) )
     
@@ -87,9 +89,10 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
         4. serialize path to disk
         5. conduct statistic or sub-domain measurement
     '''
-    
+    global g_nUser2Process
+
     print("--Measurement configuration--")
-    print("cell_Loc_path: %s\n IMEI_path: %s\n input_path: %s\n output_path:%s\n #user:%s\n max_proc: %d\n #user_per_proc: %s\n" % \
+    print(" cell_Loc_path: %s\n IMEI_path: %s\n input_path: %s\n output_path:%s\n #user:%s\n max_proc: %d\n #user_per_proc: %s\n" % \
           (strCellLocPath, strImeiPath, strInDir, strOutDir, \
            g_nUser2Process, g_nMaxProcessNum, g_nUserPerProcess) )
     
