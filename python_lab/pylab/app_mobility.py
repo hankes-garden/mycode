@@ -10,25 +10,40 @@ from common_function import *
 
 import sys
 
+SPEED_SLOW = 30.0
+SPEED_MODERATE = 50.0
 
-def measureAppMobility(dcPaths):
+def getSpeedLevel(dSpeed):
+    nLevel = 0
+    if (0.0 < dSpeed <= SPEED_SLOW):
+        nLevel = 1
+    if (SPEED_SLOW < dSpeed <= SPEED_MODERATE):
+        nLevel = 2
+    if (dSpeed > SPEED_MODERATE):
+        nLevel = 3
+        
+    return nLevel
+
+
+def measureAppMobility(dcPaths, bySpeed=False):
     '''
         Measure application mobility
     '''
-    dcUserMobility = dict()
+    dcUserMobility = {}
     dcCurAppDict = 0
     curAppState = 0
     
     for path in dcPaths.values():
-        nCurPathLen = len(path.m_lsNodes)
-        if (nCurPathLen == 0): # skip those empty paths
+        if (len(path.m_lsNodes) == 0): # skip those empty paths
             continue
         
-        if(nCurPathLen not in dcUserMobility):
+        nCurPathIndex = getSpeedLevel(path.m_dAvgSpeed) if bySpeed else len(path.m_lsNodes)
+        
+        if(nCurPathIndex not in dcUserMobility):
             dcCurAppDict = dict()
-            dcUserMobility[nCurPathLen] = dcCurAppDict
+            dcUserMobility[nCurPathIndex] = dcCurAppDict
         else:
-            dcCurAppDict = dcUserMobility[nCurPathLen]
+            dcCurAppDict = dcUserMobility[nCurPathIndex]
             
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
@@ -87,14 +102,24 @@ def conductAppMobilityMeasurement(strInPath, strOutPath):
         AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
     '''
     dcResult = deserializeFromFile(strInPath)
-    dcUserMobility = measureAppMobility(dcResult)
-    strResult = ""
-    for tp in dcUserMobility.items():
+    
+    # based on #cell_visited
+    dcCellMobility = measureAppMobility(dcResult, False)
+    strCellResult = ""
+    for tp in dcCellMobility.items():
         for app in tp[1].values():
-            strResult += "%d,%s\n" % (tp[0], app.toString() )
-    write2File(strResult, strOutPath)
+            strCellResult += "%d,%s\n" % (tp[0], app.toString() )
+    write2File(strCellResult, strOutPath+"_cell.txt")
+
+    # based on moving speed
+    dcSpeedMobility = measureAppMobility(dcResult, True)
+    strSpeedResult = ""
+    for tp in dcSpeedMobility.items():
+        for app in tp[1].values():
+            strSpeedResult += "%d,%s\n" % (tp[0], app.toString() )
+    write2File(strSpeedResult, strOutPath+"_speed.txt")
 
 if __name__ == '__main__':
     conductAppMobilityMeasurement("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt",\
-                                  "D:\\yanglin\\playground\\appmob_71906_export-userservice-2013100311_export-userservice-2013100315.txt")
+                                  "D:\\yanglin\\playground\\appmob_71906_export-userservice-2013100311_export-userservice-2013100315")
 
