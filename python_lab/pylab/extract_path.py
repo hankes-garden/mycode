@@ -55,6 +55,7 @@ def refinePath(path):
     i = 1
     while(i < len(lsRefinedNodes) ):
         lsRefinedNodes[i].m_dSpeed = calculateMobilitySpeed(lsRefinedNodes[i-1], lsRefinedNodes[i])
+        i += 1
     if(len(lsRefinedNodes) >= 2):
         lsRefinedNodes[0].m_dSpeed = lsRefinedNodes[1].m_dSpeed
 
