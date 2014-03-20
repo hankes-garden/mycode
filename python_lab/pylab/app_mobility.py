@@ -118,9 +118,11 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
         AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
     '''
     if (dcPaths == None):
+        print("Start to deserialize path...")
         dcPaths = deserializeFromFile(strInPath)
-    
+
     # based on #cell_visited
+    print("Start to measure application mobility based on vistied cell...")
     dcCellMobility = measureAppMobility(dcPaths, False)
     strCellResult = ""
     for tp in dcCellMobility.items():
@@ -129,15 +131,18 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
     write2File(strCellResult, strOutPath+"_cell.txt")
 
     # based on moving speed
+    print("Start to measure application mobility based on speed...")
     dcSpeedMobility = measureAppMobility(dcPaths, True)
     strSpeedResult = ""
     for tp in dcSpeedMobility.items():
         for app in tp[1].values():
             strSpeedResult += "%d,%s\n" % (tp[0], app.toString() )
     write2File(strSpeedResult, strOutPath+"_speed.txt")
+    
+    print("Application mobility is finished!")
 
 import sys
 if __name__ == '__main__':
     conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
-    print("done!")
+    
 
