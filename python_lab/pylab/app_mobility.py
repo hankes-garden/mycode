@@ -97,9 +97,12 @@ def measureAppMobility(dcPaths, bySpeed=False):
 def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
     '''
         Output format:
-        Mobility, ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, AvgUpBytes, 
-        MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, MinUpSpeed, TotalDownBytes, 
-        AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
+        Mobility, 
+        ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, 
+        AvgUpBytes, MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, 
+        MinUpSpeed, TotalDownBytes, AvgDownBytes, MaxDownBytes, 
+        MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed, 
+        Protocol, UserPort, DstPort
     '''
     if (dcPaths == None):
         dcPaths = deserializeFromFile(strInPath)
