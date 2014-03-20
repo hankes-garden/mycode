@@ -10,18 +10,11 @@ from common_function import *
 
 import sys
 
-SPEED_SLOW = 30.0
-SPEED_MODERATE = 50.0
 
 def getSpeedLevel(dSpeed):
-    nLevel = 0
-    if (0.0 < dSpeed <= SPEED_SLOW):
-        nLevel = 1
-    if (SPEED_SLOW < dSpeed <= SPEED_MODERATE):
-        nLevel = 2
-    if (dSpeed > SPEED_MODERATE):
-        nLevel = 3
-        
+    
+    # change to km/h, and divide into slots
+    nLevel = int( (dSpeed*60.0*60.0/1000.0) / 10)
     return nLevel
 
 
