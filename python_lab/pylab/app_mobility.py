@@ -9,18 +9,34 @@ from app_state import *
 from common_function import *
 
 import sys
-
-SPEED_SLOW = 30.0
-SPEED_MODERATE = 50.0
+import math
 
 def getSpeedLevel(dSpeed):
+    
+    # change to km/h, and divide into slots
+    sp = (dSpeed*60.0*60.0/1000.0)/10
+    
     nLevel = 0
-    if (0.0 < dSpeed <= SPEED_SLOW):
+    if (0.0<sp<=10.0):
         nLevel = 1
-    if (SPEED_SLOW < dSpeed <= SPEED_MODERATE):
+    if (10.0<sp<=20.0):
         nLevel = 2
-    if (dSpeed > SPEED_MODERATE):
+    if (20.0<sp<=30.0):
         nLevel = 3
+    if (30.0<sp<=40.0):
+        nLevel = 4
+    if (40.0<sp<=50.0):
+        nLevel = 5
+    if (50.0<sp<=60.0):
+        nLevel = 6
+    if (60.0<sp<=70.0):
+        nLevel = 7
+    if (70.0<sp<=80.0):
+        nLevel = 8
+    if (80.0<sp<=90.0):
+        nLevel = 9
+    if (sp>90.0):
+        nLevel = 10
         
     return nLevel
 
@@ -105,9 +121,11 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
         Protocol, UserPort, DstPort
     '''
     if (dcPaths == None):
+        print("Start to deserialize path...")
         dcPaths = deserializeFromFile(strInPath)
-    
+
     # based on #cell_visited
+    print("Start to measure application mobility based on vistied cell...")
     dcCellMobility = measureAppMobility(dcPaths, False)
     strCellResult = ""
     for tp in dcCellMobility.items():
@@ -116,15 +134,18 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
     write2File(strCellResult, strOutPath+"_cell.txt")
 
     # based on moving speed
+    print("Start to measure application mobility based on speed...")
     dcSpeedMobility = measureAppMobility(dcPaths, True)
     strSpeedResult = ""
     for tp in dcSpeedMobility.items():
         for app in tp[1].values():
             strSpeedResult += "%d,%s\n" % (tp[0], app.toString() )
     write2File(strSpeedResult, strOutPath+"_speed.txt")
+    
+    print("Application mobility is finished!")
 
 import sys
 if __name__ == '__main__':
     conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
-    print("done!")
+    
 
