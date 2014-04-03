@@ -10,7 +10,7 @@ import copy
 
 class CNode(object):
     '''
-    A node in roaming path
+    One one is corresponding to a physical cell or sector (depends on the data) 
     '''
 
 
