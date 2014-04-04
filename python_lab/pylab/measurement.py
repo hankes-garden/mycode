@@ -24,8 +24,10 @@ def extractPathCallback(rt):
     '''
         merge the paths together
     '''
+    global g_nUserPerProcess
+    
     g_dcPaths.update(rt)
-    print("==> path extraction progress: %.2f" % (len(g_dcPaths)/g_nUser2Process ) )
+    print("==> Progress of path extraction: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process*100.0 ) + "%")
     
 def proc_init():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -35,7 +37,7 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
         start multiple processes to extract path in parallel
     '''
     nImeiCount = len(lsImeis)
-    nPoolSize = min(nImeiCount/g_nUserPerProcess, g_nMaxProcessNum)
+    nPoolSize = int(min(math.ceil(float(nImeiCount)/g_nUserPerProcess), g_nMaxProcessNum))
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
     
     nStartIndex = 0
@@ -87,9 +89,14 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
         4. serialize path to disk
         5. conduct statistic or sub-domain measurement
     '''
+    global g_nUser2Process
+
+    print("--Measurement configuration--")
+    print(" cell_Loc_path: %s\n IMEI_path: %s\n input_path: %s\n output_path:%s\n #user:%s\n max_proc: %d\n #user_per_proc: %s\n" % \
+          (strCellLocPath, strImeiPath, strInDir, strOutDir, \
+           g_nUser2Process, g_nMaxProcessNum, g_nUserPerProcess) )
     
     print("--Start Measurement...--")
-    
     # pick users
     print("start user selection...")
     lsImeis = pickIMEI(strImeiPath)
@@ -115,9 +122,9 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
     
     # application mobility measurement
     print("Start application mobility measurement...")
-    strAppMobilityName = "appmob_%d_%s_%s.txt" % \
+    strAppMobilityName = "appmob_%d_%s_%s" % \
     (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
-    conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName)
+    conductAppMobilityMeasurement(strOutDir+strPathListName, strOutDir+strAppMobilityName, dcPaths)
     print("Application mobility measurement is finished")
 
     print("--All measurements are finished--")
@@ -126,30 +133,30 @@ def conductMeasurement(strCellLocPath, strImeiPath, strInDir, lsCDR, strOutDir):
 if __name__ == '__main__':
     # running config
     # sys.argv[1] - #user to process
-    # sys.argv[2] - Max number of sub-process
-    # sys.argv[3] - #user to process in each process
-    if(len(sys.argv)!=4):
-        raise StandardError("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc")
+    # sys.argv[2] - Max number of sub-process, 20 would be better
+    # sys.argv[3] - #user to process in each process, 5000 would be better
+    if(len(sys.argv)!=5):
+        raise StandardError("Usage: python measurement.py total_user_number max_proc_number user_number_per_proc working_dir")
         
     
     g_nUser2Process = int(sys.argv[1])
     if(g_nUser2Process > TOTAL_USER_NUMBER or g_nUser2Process == 0):
         raise StandardError("Error: trying to extrac %d user from all 7,000,000 users" % (g_nUser2Process) )
     g_nUserSelectionBase = math.ceil(float(TOTAL_USER_NUMBER)/float(g_nUser2Process))
-    
     g_nMaxProcessNum = int(sys.argv[2])
     g_nUserPerProcess = int(sys.argv[3])
+    strWorkingDir = sys.argv[4] if sys.argv[4].endswith("/") else sys.argv[4]+"/"
    
     # data setup
-    strImeisPath = "/mnt/disk8/yanglin/data/distinct_imei.txt"
-    strCellLocPath = "/mnt/disk8/yanglin/data/dict.csv"
-    strInDir = "/mnt/disk8/yanglin/data/cdr/"
+    strImeisPath = strWorkingDir + "data/distinct_imei.txt"
+    strCellLocPath = strWorkingDir + "data/dict.csv"
+    strInDir = strWorkingDir + "data/cdr/"
     lsCDR = [\
              "export-userservice-2013090918.dat", \
              "export-userservice-2013090919.dat", \
              "export-userservice-2013090920.dat", \
              "export-userservice-2013090921.dat" \
             ]
-    strOutDir = "/mnt/disk8/yanglin/data/out/"
+    strOutDir = strWorkingDir + "data/out/"
 
     conductMeasurement(strCellLocPath, strImeisPath, strInDir, lsCDR, strOutDir)

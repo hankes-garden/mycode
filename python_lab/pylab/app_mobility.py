@@ -9,26 +9,57 @@ from app_state import *
 from common_function import *
 
 import sys
+import math
+
+def getSpeedLevel(dSpeed):
+    
+    # change to km/h, and divide into slots
+    sp = (dSpeed*60.0*60.0/1000.0)/10
+    
+    nLevel = 0
+    if (0.0<sp<=10.0):
+        nLevel = 1
+    if (10.0<sp<=20.0):
+        nLevel = 2
+    if (20.0<sp<=30.0):
+        nLevel = 3
+    if (30.0<sp<=40.0):
+        nLevel = 4
+    if (40.0<sp<=50.0):
+        nLevel = 5
+    if (50.0<sp<=60.0):
+        nLevel = 6
+    if (60.0<sp<=70.0):
+        nLevel = 7
+    if (70.0<sp<=80.0):
+        nLevel = 8
+    if (80.0<sp<=90.0):
+        nLevel = 9
+    if (sp>90.0):
+        nLevel = 10
+        
+    return nLevel
 
 
-def measureAppMobility(dcPaths):
+def measureAppMobility(dcPaths, bySpeed=False):
     '''
         Measure application mobility
     '''
-    dcUserMobility = dict()
+    dcUserMobility = {}
     dcCurAppDict = 0
     curAppState = 0
     
     for path in dcPaths.values():
-        nCurPathLen = len(path.m_lsNodes)
-        if (nCurPathLen == 0): # skip those empty paths
+        if (len(path.m_lsNodes) == 0): # skip those empty paths
             continue
         
-        if(nCurPathLen not in dcUserMobility):
+        nCurPathIndex = getSpeedLevel(path.m_dAvgSpeed) if bySpeed else len(path.m_lsNodes)
+        
+        if(nCurPathIndex not in dcUserMobility):
             dcCurAppDict = dict()
-            dcUserMobility[nCurPathLen] = dcCurAppDict
+            dcUserMobility[nCurPathIndex] = dcCurAppDict
         else:
-            dcCurAppDict = dcUserMobility[nCurPathLen]
+            dcCurAppDict = dcUserMobility[nCurPathIndex]
             
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
@@ -79,22 +110,42 @@ def measureAppMobility(dcPaths):
     return dcUserMobility
 
                     
-def conductAppMobilityMeasurement(strInPath, strOutPath):
+def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
     '''
         Output format:
-        Mobility, ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, AvgUpBytes, 
-        MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, MinUpSpeed, TotalDownBytes, 
-        AvgDownBytes, MaxDownBytes, MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed
+        Mobility, 
+        ServiceType, ServiceGroup, UserNum, AvgCellNum, TotalUpBytes, 
+        AvgUpBytes, MaxUpBytes, MinUpBytes, AvgUpSpeed, MaxUpSpeed, 
+        MinUpSpeed, TotalDownBytes, AvgDownBytes, MaxDownBytes, 
+        MinDownBytes, AvgDownSpeed, MaxDownSpeed, MinDownSpeed, 
+        Protocol, UserPort, DstPort
     '''
-    dcResult = deserializeFromFile(strInPath)
-    dcUserMobility = measureAppMobility(dcResult)
-    strResult = ""
-    for tp in dcUserMobility.items():
-        for app in tp[1].values():
-            strResult += "%d,%s\n" % (tp[0], app.toString() )
-    write2File(strResult, strOutPath)
+    if (dcPaths == None):
+        print("Start to deserialize path...")
+        dcPaths = deserializeFromFile(strInPath)
 
+    # based on #cell_visited
+    print("Start to measure application mobility based on vistied cell...")
+    dcCellMobility = measureAppMobility(dcPaths, False)
+    strCellResult = ""
+    for tp in dcCellMobility.items():
+        for app in tp[1].values():
+            strCellResult += "%d,%s\n" % (tp[0], app.toString() )
+    write2File(strCellResult, strOutPath+"_cell.txt")
+
+    # based on moving speed
+    print("Start to measure application mobility based on speed...")
+    dcSpeedMobility = measureAppMobility(dcPaths, True)
+    strSpeedResult = ""
+    for tp in dcSpeedMobility.items():
+        for app in tp[1].values():
+            strSpeedResult += "%d,%s\n" % (tp[0], app.toString() )
+    write2File(strSpeedResult, strOutPath+"_speed.txt")
+    
+    print("Application mobility is finished!")
+
+import sys
 if __name__ == '__main__':
-    conductAppMobilityMeasurement("D:\yanglin\playground\serPath_71906_export-userservice-2013100311_export-userservice-2013100315.txt",\
-                                  "D:\\yanglin\\playground\\appmob_71906_export-userservice-2013100311_export-userservice-2013100315.txt")
+    conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
+    
 

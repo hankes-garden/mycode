@@ -1,11 +1,15 @@
 eclipse.preferences.version=1
+encoding//pylab/analysis.py=utf-8
 encoding//pylab/app.py=utf-8
 encoding//pylab/app_mobility.py=utf-8
 encoding//pylab/app_state.py=utf-8
 encoding//pylab/common_function.py=utf-8
+encoding//pylab/common_statistics.py=utf-8
+encoding//pylab/data_loader.py=utf-8
 encoding//pylab/extract_path.py=utf-8
 encoding//pylab/measurement.py=utf-8
 encoding//pylab/node.py=utf-8
+encoding//pylab/pandas_test.py=utf-8
 encoding//pylab/path.py=utf-8
 encoding//pylab/pathinfo.py=utf-8
 encoding//pylab/simple_test.py=utf-8

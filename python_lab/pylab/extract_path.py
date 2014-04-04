@@ -11,6 +11,8 @@ from tuple import *
 from common_function import *
 from path import *
 
+import multiprocessing
+
 MIN_NODE_DURATION = 10
 MIN_NODE_UP_BYTES = 100
 MIN_NODE_DOWN_BYTES = 100
@@ -53,6 +55,7 @@ def refinePath(path):
     i = 1
     while(i < len(lsRefinedNodes) ):
         lsRefinedNodes[i].m_dSpeed = calculateMobilitySpeed(lsRefinedNodes[i-1], lsRefinedNodes[i])
+        i += 1
     if(len(lsRefinedNodes) >= 2):
         lsRefinedNodes[0].m_dSpeed = lsRefinedNodes[1].m_dSpeed
 
@@ -68,7 +71,8 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
       
     dcPaths = constructUserDict(lsImeis)
     for strInFileName in lsInFiles:
-        print("Begin to scan file: "+strInFileName)
+        print("Proc: %s starts to scan file: %s" \
+              % (multiprocessing.current_process().name, strInFileName) )
         
         with open(strInDir+strInFileName) as hInFile:
             while(1):
@@ -115,13 +119,11 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     
        
     # refine the path
-    dcRefinedPaths = {}
     for tuple in dcPaths.items():
         refinePath(tuple[1])
         tuple[1].updatePathInfo() # update path info
-        dcRefinedPaths[tuple[0]] = tuple[1]
     
-    return dcRefinedPaths
+    return dcPaths
 
  
 if __name__ == '__main__':

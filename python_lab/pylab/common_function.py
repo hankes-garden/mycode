@@ -200,31 +200,30 @@ def calculateDistance(lat1, long1, lat2, long2):
     # Remember to multiply arc by the radius of the earth 
     # in your favorite set of units to get length.
     return arc * 6373 * 1000 # get distance in meters
-            
-            
-            
-                
+
+               
 if __name__ == '__main__':
-    dc = constructCellLocDict("d:\\playground\\dict.csv")
-    
-    try:
-        maxPair = (("dd",(0,0)), ("ee", (0,0)))
-        dMaxDistance = 0.0
-        for i in dc.items():
-            for j in dc.items():
-                if i[0] != j[0]:
-                    dis = calculateDistance(i[1][0], i[1][1], j[1][0], j[1][1])
-                    if (dis > dMaxDistance):
-                        dMaxDistance = dis
-                        maxPair = (i,j)
-                    
-                    print("max=%.2f, from (%.6f, %.6f) to (%.6f, %.6f)" % \
-                          (dMaxDistance/1000, maxPair[0][1][0], maxPair[0][1][1],\
-                           maxPair[1][1][0],maxPair[1][1][1]\
-                                                       ) )
-    
-    except ValueError:
-        pass
+    pass
+#     dc = constructCellLocDict("d:\\playground\\dict.csv")
+#     
+#     try:
+#         maxPair = (("dd",(0,0)), ("ee", (0,0)))
+#         dMaxDistance = 0.0
+#         for i in dc.items():
+#             for j in dc.items():
+#                 if i[0] != j[0]:
+#                     dis = calculateDistance(i[1][0], i[1][1], j[1][0], j[1][1])
+#                     if (dis > dMaxDistance):
+#                         dMaxDistance = dis
+#                         maxPair = (i,j)
+#                     
+#                     print("max=%.2f, from (%.6f, %.6f) to (%.6f, %.6f)" % \
+#                           (dMaxDistance/1000, maxPair[0][1][0], maxPair[0][1][1],\
+#                            maxPair[1][1][0],maxPair[1][1][1]\
+#                                                        ) )
+#     
+#     except ValueError:
+#         pass
                     
   
     
