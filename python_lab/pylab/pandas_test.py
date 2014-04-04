@@ -5,27 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import common_statistics as st
-from node import *
 
-def aggregateData(dcPaths, key="cell"):
-    '''
-        key=cell -> rearrange paths by cell ID
-        key=app  -> reaggregated paths by app ID
-    '''
-    # TODO: add support for aggregation by app
-    if(key == "app"):
-        raise StandardError("Unsupported key, haven't done yet")
-    dcAggregated = {}
-    for path in dcPaths:
-        for node in path.m_lsNodes:
-            strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
-            cell = dcAggregated.get(strKey)
-            if (None == cell):
-                cell = CNode("Aggregated", node.m_nLac, node.m_nCellID)
-            value = mergeNodes([cell, node])
-            dcAggregated.update((strKey, value) )
-    
-    return dcAggregated
 
 
 if __name__ == '__main__':

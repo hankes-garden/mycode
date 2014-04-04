@@ -2,23 +2,24 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib.pylab as plt
 
-def drawCDF(data, nXStart, nXStop, nXStep=1, strTitle="CDF"):
+def drawCDF(dfData, nXStart=0, nXStop=0, nXStep=1, strTitle="CDF"):
     '''
-        Draw CDF for all the columns in the data
+        Draw CDF for all the columns in the dfData
     '''
     
     fig = plt.figure()
     spCDF = fig.add_subplot(111)
     spCDF.set_color_cycle(['r','g','b','c','y','m','k'])
-    spCDF.set_xticks(range(nXStart,nXStop, nXStep))
-    spCDF.set_xlim((nXStart, nXStop))
+    if (nXStop != 0):
+        spCDF.set_xticks(range(nXStart,nXStop, nXStep))
+        spCDF.set_xlim((nXStart, nXStop))
     spCDF.set_ylim(0.0, 1.0)
     spCDF.set_title(strTitle)
         
-    for col in data.columns:
-        cdf = data[col].order(ascending=False).cumsum()/data[col].sum()
+    for col in dfData.columns:
+        cdf = dfData[col].order(ascending=False).cumsum()/dfData[col].sum()
         spCDF.plot(cdf,'-',label=col)
 
     spCDF.legend(loc='best')
