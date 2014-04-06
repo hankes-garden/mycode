@@ -201,6 +201,10 @@ def calculateDistance(lat1, long1, lat2, long2):
     # in your favorite set of units to get length.
     return arc * 6373 * 1000 # get distance in meters
 
+import pandas as pd
+def getServiceDict(strServiceDictPath):
+    dfService = pd.read_csv(strServiceDictPath, index_col='ServiceType')
+    return dfService
                
 if __name__ == '__main__':
     pass
