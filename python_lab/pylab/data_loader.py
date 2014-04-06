@@ -18,6 +18,7 @@ from common_function import *
 def aggregateData(dcPaths, strAttributeName="m_nDownBytes"):
     '''
         Aggregate data from dcPaths w.r.t given attribute
+        return format: row=serviceType, column=cell
     '''
     dcAggregated = {}
     for path in dcPaths.values():
@@ -82,22 +83,25 @@ def cleanData(dcAggAll, dcUserNum):
 
 import sys
 if __name__ == '__main__':
-    if (len(sys.argv) != 2):
-        raise StandardError("Usage: data_loader.py serializedPath")
+    if (len(sys.argv) != 3):
+        raise StandardError("Usage: data_loader.py serialized_path cell_loc_dict_path")
      
     print("Start to deserialize from file...") 
     dcPaths = deserializeFromFile(sys.argv[1])
      
-    print("Start to aggregate data...")
+    print("Start to aggregate data by m_nDownBytes...")
     dcAggregated = aggregateData(dcPaths)
     
-    print("start to get user number...")
+    print("Start to get user number...")
     dcAppUserNum = getAppUserNum(dcPaths)
      
-    print("Start to clean and transform data...")
+    print("Start to clean data...")
     cleanData(dcAggregated, dcAppUserNum)
-    dfAgg = pd.DataFrame(dcAggregated)
     
+    print("Start to construct cell-location dict...")
+    dcCellLocDict = constructCellLocDict(sys.argv[2])
+    
+    dfAgg = pd.DataFrame(dcAggregated)
     print("data_loader is ready!")
     
     

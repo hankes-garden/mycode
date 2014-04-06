@@ -6,20 +6,19 @@ Created on 2014年1月14日
 '''
 from common_function import *
 
+def outputLocalAppLocation(dcLocalApp, strOutPath):
+    with open(strOutPath, 'w') as hOutFile:
+        hOutFile.write("serviceType, lac-cid, lat, long, attributes\n")
+        for nServiceType in dcLocalApp.keys():
+            lsTopCells = dcLocalApp.get(nServiceType)
+            for tp in lsTopCells:
+                strLine = "%d, %s,%.6f,%.6f, %d\n" % (nServiceType, tp[0], tp[1][0], tp[1][1], tp[2])
+                hOutFile.write(strLine)
+    print("finished")
+        
 
 if __name__ == '__main__':
-    print("hello")
-    dfServiceDict = getServiceDict("d:\\yanglin\\local\\work\\playground\\service_dict.csv")
-    dcLocalApp = {}
-    with open("d:\\yanglin\\local\\work\\playground\\info.txt") as hFile:
-        lsLines = hFile.readlines(MAX_IO_BUF_SIZE)
-        for line in lsLines:
-            nServiceType = int(line.split(',')[0].split(':')[1])
-            nUserNum = int(line.split(',')[1].split('=')[1])
-            strName = dfServiceDict.loc[nServiceType]['ServiceName']
-            dcLocalApp[dcLocalApp] = (nUserNum, strName)
-    for tp in dcLocalApp.items():
-        print("%d,%d,%s" % tp[0], tp[1][0], tp[1][1])
+    pass    
         
         
 
