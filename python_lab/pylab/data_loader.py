@@ -5,7 +5,7 @@ Created on 2014年4月3日
 @author: y00752450
 '''
 
-MIN_VALID_USER_NUM=100
+MIN_VALID_USER_NUM=1000
 
 import numpy as np
 import pandas as pd
