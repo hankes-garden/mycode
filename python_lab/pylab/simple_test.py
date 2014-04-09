@@ -14,17 +14,16 @@ def selectPOIByCity(strPOIPath, strOutPath, strCityCode):
                 lsItems = line.split(',')
                 if (len(lsItems) != 9):
                     continue
-                if(lsItems[3].strip == strCityCode):
-                    strLine = "%s, %s, %s, %s, %s, %s, %s, %s\n" % (lsItems[1], lsItems[2], lsItems[3], lsItems[4], lsItems[5], lsItems[6], lsItems[7], lsItems[8])
+                if(lsItems[3].strip('\"') == strCityCode):
+                    strLine = "%s, %s, %s, %s, %s, %s, %s, %s\n" % \
+                    (lsItems[1].strip('\"'), lsItems[2].strip('\"'), lsItems[3].strip('\"'),\
+                      lsItems[4].strip('\"'), lsItems[5].strip('\"'), lsItems[6].strip('\"'), \
+                      lsItems[7].strip('\"'), lsItems[8].strip('\" '))
                     hOutFile.write(strLine)
     print("selectPOIByCity is finished.")
-                
 
-      
+
+
 if __name__ == '__main__':
-    pass    
-        
-        
+    pass
 
-        
-    
