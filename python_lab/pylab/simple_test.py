@@ -6,8 +6,7 @@ Created on 2014年1月14日
 '''
 from common_function import *
 
-
-        
+      
 if __name__ == '__main__':
     pass    
         
