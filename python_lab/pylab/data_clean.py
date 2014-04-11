@@ -29,6 +29,9 @@ def outputMissingLocation(strInPath, strOutPath):
 def fillMissingLocation(strInPath, strAdditionalInfoPath, strOutPath):
     '''
         fill the missing location by using additional info
+        strInPath: file path of original cell_loc_dict, format: lac,cid,lac-cid,lat,long
+        strAdditionalInfoPath: file path of additional info, format:lac,cid,lat,long,lat_r,long_r,addr,blank
+        strOutPath: file path of filled cell_loc_dict, format: lac-cid,lat,long
     '''
     # construct dcCellLoc from old format
     dcCellLoc = {}
@@ -64,8 +67,9 @@ def fillMissingLocation(strInPath, strAdditionalInfoPath, strOutPath):
                 
     # output filled dc
     with open(strOutPath, 'w') as hOutFile:
+        hOutFile.write("lac-cid,lat,long\n")
         for tp in dcCellLoc.items():
-            strLine = "%s,%s,%s" % (tp[0], tp[1][0], tp[1][1])
+            strLine = "%s,%s,%s\n" % (tp[0], tp[1][0], tp[1][1])
             hOutFile.write(strLine)
             
     print("Filling missing location is finished.")
@@ -74,8 +78,8 @@ def fillMissingLocation(strInPath, strAdditionalInfoPath, strOutPath):
 if __name__ == '__main__':
 #     strMissingPath = "d:\\yanglin\\local\\work\\playground\\missing_location.csv"
 #     outputMissingLocation("d:\\yanglin\\local\\work\\playground\\dict.csv", strMissingPath)
-    fillMissingLocation("d:\\yanglin\\local\\work\\playground\\dict.csv", "d:\\yanglin\\local\\work\\playground\\celloutput.txt", \
-                        "d:\\yanglin\\local\\work\\playground\\cell_loc.csv")
+    fillMissingLocation("d:\\playground\\dict.csv", "d:\\playground\\celloutput_done.txt", \
+                        "d:\\playground\\cell_loc_filled.csv")
     
     
     

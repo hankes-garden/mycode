@@ -14,5 +14,6 @@ encoding//pylab/node.py=utf-8
 encoding//pylab/pandas_test.py=utf-8
 encoding//pylab/path.py=utf-8
 encoding//pylab/pathinfo.py=utf-8
+encoding//pylab/role_assigner.py=utf-8
 encoding//pylab/simple_test.py=utf-8
 encoding//pylab/tuple.py=utf-8
