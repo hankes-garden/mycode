@@ -39,6 +39,8 @@ g_nCellNum = 0
 MAX_PROC_NUM = 30
 MAX_CELL_PER_PROC = 1000
 
+ENTERTAIN_POI_WEIGHT = 0.3
+
 def generatePoiRole(strPOIPath, strOutPath):
     '''
         generate a poi_role_dict as:
@@ -106,6 +108,7 @@ def assignRole2Cell(dfCellLoc, dfPOI):
         # set cell role
         nCellRole = ID_ROLE_UNKNOWN
         nRoleCount = 0
+        dcPoiRoleCount[ID_ROLE_ENTERTAINMENT] = int(dcPoiRoleCount[ID_ROLE_ENTERTAINMENT]*ENTERTAIN_POI_WEIGHT)
         for tp in dcPoiRoleCount.items():
             if (tp[1] >nRoleCount ):
                 nCellRole = tp[0]
