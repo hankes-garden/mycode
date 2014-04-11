@@ -8,10 +8,11 @@ from common_function import *
 
 def localApp(dfAgg, dcCellLocationDict, bDrawCDF=True):
     '''
-        input: row=serviceType, column=cell_id
         calculate the traffic cdf of cell for all apps,
         and find out those local apps(80% traffic is generated in top 100 cells)
         return serviceType of local app
+        
+        dfAgg: row=serviceType, column=cell_id
     '''
     # find local App
     dcLocalApps = {}
