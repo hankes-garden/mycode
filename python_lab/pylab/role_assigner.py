@@ -124,8 +124,8 @@ def roleAssignmentCallback(rt):
     # concatenate
     g_dfCellLocRole = pd.concat([g_dfCellLocRole, rt])
     
-    print("==>%d cells have been processed, Progress:%.2f" % \
-    (len(g_dfCellLocRole), len(g_dfCellLocRole)*1.0/g_nCellNum) )
+    print("==>%d cells have been processed, Progress:%.2f%%" % \
+    (len(g_dfCellLocRole), len(g_dfCellLocRole)*100.0/g_nCellNum) )
     
 def assignRoleInParallel(dfCellLoc, dfPOI, strOutPath):
     '''
