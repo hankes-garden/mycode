@@ -25,10 +25,10 @@ if __name__ == '__main__':
     dcAggregated = aggregateData(dcPaths)
     
     print("Start to get user number...")
-    dcAppUserNum = getAppUserNum(dcPaths)
+    dcAggregatedAppUserNum = AggregateAppUserNum(dcPaths)
      
     print("Start to clean data...")
-    cleanData(dcAggregated, dcAppUserNum)
+    cleanData(dcAggregated, dcAggregatedAppUserNum)
     
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(sys.argv[2])

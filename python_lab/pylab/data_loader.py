@@ -15,22 +15,25 @@ from node import *
 from common_function import *
 
 
+g_dcAgg = {}
+g_dcAppUserNum = {}
+
 def aggregateData(dcPaths, strAttributeName="m_nDownBytes"):
     '''
         Aggregate data from dcPaths w.r.t given attribute
         return format: row=serviceType, column=cell, value=given_attribute
     '''
-    dcAggregated = {}
     for path in dcPaths.values():
         for node in path.m_lsNodes:
             strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
-            dcAppsInCell = dcAggregated.get(strKey)
+            dcAppsInCell = g_dcAgg.get(strKey)
             if (None == dcAppsInCell): # no corresponding dc yet, then create one
                 dcAppsInCell = {}
-                dcAggregated[strKey] = dcAppsInCell
+                g_dcAgg[strKey] = dcAppsInCell
             updateAppDict(dcAppsInCell, node.m_lsApps, strAttributeName)
-    return dcAggregated
-            
+
+def getAggregatedData():
+    return g_dcAgg            
 
 def updateAppDict(dcApps, lsApps, strAttributeName):
     '''
@@ -53,21 +56,22 @@ def updateDictbySum(dc, key, newValue):
         dc[key] = newValue
 
 
-def getAppUserNum(dcPaths):
+def AggregateAppUserNum(dcPaths):
     '''
         get user number for each apps
         return a dc likes: {serviceType:user_number}
     '''
-    dcAppUserNum = {}
     for path in dcPaths.values():
         dcAppsPerUser = {}
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
                 dcAppsPerUser[app.m_nServiceType] = 1
-                
         for tp in dcAppsPerUser.items():
-            updateDictbySum(dcAppUserNum, tp[0], tp[1])
-    return dcAppUserNum
+            updateDictbySum(g_dcAppUserNum, tp[0], tp[1])
+
+def getAggregatedAppUserNum():
+    return g_dcAppUserNum
+
 
 def cleanData(dcAggAll, dcUserNum):
     '''
@@ -78,30 +82,38 @@ def cleanData(dcAggAll, dcUserNum):
         if tp[1] < MIN_VALID_USER_NUM:
             nUserNum = dcAggAll.pop(tp[0], 0)
             print("=>pop: serviceType=%d, user_num=%d" % (tp[0], tp[1]) )
-            
-    
 
 import sys
 if __name__ == '__main__':
     if (len(sys.argv) != 3):
-        raise StandardError("Usage: data_loader.py serialized_path cell_loc_dict_path")
-     
-    print("Start to deserialize from file...") 
-    dcPaths = deserializeFromFile(sys.argv[1])
-     
-    print("Start to aggregate data by m_nDownBytes...")
-    dcAggregated = aggregateData(dcPaths)
+        raise StandardError("Usage: data_loader.py cell_loc_dict_path serialized_path_1, [serialized_path_2]")
     
-    print("Start to get user number...")
-    dcAppUserNum = getAppUserNum(dcPaths)
+    strCellLocPath = sys.argv[1]
+    lsSerPath = sys.argv[2:len(sys.argv)]
+    
+    for sp in lsSerPath: 
+        print("Start to deserialize from file...") 
+        dcPaths = deserializeFromFile(sp)
+         
+        print("Start to aggregate data by m_nDownBytes...")
+        aggregateData(dcPaths)
+        
+        print("Start to aggregate user number...")
+        AggregateAppUserNum(dcPaths)
+        
+        del dcPaths
+    
+    print("Aggregation is finished")    
+    dcAgg = getAggregatedData()
+    dcAggregatedAppUserNum = getAggregatedAppUserNum()
      
     print("Start to clean data...")
-    cleanData(dcAggregated, dcAppUserNum)
+    cleanData(dcAgg, dcAggregatedAppUserNum)
     
     print("Start to construct cell-location dict...")
-    dcCellLocDict = constructCellLocDict(sys.argv[2])
+    dcCellLocDict = constructCellLocDict(strCellLocPath)
     
-    dfAgg = pd.DataFrame(dcAggregated)
+    dfAgg = pd.DataFrame(dcAgg)
     print("data_loader is ready!")
     
     

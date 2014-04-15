@@ -155,7 +155,6 @@ def assignRoleInParallel(dfCellLoc, dfPOI, strOutPath):
     
 
 if __name__ == '__main__':
-
     strPoiRolePath = "../../data/weibo_poi_role_gz.txt"
     strPoiPath = "../../data/weibo_poi_gz.txt"
     strCellLocFilled = "../../data/cell_loc_filled.txt"
