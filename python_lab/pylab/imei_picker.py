@@ -14,6 +14,7 @@ g_dcDistinctIMEI = {}
 
 def getIMEICallback(ret):
     g_dcDistinctIMEI.update(ret)
+    del ret
     print("--> %d IMEIs have been found." % (len(g_dcDistinctIMEI)) )
 
 def procInit():
@@ -34,20 +35,20 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
             for fn in filenames:
                 lsFiles.append(dirpath+fn)
 
-#    # create a process pool
-#    pool = multiprocessing.Pool(processes=len(lsFiles), initializer=procInit)
-#
-#    for f in lsFiles:
-#        pool.apply_async(getDistinctIMEIs, args=(f,), callback = getIMEICallback)
-#
-#    pool.close()
-#    pool.join()
+    # create a process pool
+    pool = multiprocessing.Pool(processes=len(lsFiles), initializer=procInit)
 
-    # find distinct from files
     for f in lsFiles:
-        dc = getDistinctIMEIsFromFile(f)
-        g_dcDistinctIMEI.update(dc)
-        del dc
+        pool.apply_async(getDistinctIMEIsFromFile, args=(f,), callback = getIMEICallback)
+
+    pool.close()
+    pool.join()
+
+#    # find distinct from files
+#    for f in lsFiles:
+#        dc = getDistinctIMEIsFromFile(f)
+#        g_dcDistinctIMEI.update(dc)
+#        del dc
 
     #write to file
     del g_dcDistinctIMEI['']
@@ -68,7 +69,7 @@ def getDistinctIMEIsFromFile(strCDR):
         hInFile.readline() # skip head
         while(1):
             print("--> reading...")
-            lsLines = hInFile.readlines(1024*1024*1024*50)
+            lsLines = hInFile.readlines(1024*1024*1024*3)
             if not lsLines: # break if there is no more lines
                 break
             
@@ -83,5 +84,5 @@ def getDistinctIMEIsFromFile(strCDR):
     return dc
 
 if __name__ == '__main__':
-    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)
+    getDistinctIMEIs("/mnt/disk2/yanglin/data/cdr/", "/mnt/disk2/yanglin/data/out/distinct_imei_full.txt", None)
 #    pass
