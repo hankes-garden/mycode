@@ -146,6 +146,8 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
 
 import sys
 if __name__ == '__main__':
+    print("====Start application mobility measurement...====")
     conductAppMobilityMeasurement(sys.argv[1], sys.argv[2])
+    print("====Application mobility measurement is finished====")
     
 

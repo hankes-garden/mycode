@@ -5,6 +5,7 @@ Created on 2014年4月4日
 @author: y00752450
 '''
 from common_function import *
+from role_assigner import *
 
 def localApp(dfAgg, dcCellLocationDict, bDrawCDF=True):
     '''
@@ -29,6 +30,23 @@ def localApp(dfAgg, dcCellLocationDict, bDrawCDF=True):
             dcLocalApps[nServiceType]=lsTopCells
             
     return dcLocalApps
+    
+def LocateLocalApps(dfLocalApps, dfCellLocRole):
+    lsRoleID = []
+    for tp in dfLocalApps.itertuples():
+        key = tp[2].strip()
+        nRoleID = ID_ROLE_UNKNOWN
+        try:
+            nRoleID = dfCellLocRole['roleID'].loc[key]
+            lsRoleID.append(nRoleID)
+            if(tp[3]==0 or tp[4]==0):
+                dfLocalApps['lat'].loc[tp[0]] = dfCellLocRole['lat'].loc[key]
+                dfLocalApps['long'].loc[tp[0]] = dfCellLocRole['long'].loc[key]
+        except KeyError:
+            raise
+    dfLocalApps['roleID'] = lsRoleID
+    return dfLocalApps     
+        
 
 import sys
 if __name__ == '__main__':
