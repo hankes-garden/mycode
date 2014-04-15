@@ -13,7 +13,6 @@ import cPickle
 
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
-TOTAL_USER_NUMBER = 7000000
 
 
 def exeTime(func):
