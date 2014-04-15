@@ -36,7 +36,7 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
                 lsFiles.append(dirpath+fn)
 
     # create a process pool
-    pool = multiprocessing.Pool(processes=len(lsFiles), initializer=procInit)
+    pool = multiprocessing.Pool(processes=5, initializer=procInit)
 
     for f in lsFiles:
         pool.apply_async(getDistinctIMEIsFromFile, args=(f,), callback = getIMEICallback)
@@ -69,7 +69,7 @@ def getDistinctIMEIsFromFile(strCDR):
         hInFile.readline() # skip head
         while(1):
             print("--> reading...")
-            lsLines = hInFile.readlines(1024*1024*1024*3)
+            lsLines = hInFile.readlines(1024*1024*1024*12)
             if not lsLines: # break if there is no more lines
                 break
             
