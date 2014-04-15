@@ -78,8 +78,10 @@ def getDistinctIMEIsFromFile(strCDR):
                 if(len(lsItems) != 31):
                     continue
                 dc[lsItems[4]] = 0
+                
+            del lsLines
     return dc
 
 if __name__ == '__main__':
-#    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)
-    pass
+    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)
+#    pass
