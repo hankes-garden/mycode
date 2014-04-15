@@ -4,6 +4,7 @@ Created on Mon Apr 14 22:11:00 2014
 
 @author: jason
 """
+from common_function import *
 
 import pandas as pd
 import os
@@ -49,9 +50,10 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
         del dc
 
     #write to file
+    del g_dcDistinctIMEI['']
     with open(strOutPath, 'w') as hOutFile:
         for imei in g_dcDistinctIMEI.keys():
-            if (pd.isnull(imei)):
+            if (pd.isnull(imei) or imei==''):
                 continue
             hOutFile.write("%s\n" % imei.strip())
 
@@ -60,10 +62,24 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
 
 def getDistinctIMEIsFromFile(strCDR):
     print("--> Scanning file: %s" % strCDR)
-    df = pd.read_csv(strCDR, dtype={'imei':object} )
-    dc = dict.fromkeys(df['imei'])
-    del df
+    
+    dc = {}
+    with open(strCDR) as hInFile:
+        hInFile.readline() # skip head
+        while(1):
+            print("--> reading...")
+            lsLines = hInFile.readlines(1024*1024*1024*10)
+            if not lsLines: # break if there is no more lines
+                break
+            
+            print("--> sampling...")
+            for line in lsLines:
+                lsItems = line.split(",")
+                if(len(lsItems) != 31):
+                    continue
+                dc[lsItems[4]] = 0
     return dc
 
 if __name__ == '__main__':
-    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)
+#    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)
+    pass
