@@ -31,7 +31,7 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
         lsFiles = []
         for (dirpath, dirnames, filenames) in os.walk(strInCDRDir):
             for fn in filenames:
-                lsFiles.append(dirpath+'\\'+fn)
+                lsFiles.append(dirpath+fn)
 
 #    # create a process pool
 #    pool = multiprocessing.Pool(processes=len(lsFiles), initializer=procInit)
@@ -66,5 +66,4 @@ def getDistinctIMEIsFromFile(strCDR):
     return dc
 
 if __name__ == '__main__':
-    getDistinctIMEIs(None, "D:\\playground\\distinct_imei_full.txt", ["D:\\playground\\export-userservice-2013100310-sample-lite.csv",])
-#    dc = getDistinctIMEIs("d:\\playground\\export-userservice-2013100310-sample-lite.csv")
+    getDistinctIMEIs("/mnt/disk8/yanglin/data/cdr/", "/mnt/disk8/yanglin/data/out/distinct_imei_full.txt", None)

@@ -8,6 +8,7 @@ encoding//pylab/common_statistics.py=utf-8
 encoding//pylab/data_clean.py=utf-8
 encoding//pylab/data_loader.py=utf-8
 encoding//pylab/extract_path.py=utf-8
+encoding//pylab/imei_picker.py=utf-8
 encoding//pylab/local_app.py=utf-8
 encoding//pylab/node.py=utf-8
 encoding//pylab/pandas_test.py=utf-8
