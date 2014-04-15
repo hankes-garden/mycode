@@ -151,6 +151,7 @@ def constructCellLocDict(strLocationDictPath):
     '''
     dcCellLoc = {}
     with open(strLocationDictPath) as hLocDict:
+        hLocDict.readline() # skip head
         while(1):
             lsLines = hLocDict.readlines(MAX_IO_BUF_SIZE)
             if not lsLines:
@@ -161,8 +162,12 @@ def constructCellLocDict(strLocationDictPath):
                 key = items[0]
                 if(key!=""):
                     value = (0., 0.)
-                    if (items[1]!="" and items[2]!=""):
-                        value = (float(items[3]), float(items[4]) )
+                    try:
+                        if (items[1]!="" and items[2]!=""):
+                            value = (float(items[1]), float(items[2]) )
+                    except IndexError:
+                        print "Line:" + line
+                        raise
                     dcCellLoc[key] = value
 
     return dcCellLoc

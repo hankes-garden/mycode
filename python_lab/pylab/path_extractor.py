@@ -15,6 +15,7 @@ from app_mobility import *
 
 import multiprocessing
 import math
+import os
 
 
 g_dcPaths = {}                  # global extracted paths
@@ -32,7 +33,7 @@ def extractPathCallback(rt):
     g_dcPaths.update(rt)
     print("==> Progress of path extraction: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process*100.0 ) + "%")
     
-def proc_init():
+def extractPathInit():
     print("Starting proc:" + multiprocessing.current_process().name )
     
 def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDir):
@@ -40,12 +41,17 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
         start multiple processes to extract path in parallel
     '''
     nImeiCount = len(lsImeis)
-    nPoolSize = int(min(math.ceil(float(nImeiCount)/g_nUserPerProcess), g_nMaxProcessNum))
-    pool = multiprocessing.Pool(processes=nPoolSize, initializer=proc_init)
+    nStartIndex = 6000000
+    nImeiEnd = nImeiCount
+
+    nPoolSize = int(min(math.ceil(float(nImeiEnd-nStartIndex)/g_nUserPerProcess), g_nMaxProcessNum))
+    pool = multiprocessing.Pool(processes=nPoolSize, initializer=extractPathInit)
     
-    nStartIndex = 0
-    while nStartIndex < nImeiCount:
-        nEndIndex = min(nStartIndex+g_nUserPerProcess, nImeiCount)
+    
+    
+    print("IMEI index:%d ~ %d" % (nStartIndex, nImeiEnd) )
+    while nStartIndex < nImeiEnd:
+        nEndIndex = min(nStartIndex+g_nUserPerProcess, nImeiEnd)
         pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = extractPathCallback)
         nStartIndex = nEndIndex
     pool.close()
@@ -146,14 +152,13 @@ if __name__ == '__main__':
    
     # data setup
     strImeisPath = strWorkingDir + "data/distinct_imei_full.txt"
-    strCellLocPath = strWorkingDir + "data/cell_loc_filled.csv"
+    strCellLocPath = strWorkingDir + "data/cell_loc_filled.txt"
     strInDir = strWorkingDir + "data/cdr/"
-#     lsCDR = [\
-#              "export-userservice-2013090918.dat", \
-#              "export-userservice-2013090919.dat", \
-#              "export-userservice-2013090920.dat", \
-#              "export-userservice-2013090921.dat" \
-#             ]
+    lsCDR = []
+    for (dirpath, dirnames, filenames) in os.walk(strInDir):
+        for fn in filenames:
+            lsCDR.append(dirpath+fn)
+            
     strOutDir = strWorkingDir + "data/out/"
 
-    extract(strCellLocPath, strImeisPath, strInDir, None, strOutDir, bAll)
+    extract(strCellLocPath, strImeisPath, strInDir, lsCDR, strOutDir, bAll)

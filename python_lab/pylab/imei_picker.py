@@ -17,7 +17,7 @@ def getIMEICallback(ret):
     del ret
     print("--> %d IMEIs have been found." % (len(g_dcDistinctIMEI)) )
 
-def procInit():
+def getIMEIInit():
     print("--> Starting proc:" + multiprocessing.current_process().name )
 
 def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
@@ -28,24 +28,24 @@ def getDistinctIMEIs(strInCDRDir, strOutPath, lsCDR = None):
 
     '''
     # Get CDR list
-    lsFiles = lsCDR
-    if(lsFiles == None):
-        lsFiles = []
+    lsCDR = lsCDR
+    if(lsCDR == None):
+        lsCDR = []
         for (dirpath, dirnames, filenames) in os.walk(strInCDRDir):
             for fn in filenames:
-                lsFiles.append(dirpath+fn)
+                lsCDR.append(dirpath+fn)
 
     # create a process pool
-    pool = multiprocessing.Pool(processes=5, initializer=procInit)
+    pool = multiprocessing.Pool(processes=5, initializer=getIMEIInit)
 
-    for f in lsFiles:
+    for f in lsCDR:
         pool.apply_async(getDistinctIMEIsFromFile, args=(f,), callback = getIMEICallback)
 
     pool.close()
     pool.join()
 
 #    # find distinct from files
-#    for f in lsFiles:
+#    for f in lsCDR:
 #        dc = getDistinctIMEIsFromFile(f)
 #        g_dcDistinctIMEI.update(dc)
 #        del dc

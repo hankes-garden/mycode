@@ -74,10 +74,11 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
         print("Proc: %s starts to scan file: %s" \
               % (multiprocessing.current_process().name, strInFileName) )
         
-        with open(strInDir+strInFileName) as hInFile:
+        with open(strInFileName) as hInFile:
             while(1):
                 lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
                 if not lsLines: # break if there is no more lines
+                    print("reach file end: %s" % strInFileName)
                     break
                 
                 for line in lsLines:
