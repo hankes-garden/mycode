@@ -68,7 +68,7 @@ def getDistinctIMEIsFromFile(strCDR):
         hInFile.readline() # skip head
         while(1):
             print("--> reading...")
-            lsLines = hInFile.readlines(1024*1024*1024*10)
+            lsLines = hInFile.readlines(1024*1024*1024*50)
             if not lsLines: # break if there is no more lines
                 break
             

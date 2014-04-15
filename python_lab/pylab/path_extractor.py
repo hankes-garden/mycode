@@ -98,14 +98,15 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
     global g_nUser2Process
 
     print("====Begin Path Extraction====")
-    print(" cell_loc_dict: %s\n distinct_imei: %s\n input_path: %s\n output_path:%s\n max_proc: %d\n #user_per_proc: %s\n" % \
+    print(" cell_loc_dict: %s\n distinct_imei: %s\n input_path: %s\n output_path:%s\n max_proc: %d\n #user_per_proc: %s\n bAll: %s\n" % \
           (strCellLocDictPath, strDistinctImeiPath, strInDir, strOutDir, \
-           g_nMaxProcessNum, g_nUserPerProcess) )
+           g_nMaxProcessNum, g_nUserPerProcess,
+           "True" if bAll else "False") )
     
     # pick users
-    print("start user selection...")
+    print("start user sampling...")
     lsImeis = pickIMEI(strDistinctImeiPath, bAll)
-    print("user selection is finished, %d IMEIs need to be processed." % (len(lsImeis)))
+    print("user sampling is finished, %d IMEIs need to be processed." % (len(lsImeis)))
     g_nUser2Process = len(lsImeis)
 
     # construct cell-location mapping
@@ -134,8 +135,8 @@ if __name__ == '__main__':
     # sys.argv[2] - Max number of sub-process, 20 would be better
     # sys.argv[3] - #user to process in each process, 5000 would be better
     # sys.argv[4] - working dir
-    if(len(sys.argv)!=5):
-        raise StandardError("Usage: python path_extractor.py #user2simple, max_proc_number #user_per_proc working_dir")
+    if(len(sys.argv) != 5):
+        raise StandardError("Usage: python path_extractor.py #user2simple, max_proc_number=20, #user_per_proc=5000, working_dir=/mnt/disk7/yanglin/")
     
     g_nUser2Simple = int(sys.argv[1])
     bAll = True if (g_nUser2Simple == -1) else False
@@ -144,8 +145,8 @@ if __name__ == '__main__':
     strWorkingDir = sys.argv[4] if sys.argv[4].endswith("/") else sys.argv[4]+"/"
    
     # data setup
-    strImeisPath = strWorkingDir + "data/distinct_imei.txt"
-    strCellLocPath = strWorkingDir + "data/dict.csv"
+    strImeisPath = strWorkingDir + "data/distinct_imei_full.txt"
+    strCellLocPath = strWorkingDir + "data/cell_loc_filled.csv"
     strInDir = strWorkingDir + "data/cdr/"
 #     lsCDR = [\
 #              "export-userservice-2013090918.dat", \

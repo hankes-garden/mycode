@@ -18,7 +18,7 @@ from common_function import *
 def aggregateData(dcPaths, strAttributeName="m_nDownBytes"):
     '''
         Aggregate data from dcPaths w.r.t given attribute
-        return format: row=serviceType, column=cell
+        return format: row=serviceType, column=cell, value=given_attribute
     '''
     dcAggregated = {}
     for path in dcPaths.values():
