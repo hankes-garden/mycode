@@ -84,5 +84,5 @@ def getDistinctIMEIsFromFile(strCDR):
     return dc
 
 if __name__ == '__main__':
-    getDistinctIMEIs("/mnt/disk2/yanglin/data/cdr/", "/mnt/disk2/yanglin/data/out/distinct_imei_full.txt", None)
+    getDistinctIMEIs("/mnt/disk3/yanglin/data/cdr/", "/mnt/disk3/yanglin/data/out/distinct_imei_full.txt", None)
 #    pass
