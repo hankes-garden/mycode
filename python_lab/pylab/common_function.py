@@ -10,6 +10,7 @@ from pathinfo import *
 
 import time
 import cPickle
+import gc
 
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1

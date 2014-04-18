@@ -73,15 +73,14 @@ def getAggregatedAppUserNum():
     return g_dcAppUserNum
 
 
-def cleanData(dcAggAll, dcUserNum):
+def cleanData(dfAggAll, sAppUserNum):
     '''
         clean data based on some criteria
-        1. user_number < minimal requirement
+        1. top 100 app based on #user
     '''
-    for tp in dcUserNum.items():
-        if tp[1] < MIN_VALID_USER_NUM:
-            nUserNum = dcAggAll.pop(tp[0], 0)
-            print("=>pop: serviceType=%d, user_num=%d" % (tp[0], tp[1]) )
+    sSelectedApps = sAppUserNum.order(ascending=False)[:100]
+    dfAggAllCleaned = dfAggAll.loc[sSelectedApps.index]
+    return dfAggAllCleaned
 
 import sys
 if __name__ == '__main__':
@@ -92,7 +91,7 @@ if __name__ == '__main__':
     lsSerPath = sys.argv[2:len(sys.argv)]
     
     for sp in lsSerPath: 
-        print("Start to deserialize from file...") 
+        print("Start to deserialize from %s" % sp) 
         dcPaths = deserializeFromFile(sp)
          
         print("Start to aggregate data by m_nDownBytes...")
@@ -100,20 +99,26 @@ if __name__ == '__main__':
         
         print("Start to aggregate user number...")
         AggregateAppUserNum(dcPaths)
-        
-        del dcPaths
     
-    print("Aggregation is finished")    
     dcAgg = getAggregatedData()
     dcAggregatedAppUserNum = getAggregatedAppUserNum()
+    print("Aggregation is finished")  
+    del dcPaths
      
-    print("Start to clean data...")
-    cleanData(dcAgg, dcAggregatedAppUserNum)
-    
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(strCellLocPath)
     
     dfAgg = pd.DataFrame(dcAgg)
+    sAppUserNum = pd.Series(dcAggregatedAppUserNum)
+    
+    del dcAgg
+    del dcAggregatedAppUserNum
+    
+    
+    print("Start to clean data...")
+    dfAggCleaned = cleanData(dfAgg, sAppUserNum)
+    del dfAgg
+    
     print("data_loader is ready!")
     
     
