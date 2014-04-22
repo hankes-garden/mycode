@@ -76,19 +76,28 @@ def getAggregatedAppUserNum():
 def cleanData(dfAggAll, sAppUserNum):
     '''
         clean data based on some criteria
-        1. top 100 app based on #user
+        1. all user-intended apps(network_related_apps are excluded)
+        2. top 100 app based on #user
     '''
-    sSelectedApps = sAppUserNum.order(ascending=False)[:100]
+    lsLabel = []
+    for lb in dfAggAll.index:
+        nLb = int(lb)
+        if(nLb>=17000 and nLb<=21000): #exclude all network_related_apps
+            continue
+        lsLabel.append(lb)
+    
+    sSelectedApps = sAppUserNum.loc[lsLabel].order(ascending=False)[:100]
     dfAggAllCleaned = dfAggAll.loc[sSelectedApps.index]
     return dfAggAllCleaned
 
 import sys
 if __name__ == '__main__':
     if (len(sys.argv) != 3):
-        raise MyError("Usage: data_loader.py cell_loc_dict_path serialized_path_1, [serialized_path_2]")
+        raise MyError("Usage: data_loader.py cell_loc_dict_path output_dir serialized_path_1, [serialized_path_2]")
     
     strCellLocPath = sys.argv[1]
-    lsSerPath = sys.argv[2:len(sys.argv)]
+    strOutDir = sys.argv[2] if sys.argv[2].endswith("/") else sys.argv[2]+"/"
+    lsSerPath = sys.argv[3:len(sys.argv)]
     
     for sp in lsSerPath: 
         print("Start to deserialize from %s" % sp) 
@@ -99,11 +108,13 @@ if __name__ == '__main__':
         
         print("Start to aggregate user number...")
         AggregateAppUserNum(dcPaths)
+        
+        del dcPaths
     
     dcAgg = getAggregatedData()
     dcAggregatedAppUserNum = getAggregatedAppUserNum()
     print("Aggregation is finished")  
-    del dcPaths
+    
      
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(strCellLocPath)
@@ -118,6 +129,10 @@ if __name__ == '__main__':
     print("Start to clean data...")
     dfAggCleaned = cleanData(dfAgg, sAppUserNum)
     del dfAgg
+    
+    print("Start to output cleaned data...")
+    dfAggCleaned.to_csv(strOutDir+"cleaned_data.txt")
+    sAppUserNum.to_csv(strOutDir+"app_user.txt")
     
     print("data_loader is ready!")
     

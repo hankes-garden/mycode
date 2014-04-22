@@ -33,6 +33,9 @@ def extractPathCallback(rt):
     g_dcPaths.update(rt)
     print("==> Progress of path extraction: %d of %d" % (len(g_dcPaths), g_nUser2Process) )
     
+    del rt
+
+    
 def extractPathInit():
     print("Starting proc:" + multiprocessing.current_process().name )
     
