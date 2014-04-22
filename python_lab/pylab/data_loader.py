@@ -85,7 +85,7 @@ def cleanData(dfAggAll, sAppUserNum):
 import sys
 if __name__ == '__main__':
     if (len(sys.argv) != 3):
-        raise StandardError("Usage: data_loader.py cell_loc_dict_path serialized_path_1, [serialized_path_2]")
+        raise MyError("Usage: data_loader.py cell_loc_dict_path serialized_path_1, [serialized_path_2]")
     
     strCellLocPath = sys.argv[1]
     lsSerPath = sys.argv[2:len(sys.argv)]

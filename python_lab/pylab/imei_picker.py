@@ -66,21 +66,14 @@ def getDistinctIMEIsFromFile(strCDR):
     
     dc = {}
     with open(strCDR) as hInFile:
+        print("--> sampling...")
         hInFile.readline() # skip head
-        while(1):
-            print("--> reading...")
-            lsLines = hInFile.readlines(1024*1024*1024*5)
-            if not lsLines: # break if there is no more lines
-                break
-            
-            print("--> sampling...")
-            for line in lsLines:
-                lsItems = line.split(",")
-                if(len(lsItems) != 31):
-                    continue
-                dc[lsItems[4]] = 0
+        for line in hInFile:
+            lsItems = line.split(",")
+            if(len(lsItems) != 31):
+                continue
+            dc[lsItems[4]] = 0
                 
-            del lsLines
     return dc
 
 if __name__ == '__main__':

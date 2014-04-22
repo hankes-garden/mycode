@@ -15,7 +15,7 @@ if __name__ == '__main__':
     
     # input checking
     if (len(sys.argv) != 4):
-        raise StandardError("Usage: %run analysis.py serialized_path cell_loc_dict_path outdir")
+        raise MyError("Usage: %run analysis.py serialized_path cell_loc_dict_path outdir")
     
     # load data
     print("Start to deserialize from file...") 

@@ -23,6 +23,8 @@ g_nUser2Process = 0             # Total User to be processed
 g_nMaxProcessNum = 20           # number of processes running in parallel
 g_nUserPerProcess = 100         # how many Imeis should be processed in each process
 g_nUser2Simple = 0              # How to select user?
+g_nStartIndex = 0               # the start index of distinct_user_dict
+g_nEndIndex = 0                 # the end index of distinct_user_dict
 
 def extractPathCallback(rt):
     '''
@@ -40,16 +42,13 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
     '''
         start multiple processes to extract path in parallel
     '''
-    nImeiCount = len(lsImeis)
-    nStartIndex = 6000000
-    nImeiEnd = nImeiCount
+    nStartIndex = g_nStartIndex
+    nImeiEnd = max(len(lsImeis), g_nEndIndex)
+    g_nUser2Process = nImeiEnd - nStartIndex
+    print("IMEI index:%d ~ %d, #user_to_process = %d" % (nStartIndex, nImeiEnd, g_nUser2Process) )
 
     nPoolSize = int(min(math.ceil(float(nImeiEnd-nStartIndex)/g_nUserPerProcess), g_nMaxProcessNum))
     pool = multiprocessing.Pool(processes=nPoolSize, initializer=extractPathInit)
-    
-    
-    
-    print("IMEI index:%d ~ %d" % (nStartIndex, nImeiEnd) )
     while nStartIndex < nImeiEnd:
         nEndIndex = min(nStartIndex+g_nUserPerProcess, nImeiEnd)
         pool.apply_async(extractPath, args=(dcCellLoc, lsImeis[nStartIndex:nEndIndex], strInDir, lsCDRFilePaths, strOutDir), callback = extractPathCallback)
@@ -73,21 +72,16 @@ def pickIMEI(strDistinctedImeisPath, bAll = True):
         pick some IMEIs from IMEI list randomly
         if bAll == True, then pick all IMEIs
     '''
-    lsImeis = list()
+    lsImeis = []
+    nBase = 1 if (bAll == True) else int(7000000/g_nUser2Simple)
     with open(strDistinctedImeisPath) as hInFile:
-        while(1):
-                lsLines = hInFile.readlines(MAX_IO_BUF_SIZE)
-                if not lsLines:
-                    break
-                
-                nBase = 1 if (bAll == True) else int(7000000/g_nUser2Simple)   
-                                          
-                for i in xrange(len(lsLines)):
-                    if (i%nBase ==0):
-                        strIm = lsLines[i].split(',')[0].strip()
-                        if (strIm != "" and strIm.isdigit() ):
-                            lsImeis.append(strIm)
-    
+        i = 0
+        for line in hInFile:
+            if (i%nBase ==0):
+                strIm = line.split(',')[0].strip()
+                if (strIm != "" and strIm.isdigit() ):
+                    lsImeis.append(strIm)
+            i += 1
     return lsImeis
         
 
@@ -113,7 +107,6 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
     print("start user sampling...")
     lsImeis = pickIMEI(strDistinctImeiPath, bAll)
     print("user sampling is finished, %d IMEIs need to be processed." % (len(lsImeis)))
-    g_nUser2Process = len(lsImeis)
 
     # construct cell-location mapping
     print("start building cell-location dict...")
@@ -141,14 +134,25 @@ if __name__ == '__main__':
     # sys.argv[2] - Max number of sub-process, 20 would be better
     # sys.argv[3] - #user to process in each process, 5000 would be better
     # sys.argv[4] - working dir
-    if(len(sys.argv) != 5):
-        raise StandardError("Usage: python path_extractor.py #user2simple, max_proc_number=20, #user_per_proc=5000, working_dir=/mnt/disk7/yanglin/")
+    # sys.argv[5] - start index of distinct_user_dict
+    # sys.argv[6] - end index of distinct_user_dict
+    if(len(sys.argv) != 7):
+        raise MyError("Usage: python path_extractor.py #user2simple, max_proc_number=20, #user_per_proc=5000, working_dir=/mnt/disk7/yanglin/, startIndex, endIndex")
+    
+    global g_nUser2Simple
+    global g_nMaxProcessNum
+    global g_nUserPerProcess
+    global g_nStartIndex
+    global g_nEndIndex
+    
     
     g_nUser2Simple = int(sys.argv[1])
     bAll = True if (g_nUser2Simple == -1) else False
     g_nMaxProcessNum = int(sys.argv[2])
     g_nUserPerProcess = int(sys.argv[3])
     strWorkingDir = sys.argv[4] if sys.argv[4].endswith("/") else sys.argv[4]+"/"
+    g_nStartIndex = int(sys.argv[5])
+    g_nEndIndex = int(sys.argv[6])
    
     # data setup
     strImeisPath = strWorkingDir + "data/distinct_imei_full.txt"

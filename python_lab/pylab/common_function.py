@@ -15,6 +15,15 @@ import gc
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
 
+class MyError(Exception):
+    '''
+        Exception in my code
+    '''
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 
 def exeTime(func):
     '''
@@ -57,7 +66,7 @@ def calculateMobilitySpeed(node1, node2):
     dDuration = node1.m_dDuration + node2.m_dDuration
     dSpeed = 2.0*nDistance//dDuration
     if dSpeed < 0:
-        raise StandardError("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
+        raise MyException("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
                             (dDuration, nDistance, get_time_str(node1.m_firstTime), get_time_str(node2.m_endTime) ) )
     return dSpeed
     
@@ -102,7 +111,7 @@ def write2File(strContent, strOutFilePath):
         with open(strOutFilePath, 'w') as hOutFile:
             hOutFile.write(strContent)
     else:
-        raise StandardError("Error: invalid output file path")
+        raise MyException("Error: invalid output file path")
     
 
 def serialize2File(strFileName, strOutDir, obj):
@@ -153,23 +162,18 @@ def constructCellLocDict(strLocationDictPath):
     dcCellLoc = {}
     with open(strLocationDictPath) as hLocDict:
         hLocDict.readline() # skip head
-        while(1):
-            lsLines = hLocDict.readlines(MAX_IO_BUF_SIZE)
-            if not lsLines:
-                break
-            
-            for line in lsLines:
-                items = line.split(',')
-                key = items[0]
-                if(key!=""):
-                    value = (0., 0.)
-                    try:
-                        if (items[1]!="" and items[2]!=""):
-                            value = (float(items[1]), float(items[2]) )
-                    except IndexError:
-                        print "Line:" + line
-                        raise
-                    dcCellLoc[key] = value
+        for line in hLocDict:
+            items = line.split(',')
+            key = items[0]
+            if(key!=""):
+                value = (0., 0.)
+                try:
+                    if (items[1]!="" and items[2]!=""):
+                        value = (float(items[1]), float(items[2]) )
+                except IndexError:
+                    print "Line:" + line
+                    raise
+                dcCellLoc[key] = value
 
     return dcCellLoc
 
@@ -221,27 +225,29 @@ def outputLocalAppLocation(dcLocalApp, strOutPath):
             for tp in lsTopCells:
                 strLine = "%d, %s,%.6f,%.6f, %d\n" % (nServiceType, tp[0], tp[1][0], tp[1][1], tp[2])
                 hOutFile.write(strLine)
-               
+            
+
+
 if __name__ == '__main__':
-     dc = constructCellLocDict("d:\\playground\\dict.csv")
-     try:
-         maxPair = (("dd",(0,0)), ("ee", (0,0)))
-         dMaxDistance = 0.0
-         for i in dc.items():
-             for j in dc.items():
-                 if i[0] != j[0]:
-                     dis = calculateDistance(i[1][0], i[1][1], j[1][0], j[1][1])
-                     if (dis > dMaxDistance):
-                         dMaxDistance = dis
-                         maxPair = (i,j)
-                     
-                     print("max=%.2f, from (%.6f, %.6f) to (%.6f, %.6f)" % \
-                           (dMaxDistance/1000, maxPair[0][1][0], maxPair[0][1][1],\
-                            maxPair[1][1][0],maxPair[1][1][1]\
-                                                        ) )
-     
-     except ValueError:
-         pass
-                    
+    pass
+#      dc = constructCellLocDict("d:\\playground\\dict.csv")
+#      try:
+#          maxPair = (("dd",(0,0)), ("ee", (0,0)))
+#          dMaxDistance = 0.0
+#          for i in dc.items():
+#              for j in dc.items():
+#                  if i[0] != j[0]:
+#                      dis = calculateDistance(i[1][0], i[1][1], j[1][0], j[1][1])
+#                      if (dis > dMaxDistance):
+#                          dMaxDistance = dis
+#                          maxPair = (i,j)
+#                      
+#                      print("max=%.2f, from (%.6f, %.6f) to (%.6f, %.6f)" % \
+#                            (dMaxDistance/1000, maxPair[0][1][0], maxPair[0][1][1],\
+#                             maxPair[1][1][0],maxPair[1][1][1]\
+#                                                         ) )
+#      
+#      except ValueError:
+#          pass
+#                     
   
-    

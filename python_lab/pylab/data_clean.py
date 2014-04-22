@@ -37,20 +37,14 @@ def fillMissingLocation(strInPath, strAdditionalInfoPath, strOutPath):
     # construct dcCellLoc from old format
     dcCellLoc = {}
     with open(strInPath) as hLocDict:
-        while(1):
-            hLocDict.readline() # skip head
-            lsLines = hLocDict.readlines(MAX_IO_BUF_SIZE)
-            if not lsLines:
-                break
-            
-            for line in lsLines:
-                items = line.split(',')
-                key = items[2]
-                if(key!=""):
-                    value = (0., 0.)
-                    if (items[3]!="" and items[4]!=""):
-                        value = (float(items[3]), float(items[4]) )
-                    dcCellLoc[key] = value
+        for line in hLocDict:
+            items = line.split(',')
+            key = items[2]
+            if(key!=""):
+                value = (0., 0.)
+                if (items[3]!="" and items[4]!=""):
+                    value = (float(items[3]), float(items[4]) )
+                dcCellLoc[key] = value
     
     # fill the missing location
     with open(strAdditionalInfoPath) as hFile:

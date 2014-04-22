@@ -91,7 +91,7 @@ def mergeNodes(lsNodes):
         this function merge a list of nodes to a single node
     '''
     if len(lsNodes) == 0:
-        raise StandardError("Error: try to merge empty node list.")
+        raise MyError("Error: try to merge empty node list.")
     
     if len(lsNodes) == 1:
         return lsNodes[0]
