@@ -139,11 +139,11 @@ if __name__ == '__main__':
     if(len(sys.argv) != 7):
         raise MyError("Usage: python path_extractor.py #user2simple, max_proc_number=20, #user_per_proc=5000, working_dir=/mnt/disk7/yanglin/, startIndex, endIndex")
     
-    global g_nUser2Simple
-    global g_nMaxProcessNum
-    global g_nUserPerProcess
-    global g_nStartIndex
-    global g_nEndIndex
+#     global g_nUser2Simple
+#     global g_nMaxProcessNum
+#     global g_nUserPerProcess
+#     global g_nStartIndex
+#     global g_nEndIndex
     
     
     g_nUser2Simple = int(sys.argv[1])
