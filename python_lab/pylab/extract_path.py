@@ -61,7 +61,8 @@ def refinePath(path):
 
     path.m_lsNodes = lsRefinedNodes
 
-
+import gc
+import time
 def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     '''
         extract roaming path of given IMEIs from CDR
@@ -69,9 +70,16 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     if len(lsInFiles) == 0 :
         raise MyError("Error: empty input file list")
       
+    print("--> %s: starts to gc..." % multiprocessing.current_process().name )  
+    t1 =  time.time()
+    gc.collect()
+    t2 =  time.time()
+    print("--> %s: gc is finished, consume %.2f sec" % (multiprocessing.current_process().name, (t2-t1) ))
+    
+    
     dcPaths = constructUserDict(lsImeis)
     for strInFileName in lsInFiles:
-        print("%s starts to scan file: %s" \
+        print("%s is scanning file: %s" \
               % (multiprocessing.current_process().name, strInFileName) )
         
         with open(strInFileName) as hInFile:

@@ -33,7 +33,9 @@ def extractPathCallback(rt):
     global g_nUserPerProcess
     
     g_dcPaths.update(rt)
-    print("==> Progress of path extraction: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process*100.0 ) + "%")
+    print("--> Progress: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process*100.0 ) + "%")
+    
+    del rt
     
 def extractPathInit():
     print("Starting proc:" + multiprocessing.current_process().name )
