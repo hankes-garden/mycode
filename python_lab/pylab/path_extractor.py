@@ -43,7 +43,7 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
         start multiple processes to extract path in parallel
     '''
     nStartIndex = g_nStartIndex
-    nImeiEnd = max(len(lsImeis), g_nEndIndex)
+    nImeiEnd = min(len(lsImeis), g_nEndIndex)
     g_nUser2Process = nImeiEnd - nStartIndex
     print("IMEI index:%d ~ %d, #user_to_process = %d" % (nStartIndex, nImeiEnd, g_nUser2Process) )
 
