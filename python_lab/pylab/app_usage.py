@@ -8,7 +8,11 @@ Created on 2014年4月22日
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def getAppCategoryUserNum(sAppUser, bDraw=False):
+
+def getAppCategoryUserNum(sAppUser):
+    '''
+        return a series {'category':#user} 
+    '''
     dcAppCategoryUser = {}
     dcAppCategoryUser['web_browsing'] = sAppUser.loc[1002:1006].sum()
     dcAppCategoryUser['p2p_downloading'] = sAppUser.loc[2001:2037].sum()
@@ -26,46 +30,54 @@ def getAppCategoryUserNum(sAppUser, bDraw=False):
     dcAppCategoryUser['map'] = sAppUser.loc[26001:26003].sum()
     sAppCategoryUser = pd.Series(dcAppCategoryUser)
     
-    if(True == bDraw):
-        plt.figure()
-        sAppCategoryUser.plot(kind='bar')
-        plt.legend(loc='best')
-        plt.show()
-    
     return sAppCategoryUser
 
 
-def getAppCategoryTraffic(dfAgg, bDraw=False):
+def getAppCategoryTraffic(dfAgg):
+    '''
+        return a series{'category':traffic_percentage}
+    '''
+    nTotalTraffic = dfAgg.sum().sum()
     dcAppCategoryTraffic = {}
-    dcAppCategoryTraffic['web_browsing'] = dfAgg.loc[1002:1006].sum(axis=1).sum()
-    dcAppCategoryTraffic['p2p_downloading'] = dfAgg.loc[2001:2037].sum(axis=1).sum()
-    dcAppCategoryTraffic['instant_message'] = dfAgg.loc[3001:3029].sum(axis=1).sum()
-    dcAppCategoryTraffic['reading'] = dfAgg.loc[4001:4016].sum(axis=1).sum()
-    dcAppCategoryTraffic['social_network'] = dfAgg.loc[5001:5005].sum(axis=1).sum()
-    dcAppCategoryTraffic['social_network'] += dfAgg.loc[21001:21010].sum(axis=1).sum()
-    dcAppCategoryTraffic['video'] = dfAgg.loc[6001:7004].sum(axis=1).sum()
-    dcAppCategoryTraffic['music'] = dfAgg.loc[8001:8016].sum(axis=1).sum()
-    dcAppCategoryTraffic['app_market'] = dfAgg.loc[9001:9003].sum(axis=1).sum()
-    dcAppCategoryTraffic['game'] = dfAgg.loc[10001:10115].sum(axis=1).sum()
-    dcAppCategoryTraffic['email'] = dfAgg.loc[11001:11017].sum(axis=1).sum()
-    dcAppCategoryTraffic['stock'] = dfAgg.loc[16001:16012].sum(axis=1).sum()
-    dcAppCategoryTraffic['shopping'] = dfAgg.loc[22001:22006].sum(axis=1).sum()
-    dcAppCategoryTraffic['map'] = dfAgg.loc[26001:26003].sum(axis=1).sum()
+    dcAppCategoryTraffic['web_browsing'] = dfAgg.loc[1002:1006].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['p2p_downloading'] = dfAgg.loc[2001:2037].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['instant_message'] = dfAgg.loc[3001:3029].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['reading'] = dfAgg.loc[4001:4016].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['social_network'] = dfAgg.loc[5001:5005].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['social_network'] += dfAgg.loc[21001:21010].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['video'] = dfAgg.loc[6001:7004].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['music'] = dfAgg.loc[8001:8016].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['app_market'] = dfAgg.loc[9001:9003].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['game'] = dfAgg.loc[10001:10115].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['email'] = dfAgg.loc[11001:11017].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['stock'] = dfAgg.loc[16001:16012].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['shopping'] = dfAgg.loc[22001:22006].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['map'] = dfAgg.loc[26001:26003].sum(axis=1).sum()/nTotalTraffic
     sAppCategoryTraffic = pd.Series(dcAppCategoryTraffic)
-    
-    if(True == bDraw):
-        plt.figure()
-        sAppCategoryTraffic.plot(kind='bar')
-        plt.legend(loc='best')
-        plt.show()
-        
+
+
     return sAppCategoryTraffic
+    
+def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
+    '''
+        draw user_num & traffic_percentage of different app categories
+    '''
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    
+    sAppCategoryUserNum.plot(ax=axes[0], kind='bar')
+    sAppCategoryTraffic.plot(ax=axes[1], kind='bar')
+    
+    axes[0].set_ylabel('# unique users')
+    axes[0].set_ylabel('traffic volume (%)')
+        
         
 def getAppCategoryUserPerHour():
     pass
         
 def getAppCategoryCorrelation():
     pass
+
+def drawCategoryTrafficDynamics():
 
 if __name__ == '__main__':
     pass

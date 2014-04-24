@@ -41,7 +41,7 @@ def getSpeedLevel(dSpeed):
     return nLevel
 
 
-def measureAppMobility(dcPaths, bySpeed=False):
+def appMobility(dcPaths, bySpeed=False):
     '''
         Measure application mobility
     '''
@@ -126,7 +126,7 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
 
     # based on #cell_visited
     print("Start to measure application mobility based on vistied cell...")
-    dcCellMobility = measureAppMobility(dcPaths, False)
+    dcCellMobility = appMobility(dcPaths, False)
     strCellResult = ""
     for tp in dcCellMobility.items():
         for app in tp[1].values():
@@ -135,7 +135,7 @@ def conductAppMobilityMeasurement(strInPath, strOutPath, dcPaths = None):
 
     # based on moving speed
     print("Start to measure application mobility based on speed...")
-    dcSpeedMobility = measureAppMobility(dcPaths, True)
+    dcSpeedMobility = appMobility(dcPaths, True)
     strSpeedResult = ""
     for tp in dcSpeedMobility.items():
         for app in tp[1].values():
