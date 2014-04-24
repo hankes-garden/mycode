@@ -30,12 +30,11 @@ def extractPathCallback(rt):
     '''
         merge the paths together
     '''
-    global g_nUserPerProcess
-    
     g_dcPaths.update(rt)
-    print("--> Progress: %.2f" % ( float(len(g_dcPaths))/g_nUser2Process*100.0 ) + "%")
+    print("==> Progress of path extraction: %d of %d" % (len(g_dcPaths), g_nUser2Process) )
     
     del rt
+
     
 def extractPathInit():
     print("Starting proc:" + multiprocessing.current_process().name )
@@ -44,6 +43,7 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
     '''
         start multiple processes to extract path in parallel
     '''
+    global g_nUser2Process
     nStartIndex = g_nStartIndex
     nImeiEnd = min(len(lsImeis), g_nEndIndex)
     g_nUser2Process = nImeiEnd - nStartIndex
