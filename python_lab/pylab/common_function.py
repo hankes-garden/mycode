@@ -12,6 +12,8 @@ import time
 import cPickle
 import gc
 
+import os
+
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
 
@@ -114,12 +116,10 @@ def write2File(strContent, strOutFilePath):
         raise MyException("Error: invalid output file path")
     
 
-def serialize2File(strFileName, strOutDir, obj):
+def serialize2File(strOutFilePath, obj):
     if len(obj) != 0:
-        strOutFilePath = "%s%s" % (strOutDir, strFileName)
         with open(strOutFilePath, 'w') as hOutFile:
-            cPickle.dump(obj, hOutFile, protocol=0)
-        return strOutFilePath
+            cPickle.dump(obj, hOutFile, protocol=-1)
     else:
         print("Nothing to serialize!")
    
@@ -226,10 +226,13 @@ def outputLocalAppLocation(dcLocalApp, strOutPath):
                 strLine = "%d, %s,%.6f,%.6f, %d\n" % (nServiceType, tp[0], tp[1][0], tp[1][1], tp[2])
                 hOutFile.write(strLine)
             
-
+def ensurePathExist(f):
+    d = os.path.dirname(f)
+    if not os.path.exists(d):
+        os.makedirs(d)
 
 if __name__ == '__main__':
-    pass
+    print("this is common function")
 #      dc = constructCellLocDict("d:\\playground\\dict.csv")
 #      try:
 #          maxPair = (("dd",(0,0)), ("ee", (0,0)))

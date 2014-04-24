@@ -18,20 +18,36 @@ import math
 import os
 
 
-g_dcPaths = {}                  # global extracted paths
 g_nUser2Process = 0             # Total User to be processed
 g_nMaxProcessNum = 20           # number of processes running in parallel
 g_nUserPerProcess = 100         # how many Imeis should be processed in each process
 g_nUser2Simple = 0              # How to select user?
 g_nStartIndex = 0               # the start index of distinct_user_dict
 g_nEndIndex = 0                 # the end index of distinct_user_dict
+g_nSerializationID = 0          # the id of current serialization
+g_strSerPathPrefix = ''         # the prefix of output path
+g_nUserProcessed = 0            # number of processed users
+
 
 def extractPathCallback(rt):
     '''
-        merge the paths together
+        serialize path to file
     '''
-    g_dcPaths.update(rt)
-    print("==> Progress of path extraction: %d of %d" % (len(g_dcPaths), g_nUser2Process) )
+    global g_nUserProcessed
+    g_nUserProcessed += len(rt)
+    
+    # serialize dcPaths
+    global g_strSerPathPrefix
+    if ('' == g_strSerPathPrefix):
+        print("--> WTF!!!!! the path is empty~")
+        g_strSerPathPrefix = "/mnt/disk2/yanglin/data/out/ser_path/path"
+        ensurePathExist(g_strSerPathPrefix)
+        
+    strOutPath = "%s_%d.txt" % (g_strSerPathPrefix, g_nSerializationID)
+    serialize2File(strOutPath, rt)
+    g_nSerializationID += 1
+    
+    print("==> Progress of path extraction: %d of %d" % (g_nUserProcessed, g_nUser2Process) )
     
     del rt
 
@@ -58,8 +74,6 @@ def extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDRFilePaths, strOutDi
     pool.close()
     pool.join()
     
-    return g_dcPaths
-        
 def statistic(dcResult):
     text = ""
     for path in dcResult.values():
@@ -97,8 +111,6 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
         4. serialize path to disk
         5. conduct statistic or sub-domain measurement
     '''
-    global g_nUser2Process
-
     print("====Begin Path Extraction====")
     print(" cell_loc_dict: %s\n distinct_imei: %s\n input_path: %s\n output_path:%s\n max_proc: %d\n #user_per_proc: %s\n bAll: %s\n" % \
           (strCellLocDictPath, strDistinctImeiPath, strInDir, strOutDir, \
@@ -116,16 +128,21 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
     print("cell-location dict is finished, #cell-location=%d" % (len(dcCellLoc)))
 
     # extract roaming path in parallel
+    global g_strSerPathPrefix
+    g_strSerPathPrefix = "%sser_path/path_%d_%s_%s" % \
+    (strOutDir, len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
+    ensurePathExist(g_strSerPathPrefix)
+
     print("start path extraction...")
-    dcPaths = extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
+    extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
     print("path extraction is finished")
     
-    # serialize roaming path
-    print("start serialization of path...")
-    strPathListName = "serPath_%d_%s_%s.txt" % \
-    (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
-    serialize2File(strPathListName, strOutDir, dcPaths)
-    print("serialization of path is finished.")
+#     # serialize roaming path
+#     print("start serialization of path...")
+#     strPathListName = "serPath_%d_%s_%s" % \
+#     (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])
+#     serialize2File(strPathListName, strOutDir, dcPaths)
+#     print("serialization of path is finished.")
     
     print("====Path Extraction is finished====")
 
@@ -133,20 +150,13 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
 if __name__ == '__main__':
     # running config
     # sys.argv[1] - #user to sample, -1 means all users
-    # sys.argv[2] - Max number of sub-process, 20 would be better
-    # sys.argv[3] - #user to process in each process, 5000 would be better
+    # sys.argv[2] - Max number of sub-process, 10 would be better
+    # sys.argv[3] - #user to process in each process, 100,000 would be better
     # sys.argv[4] - working dir
     # sys.argv[5] - start index of distinct_user_dict
     # sys.argv[6] - end index of distinct_user_dict
     if(len(sys.argv) != 7):
-        raise MyError("Usage: python path_extractor.py #user2simple, max_proc_number=20, #user_per_proc=5000, working_dir=/mnt/disk7/yanglin/, startIndex, endIndex")
-    
-#     global g_nUser2Simple
-#     global g_nMaxProcessNum
-#     global g_nUserPerProcess
-#     global g_nStartIndex
-#     global g_nEndIndex
-    
+        raise MyError("Usage: python path_extractor.py #user2simple, max_proc_number=10, #user_per_proc=100000, working_dir=/mnt/disk7/yanglin/, startIndex, endIndex")
     
     g_nUser2Simple = int(sys.argv[1])
     bAll = True if (g_nUser2Simple == -1) else False
@@ -166,5 +176,5 @@ if __name__ == '__main__':
             lsCDR.append(dirpath+fn)
             
     strOutDir = strWorkingDir + "data/out/"
-
+    ensurePathExist(strOutDir)
     extract(strCellLocPath, strImeisPath, strInDir, lsCDR, strOutDir, bAll)

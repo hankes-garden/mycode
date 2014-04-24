@@ -7,6 +7,8 @@ Created on 2014年1月14日
 from common_function import *
 import pandas as pd
 
+import os
+
  
 def constructCellLocFromAdditionalSource(strPath):
     dcNew = {}
@@ -44,5 +46,10 @@ def findDiff(dfPrevious, dcNew):
     sDis.describe()
     return sDis
 
+def ensurePathExist(f):
+    d = os.path.dirname(f)
+    if not os.path.exists(d):
+        os.makedirs(d)
+
 if __name__ == '__main__':
-    pass
+    ensure_dir(".\\dd\\ss74\\test.txt")
