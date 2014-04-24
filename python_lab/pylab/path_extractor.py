@@ -40,7 +40,7 @@ def extractPathCallback(rt):
     global g_strSerPathPrefix
     if ('' == g_strSerPathPrefix):
         print("--> WTF!!!!! the path is empty~")
-        g_strSerPathPrefix = "/mnt/disk2/yanglin/data/out/ser_path/path"
+        g_strSerPathPrefix = "/mnt/disk7/yanglin/data/out/ser_path/path"
         ensurePathExist(g_strSerPathPrefix)
         
     strOutPath = "%s_%d.txt" % (g_strSerPathPrefix, g_nSerializationID)
