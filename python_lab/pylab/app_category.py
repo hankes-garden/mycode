@@ -14,10 +14,10 @@ g_lsIM = range(3001, 3030)
 g_lsReading = range(4001, 4017)
 
 g_lsSNS = range(5001, 5006)
-g_lsSNS.append(range(21001, 21011) )
+g_lsSNS = g_lsSNS + range(21001, 21011) 
 
 g_lsVideo = range(6001, 6057)
-g_lsVideo.append(range(7001, 7005) )
+g_lsVideo = g_lsVideo + range(7001, 7005)
 
 g_lsMusic = range(8001, 8017)
 
