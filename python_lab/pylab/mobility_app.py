@@ -10,6 +10,7 @@ import app_category
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.markers as mk
 
 def getAppDistributionOnMobility(dcPaths):
     '''
@@ -31,9 +32,10 @@ def getAppDistributionOnMobility(dcPaths):
         
         dcAppUserForCurrentUser = {}
         for node in path.m_lsNodes:
-            dcAppUserForCurrentUser.update(dict.fromkeys(node.m_lsApps, 1) )
+            for app in node.m_lsApps:
+                dcAppUserForCurrentUser[app.m_nServiceType] = 1
         
-        for tp in dcAppUserForCurrentUser:
+        for tp in dcAppUserForCurrentUser.items():
             updateDictBySum(dcAppUserOnCurrentMobility, tp[0], tp[1])
             
         # traffic
@@ -52,12 +54,12 @@ def getAppDistributionOnMobility(dcPaths):
 
 def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility):
     
-    dfCategoryUser = pd.DataFrame()
-    dfCategoryTraffic = pd.DataFrame()
+    dcCategoryUser = {}
+    dcCategoryTraffic = {}
     
     for tp in app_category.g_dcCategory.items():
-        dfCategoryUser[tp[0]] = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(tp[1])].sum(axis=0)
-        dfCategoryTraffic[tp[0]] = dfAppTrafficPerMobility.loc[dfAppUserPerMobility.index.isin(tp[1])].sum(axis=0)
+        dcCategoryUser[tp[0]] = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(tp[1])].sum(axis=0)
+        dcCategoryTraffic[tp[0]] = dfAppTrafficPerMobility.loc[dfAppTrafficPerMobility.index.isin(tp[1])].sum(axis=0)
     
 #     sUserWebBrowsing = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsWebBrowsing)].sum(axis=0)
 #     sUserP2P = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsP2P)].sum(axis=0)
@@ -88,29 +90,36 @@ def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobil
 #     dfCategoryUser[app_category.g_strShopping] = sUserShopping
 #     dfCategoryUser[app_category.g_strMap] = sUserMap
     
+    dfCategoryUser = pd.DataFrame(dcCategoryUser)
+    dfCategoryTraffic = pd.DataFrame(dcCategoryTraffic)
+    
     return dfCategoryUser, dfCategoryTraffic
     
     
 
 def drawCategoryAccessProbability(dfCategoryUserPerMobility):
-    dTotoalUser = dfCategoryUserPerMobility.sum().sum() * 1.0
-    dfCategoryAccessProb = dfCategoryUserPerMobility/dTotoalUser
+    sUserPerMobility = dfCategoryUserPerMobility.sum(axis=1)
+    dfCategoryAccessProb = dfCategoryUserPerMobility.div(sUserPerMobility, axis=0)
     
-    fig, axes = plt.subplots(1,1)
-    dfCategoryAccessProb.plot(ax=axes[0], style='-o', xlim=(1, 50) )
+    ax0 =  plt.subplot()
+    tpMakers = mk.MarkerStyle().filled_markers
+    lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
+    dfCategoryAccessProb.plot(ax=ax0, style=lsLineStyle, xlim=(0, 20) )
     # set style
-    axes[0].set_xlabel('# cells')
-    axes[0].set_ylabel('access probability')
+    ax0.set_xlabel('# cells')
+    ax0.set_ylabel('access probability')
 
 def drawCategoryTrafficProbability(dfCategoryTrafficPerMobility):
-    dTotoalTraffic = dfCategoryTrafficPerMobility.sum().sum() * 1.0
-    dfCategoryTrafficProb = dfCategoryTrafficPerMobility/dTotoalTraffic
+    sTrafficPerMobility = dfCategoryTrafficPerMobility.sum(axis=1)
+    dfCategoryTrafficProb = dfCategoryTrafficPerMobility.div(sTrafficPerMobility, axis=0)
     
-    fig, axes = plt.subplots(1,1)
-    dfCategoryTrafficProb.plot(ax=axes[0], style='-o', xlim=(1, 50) )
+    ax0 = plt.subplot()
+    tpMakers = mk.MarkerStyle().filled_markers
+    lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
+    dfCategoryTrafficProb.plot(ax=ax0, style=lsLineStyle, xlim=(0, 50) )
     # set style
-    axes[0].set_xlabel('# cells')
-    axes[0].set_ylabel('traffic contribution')
+    ax0.set_xlabel('# cells')
+    ax0.set_ylabel('traffic contribution')
 
 def getCategoryMobility():
     pass
