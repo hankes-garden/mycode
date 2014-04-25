@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//pylab/analysis.py=utf-8
 encoding//pylab/app.py=utf-8
+encoding//pylab/app_category.py=utf-8
 encoding//pylab/app_mobility.py=utf-8
 encoding//pylab/app_state.py=utf-8
 encoding//pylab/app_usage.py=utf-8
