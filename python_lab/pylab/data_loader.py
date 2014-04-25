@@ -33,21 +33,10 @@ def aggregateDataIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
             if (None == dcAppsInCell): # no corresponding dc yet, then create one
                 dcAppsInCell = {}
                 dcAgg[strKey] = dcAppsInCell
-            updateAppDict(dcAppsInCell, node.m_lsApps, strAttributeName)
+            updateDictBySumOnAttribute(dcAppsInCell, node.m_lsApps, strAttributeName)
    
 
-def updateAppDict(dcApps, lsApps, strAttributeName):
-    '''
-        update AppDict with given app list
-    '''
-    if (len(lsApps) == 0 ):
-        return
-    for app in lsApps:
-        oldValue = dcApps.get(app.m_nServiceType)
-        if (None == oldValue):
-            dcApps[app.m_nServiceType] = app.__dict__.get(strAttributeName)
-        else:
-            dcApps[app.m_nServiceType] = oldValue + app.__dict__.get(strAttributeName)
+
 
 
 def AggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
@@ -65,7 +54,7 @@ def AggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
             for app in node.m_lsApps:
                 dcAppsPerUser[app.m_nServiceType] = 1
         for tp in dcAppsPerUser.items():
-            updateDictbySum(dcAppUserNum, tp[0], tp[1])
+            updateDictBySum(dcAppUserNum, tp[0], tp[1])
 
 
 def cleanData(dfAggAll, sAppUserNum, nTopApp):

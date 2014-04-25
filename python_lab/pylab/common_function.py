@@ -274,11 +274,24 @@ def calculateRog(path):
     return dRog
 
 
-def updateDictbySum(dc, key, newValue):
+def updateDictBySum(dc, key, newValue):
     if key in dc:
         dc[key] += newValue
     else:
         dc[key] = newValue
+        
+def updateDictBySumOnAttribute(dcApps, lsApps, strAttributeName):
+    '''
+        update AppDict with given app list
+    '''
+    if (len(lsApps) == 0 ):
+        return
+    for app in lsApps:
+        oldValue = dcApps.get(app.m_nServiceType)
+        if (None == oldValue):
+            dcApps[app.m_nServiceType] = app.__dict__.get(strAttributeName)
+        else:
+            dcApps[app.m_nServiceType] = oldValue + app.__dict__.get(strAttributeName)
 
 if __name__ == '__main__':
     print("this is common function")
