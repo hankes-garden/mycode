@@ -7,11 +7,36 @@ Created on 2014年4月24日
 
 from common_function import *
 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def getMobility(dcPaths, kind='cell_num'):
-    pass
+
+def getMobility(dcPaths):
+    '''
+        calculate mobility from raw dcPaths
+        
+        return
+            a tuple of series like: {mobility: #user}
+    '''
+    dcMobilityCell = {}
+    dcMobilitySpeed = {}
+    dcMobilityRog = {}
+    
+    for path in dcPaths.values():
+        dcMobilityCell[len(path.m_lsNodes)] = dcMobilityCell.get(len(path.m_lsNodes), 0) + 1
+        
+        nSpeedLevel = getSpeedLevel(path.m_dMaxSpeed)
+        dcMobilitySpeed[nSpeedLevel] = dcMobilitySpeed.get(nSpeedLevel, 0) + 1
+        
+        dRog = calculateRog(path) / 1000.0 # change unit to km
+        dcMobilityRog[dRog] = dcMobilityRog.get(dRog, 0) + 1
+        
+    sMobilityCell = pd.Series(dcMobilityCell)
+    sMobilitySpeed = pd.Series(dcMobilitySpeed)
+    sMobilityRog = pd.Series(dcMobilityRog)
+    
+    return sMobilityCell, sMobilitySpeed, sMobilityRog
     
 
 def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
@@ -21,27 +46,32 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
     fig, axes = plt.subplots(nrows=1, ncols=3)
     
     # CDF of mobility by cell_num
-    sCDFCell = sUserMobilityCell.order(ascending=False).cumsum()/sUserMobilityCell.sum()
-    sCDFCell.plot(ax=axes[0], style='-o')
+    sCDFCell = sUserMobilityCell.sort_index().cumsum()*1.0/sUserMobilityCell.sum()
+    sCDFCell.plot(ax=axes[0], style='-o', xlim=(1, 50))
     
-    # CDF of mobility by cell_num
-    sCDFSpeed = sUserMobilitySpeed.order(ascending=False).cumsum()/sUserMobilitySpeed.sum()
+    # CDF of mobility by speed
+    sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
     sCDFSpeed.plot(ax=axes[1], style='-o')
     
-    # CDF of mobility by cell_num
-    sCDFRog = sUserMobilityRog.order(ascending=False).cumsum()/sUserMobilityRog.sum()
-    sCDFRog.plot(ax=axes[2], style='-o')
+    # CDF of mobility by rog
+    sCDFRog = sUserMobilityRog.sort_index().cumsum()*1.0/sUserMobilityRog.sum()
+    sCDFRog.plot(ax=axes[2], style='-o', xlim=(0., 50.))
     
     # set style
     axes[0].set_xlabel('# cells')
     axes[0].set_ylabel('CDF(%)')
     
+    
     axes[1].set_xlabel('speed level')
     axes[1].set_ylabel('CDF(%)')
     
-    axes[2].set_xlabel('radius of gyration')
+    axes[2].set_xlabel('radius of gyration (km)')
     axes[2].set_ylabel('CDF(%)')
         
+
+def execute(dcPaths):
+    sMobilityCell, sMobilitySpeed, sMobilityRog = getMobility(dcPaths)
+    drawCDFofMobility(sMobilityCell, sMobilitySpeed, sMobilityRog)
 
 if __name__ == '__main__':
     pass

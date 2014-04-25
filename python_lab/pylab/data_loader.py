@@ -10,30 +10,31 @@ MIN_VALID_USER_NUM=1000
 import numpy as np
 import pandas as pd
 import matplotlib as mat
+import gc
 
 from node import *
 from common_function import *
 
 
-g_dcAgg = {}
-g_dcAppUserNum = {}
-
-def aggregateData(dcPaths, strAttributeName="m_nDownBytes"):
+def aggregateDataIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
     '''
-        Aggregate data from dcPaths w.r.t given attribute
-        return format: row=serviceType, column=cell, value=given_attribute
+        Aggregate data from dcPaths w.r.t given attribute incrementally
+        Params:
+                dcPath - piece of dcPath
+                dcAgg - the dcAgg which stored previous aggregated data
+                strAttributeName - the attribute name
+        Return:
+                format: row=serviceType, column=cell, value=given_attribute
     '''
     for path in dcPaths.values():
         for node in path.m_lsNodes:
             strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
-            dcAppsInCell = g_dcAgg.get(strKey)
+            dcAppsInCell = dcAgg.get(strKey)
             if (None == dcAppsInCell): # no corresponding dc yet, then create one
                 dcAppsInCell = {}
-                g_dcAgg[strKey] = dcAppsInCell
+                dcAgg[strKey] = dcAppsInCell
             updateAppDict(dcAppsInCell, node.m_lsApps, strAttributeName)
-
-def getAggregatedData():
-    return g_dcAgg            
+   
 
 def updateAppDict(dcApps, lsApps, strAttributeName):
     '''
@@ -49,17 +50,14 @@ def updateAppDict(dcApps, lsApps, strAttributeName):
             dcApps[app.m_nServiceType] = oldValue + app.__dict__.get(strAttributeName)
 
 
-def updateDictbySum(dc, key, newValue):
-    if key in dc:
-        dc[key] += newValue
-    else:
-        dc[key] = newValue
-
-
-def AggregateAppUserNum(dcPaths):
+def AggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
     '''
-        get user number for each apps
-        return a dc likes: {serviceType:user_number}
+        Aggregate App User Num Incrementally
+        
+        Params:
+                dcPaths - piece of dcPaths
+                dcAppUserNum - The dict which stores previous aggregated App user number, 
+                               format: {serviceType:user_number}
     '''
     for path in dcPaths.values():
         dcAppsPerUser = {}
@@ -67,17 +65,14 @@ def AggregateAppUserNum(dcPaths):
             for app in node.m_lsApps:
                 dcAppsPerUser[app.m_nServiceType] = 1
         for tp in dcAppsPerUser.items():
-            updateDictbySum(g_dcAppUserNum, tp[0], tp[1])
-
-def getAggregatedAppUserNum():
-    return g_dcAppUserNum
+            updateDictbySum(dcAppUserNum, tp[0], tp[1])
 
 
-def cleanData(dfAggAll, sAppUserNum):
+def cleanData(dfAggAll, sAppUserNum, nTopApp):
     '''
-        clean data based on some criteria
-        1. all user-intended apps(network_related_apps are excluded)
-        2. top 100 app based on #user
+        Clean data based on some criteria:
+            1. all user-intended apps(network_related_apps are excluded)
+            2. top 100 app based on #user
     '''
     lsLabel = []
     for lb in dfAggAll.index:
@@ -86,60 +81,81 @@ def cleanData(dfAggAll, sAppUserNum):
             continue
         lsLabel.append(lb)
     
-    sSelectedApps = sAppUserNum.loc[lsLabel].order(ascending=False)[:100]
+    sSelectedApps = sAppUserNum.loc[lsLabel].order(ascending=False)[:nTopApp]
     dfAggAllCleaned = dfAggAll.loc[sSelectedApps.index]
     return dfAggAllCleaned
 
-import sys
-if __name__ == '__main__':
+def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     '''
-        sys.argv[1] - path of cell_loc_dict
-        sys.argv[2] - output path for dataframe of cleaned data and app user
-        sys.argv[3:] - list of serialized path
+        return a tuple of three data:
+        tp[0] - dcTotalPaths
+        tp[1] - sAppUserNum
+        tp[2] - cleaned data
+        tp[3] - dcCellLoc
     '''
-    if (len(sys.argv) < 4):
-        raise MyError("Usage: data_loader.py cell_loc_dict_path output_dir serialized_path_1, [serialized_path_2]")
     
-    strCellLocPath = sys.argv[1]
-    strOutDir = sys.argv[2] if sys.argv[2].endswith("/") else sys.argv[2]+"/"
-    lsSerPath = sys.argv[3:len(sys.argv)]
+    lsSerPath = []
+    for (dirpath, dirnames, filenames) in os.walk(strSerPathDir):
+        for fn in sorted(filenames):
+            lsSerPath.append(dirpath+fn)
     
+    dcTotoalPaths = {}
+    dcAggData = {}
+    dcAggAppUserNum = {}
     for sp in lsSerPath: 
         print("Start to deserialize from %s" % sp) 
         dcPaths = deserializeFromFile(sp)
          
         print("Start to aggregate data by m_nDownBytes...")
-        aggregateData(dcPaths)
+        aggregateDataIncrementally(dcPaths, dcAggData)
         
         print("Start to aggregate user number...")
-        AggregateAppUserNum(dcPaths)
+        AggregateAppUserNumIncrementally(dcPaths, dcAggAppUserNum)
+        
+        if(True == bRaw):
+            dcTotoalPaths.update(dcPaths)
         
         del dcPaths
+        gc.collect()
+    print("Data Aggregation is finished")  
     
-    dcAgg = getAggregatedData()
-    dcAggregatedAppUserNum = getAggregatedAppUserNum()
-    print("Aggregation is finished")  
+    dfAgg = pd.DataFrame(dcAggData)
+    sAppUserNum = pd.Series(dcAggAppUserNum)
+    del dcAggData
+    del dcAggAppUserNum
     
-     
+    print("Start to clean data...")
+    dfAggCleaned = cleanData(dfAgg, sAppUserNum, nTopApp)
+    del dfAgg
+    
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(strCellLocPath)
     
-    dfAgg = pd.DataFrame(dcAgg)
-    sAppUserNum = pd.Series(dcAggregatedAppUserNum)
+    # release memory      
+    gc.collect()
     
-    del dcAgg
-    del dcAggregatedAppUserNum
+    return dcTotoalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict
+
+import sys
+if __name__ == '__main__':
+    '''
+        sys.argv[1] - path of cell_loc_dict
+        sys.argv[2] - store raw dcPaths in memory? 1 means yes and 0 means no
+        sys.argv[3] - dir of serialized paths
+        
+        return nothing, but all loaded data are store in context variables
+    '''
+    if (len(sys.argv) != 4):
+        raise MyError("Usage: data_loader.py cell_loc_dict_path output_dir serialized_path_1, [serialized_path_2]")
+    
+    strCellLocPath = sys.argv[1]
+    bRaw = True if sys.argv[2] == '1' else False
+    strSerPathDir = sys.argv[3]
+    
+    execute(strCellLocPath, bRaw, strSerPathDir)
     
     
-    print("Start to clean data...")
-    dfAggCleaned = cleanData(dfAgg, sAppUserNum)
-    del dfAgg
     
-    print("Start to output cleaned data...")
-    dfAggCleaned.to_csv(strOutDir+"cleaned_data.txt")
-    sAppUserNum.to_csv(strOutDir+"app_user.txt")
-    
-    print("data_loader is ready!")
     
     
     

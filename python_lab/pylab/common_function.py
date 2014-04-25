@@ -7,6 +7,7 @@ Created on 2014年1月14日
 
 from node import *
 from pathinfo import *
+from my_error import MyError
 
 import time
 import cPickle
@@ -16,16 +17,6 @@ import os
 
 MAX_IO_BUF_SIZE = 0
 MAX_IO_BUF_SIZE = 1024*1024*1024*1
-
-class MyError(Exception):
-    '''
-        Exception in my code
-    '''
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
-
 
 def exeTime(func):
     '''
@@ -68,7 +59,7 @@ def calculateMobilitySpeed(node1, node2):
     dDuration = node1.m_dDuration + node2.m_dDuration
     dSpeed = 2.0*nDistance//dDuration
     if dSpeed < 0:
-        raise MyException("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
+        raise MyError("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
                             (dDuration, nDistance, get_time_str(node1.m_firstTime), get_time_str(node2.m_endTime) ) )
     return dSpeed
     
@@ -113,7 +104,7 @@ def write2File(strContent, strOutFilePath):
         with open(strOutFilePath, 'w') as hOutFile:
             hOutFile.write(strContent)
     else:
-        raise MyException("Error: invalid output file path")
+        raise MyError("Error: invalid output file path")
     
 
 def serialize2File(strOutFilePath, obj):
@@ -206,7 +197,7 @@ def calculateDistance(lat1, long1, lat2, long2):
     
     cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) + 
            math.cos(phi1)*math.cos(phi2))
-    arc = math.acos( cos )
+    arc = math.acos( 1.0 if cos>1.0 else cos )
 
     # Remember to multiply arc by the radius of the earth 
     # in your favorite set of units to get length.
@@ -230,6 +221,64 @@ def ensurePathExist(f):
     d = os.path.dirname(f)
     if not os.path.exists(d):
         os.makedirs(d)
+        
+def getSpeedLevel(dSpeed):
+    
+    # change to km/h, and divide into slots
+    sp = (dSpeed*60.0*60.0/1000.0)/10
+    
+    nLevel = 0
+    if (0.0<sp<=10.0):
+        nLevel = 1
+    if (10.0<sp<=20.0):
+        nLevel = 2
+    if (20.0<sp<=30.0):
+        nLevel = 3
+    if (30.0<sp<=40.0):
+        nLevel = 4
+    if (40.0<sp<=50.0):
+        nLevel = 5
+    if (50.0<sp<=60.0):
+        nLevel = 6
+    if (60.0<sp<=70.0):
+        nLevel = 7
+    if (70.0<sp<=80.0):
+        nLevel = 8
+    if (80.0<sp<=90.0):
+        nLevel = 9
+    if (sp>90.0):
+        nLevel = 10
+        
+    return nLevel
+
+def calculateRog(path):
+    '''
+        rog = sqrt(1/n*sum(power(dis(mass, node), 2) ) )
+    '''
+    dRog = 0.0
+    if(len(path.m_lsNodes) != 0):
+        dMassLat = 0.0
+        dMassLong = 0.0
+        for node in path.m_lsNodes:
+            dMassLat += node.m_dLat
+            dMassLong += node.m_dLong
+        dMassLat = dMassLat / len(path.m_lsNodes)
+        dMassLong = dMassLong / len(path.m_lsNodes)
+        
+        dVariance = 0.0
+        for node in path.m_lsNodes:
+            dDis = calculateDistance(node.m_dLat, node.m_dLong, dMassLat, dMassLong)
+            dVariance += math.pow(dDis, 2)
+        dRog = math.sqrt(dVariance / len(path.m_lsNodes) )
+        
+    return dRog
+
+
+def updateDictbySum(dc, key, newValue):
+    if key in dc:
+        dc[key] += newValue
+    else:
+        dc[key] = newValue
 
 if __name__ == '__main__':
     print("this is common function")

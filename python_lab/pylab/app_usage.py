@@ -9,60 +9,109 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def getAppCategoryUserNum(sAppUser):
+def getCategoryUserNum(sAppUser):
     '''
         return a series {'category':#user} 
     '''
     dcAppCategoryUser = {}
-    try:
-        
-        dcAppCategoryUser['web_browsing'] = sAppUser.loc[1002:1006].sum()
-        dcAppCategoryUser['p2p_downloading'] = sAppUser.loc[2001:2037].sum()
-        dcAppCategoryUser['instant_message'] = sAppUser.loc[3001:3029].sum()
-        dcAppCategoryUser['reading'] = sAppUser.loc[4001:4016].sum()
-        dcAppCategoryUser['social_network'] = sAppUser.loc[5001:5005].sum()
-        dcAppCategoryUser['social_network'] += sAppUser.loc[21001:21010].sum()
-        dcAppCategoryUser['video'] = sAppUser.loc[6001:7004].sum()
-        dcAppCategoryUser['music'] = sAppUser.loc[8001:8016].sum()
-        dcAppCategoryUser['app_market'] = sAppUser.loc[9001:9003].sum()
-        dcAppCategoryUser['game'] = sAppUser.loc[10001:10115].sum()
-        dcAppCategoryUser['email'] = sAppUser.loc[11001:11017].sum()
-        dcAppCategoryUser['stock'] = sAppUser.loc[16001:16012].sum()
-        dcAppCategoryUser['shopping'] = sAppUser.loc[22001:22006].sum()
-        dcAppCategoryUser['map'] = sAppUser.loc[26001:26003].sum()
-        
-    except KeyError as err:
-        print("Ignore: " + err)
-        pass
+    
+    dcAppCategoryUser['web_browsing'] = \
+    sAppUser.loc[(sAppUser.index>=1002) & (sAppUser.index<=1006) ].sum()
+    
+    dcAppCategoryUser['p2p_downloading'] = \
+    sAppUser.loc[(sAppUser.index>=2001) & (sAppUser.index<=2037) ].sum()
+    
+    dcAppCategoryUser['im'] = \
+    sAppUser.loc[(sAppUser.index>=3001) & (sAppUser.index<=3029)].sum()
+    
+    dcAppCategoryUser['reading'] = \
+    sAppUser.loc[(sAppUser.index>=4001) & (sAppUser.index<=4016)].sum()
+    
+    dcAppCategoryUser['social_network'] = \
+    sAppUser.loc[(sAppUser.index>=5001) & (sAppUser.index<=5005)].sum()
+    
+    dcAppCategoryUser['social_network'] += \
+    sAppUser.loc[(sAppUser.index>=21001) & (sAppUser.index<=21010)].sum()
+    
+    dcAppCategoryUser['video'] = \
+    sAppUser.loc[(sAppUser.index>=6001) & (sAppUser.index<=7004)].sum()
+    
+    dcAppCategoryUser['music'] = \
+    sAppUser.loc[(sAppUser.index>=8001) & (sAppUser.index<=8016)].sum()
+    
+    dcAppCategoryUser['app_market'] = \
+    sAppUser.loc[(sAppUser.index>=9001) & (sAppUser.index<=9003)].sum()
+    
+    dcAppCategoryUser['game'] = \
+    sAppUser.loc[(sAppUser.index>=10001) & (sAppUser.index<=10115)].sum()
+    
+    dcAppCategoryUser['email'] = \
+    sAppUser.loc[(sAppUser.index>=11001) & (sAppUser.index<=11017)].sum()\
+    
+    
+    dcAppCategoryUser['stock'] = \
+    sAppUser.loc[(sAppUser.index>=16001) & (sAppUser.index<=16012)].sum()
+    
+    dcAppCategoryUser['shopping'] = \
+    sAppUser.loc[(sAppUser.index>=22001) & (sAppUser.index<=22006)].sum()
+    
+    dcAppCategoryUser['map'] = \
+    sAppUser.loc[(sAppUser.index>=26001) & (sAppUser.index<=26003)].sum()
     
     sAppCategoryUser = pd.Series(dcAppCategoryUser)
     
     return sAppCategoryUser
 
 
-def getAppCategoryTraffic(dfAgg):
+def getCategoryTraffic(dfAgg):
     '''
         return a series{'category':traffic_percentage}
     '''
     nTotalTraffic = dfAgg.sum().sum()
     dcAppCategoryTraffic = {}
-    dcAppCategoryTraffic['web_browsing'] = dfAgg.loc[1002:1006].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['p2p_downloading'] = dfAgg.loc[2001:2037].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['instant_message'] = dfAgg.loc[3001:3029].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['reading'] = dfAgg.loc[4001:4016].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['social_network'] = dfAgg.loc[5001:5005].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['social_network'] += dfAgg.loc[21001:21010].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['video'] = dfAgg.loc[6001:7004].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['music'] = dfAgg.loc[8001:8016].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['app_market'] = dfAgg.loc[9001:9003].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['game'] = dfAgg.loc[10001:10115].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['email'] = dfAgg.loc[11001:11017].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['stock'] = dfAgg.loc[16001:16012].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['shopping'] = dfAgg.loc[22001:22006].sum(axis=1).sum()/nTotalTraffic
-    dcAppCategoryTraffic['map'] = dfAgg.loc[26001:26003].sum(axis=1).sum()/nTotalTraffic
+    dcAppCategoryTraffic['web_browsing'] = \
+    dfAgg.loc[(dfAgg.index>=1002) & (dfAgg.index<=1006)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['p2p_downloading'] = \
+    dfAgg.loc[(dfAgg.index>=2001) & (dfAgg.index<=2037)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['im'] = \
+    dfAgg.loc[(dfAgg.index>=3001) & (dfAgg.index<=3029)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['reading'] = \
+    dfAgg.loc[(dfAgg.index>=4001) & (dfAgg.index<=4016)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['social_network'] \
+    = dfAgg.loc[(dfAgg.index>=5001) & (dfAgg.index<=5005)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['social_network'] += \
+    dfAgg.loc[(dfAgg.index>=21001) & (dfAgg.index<=21010)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['video'] = \
+    dfAgg.loc[(dfAgg.index>=6001) & (dfAgg.index<=7004)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['music'] = \
+    dfAgg.loc[(dfAgg.index>=8001) & (dfAgg.index<=8016)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['app_market'] = \
+    dfAgg.loc[(dfAgg.index>=9001) & (dfAgg.index<=9003)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['game'] = \
+    dfAgg.loc[(dfAgg.index>=10001) & (dfAgg.index<=10115)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['email'] = \
+    dfAgg.loc[(dfAgg.index>=11001) & (dfAgg.index<=11017)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['stock'] = \
+    dfAgg.loc[(dfAgg.index>=16001) & (dfAgg.index<=16012)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['shopping'] = \
+    dfAgg.loc[(dfAgg.index>=22001) & (dfAgg.index<=22006)].sum(axis=1).sum()/nTotalTraffic
+    
+    dcAppCategoryTraffic['map'] = \
+    dfAgg.loc[(dfAgg.index>=26001) & (dfAgg.index<=26003)].sum(axis=1).sum()/nTotalTraffic
+    
     sAppCategoryTraffic = pd.Series(dcAppCategoryTraffic)
-
-
     return sAppCategoryTraffic
     
 def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
@@ -75,8 +124,9 @@ def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
     sAppCategoryTraffic.plot(ax=axes[1], kind='bar')
     
     axes[0].set_ylabel('# unique users')
-    axes[0].set_ylabel('traffic volume (%)')
-        
+    axes[0].set_xlabel('a. # uniqure users of app categories')
+    axes[1].set_ylabel('traffic volume (%)')
+    axes[1].set_xlabel('b. normalized traffic volume of app categories')
         
 def getAppCategoryUserPerHour():
     pass
@@ -86,6 +136,11 @@ def getAppCategoryCorrelation():
 
 def drawCategoryTrafficDynamics():
     pass
+
+def execute(sAppUserNum, dfCleanedData):
+    sCategoryUserNum = getCategoryUserNum(sAppUserNum)
+    sCategoryTraffic = getCategoryTraffic(dfCleanedData)
+    drawCategoryPopularity(sCategoryUserNum, sCategoryTraffic)
 
 if __name__ == '__main__':
     pass

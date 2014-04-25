@@ -43,6 +43,7 @@ def extractPathCallback(rt):
         g_strSerPathPrefix = "/mnt/disk7/yanglin/data/out/ser_path/path"
         ensurePathExist(g_strSerPathPrefix)
         
+    global g_nSerializationID    
     strOutPath = "%s_%d.txt" % (g_strSerPathPrefix, g_nSerializationID)
     serialize2File(strOutPath, rt)
     g_nSerializationID += 1
@@ -172,7 +173,7 @@ if __name__ == '__main__':
     strInDir = strWorkingDir + "data/cdr/"
     lsCDR = []
     for (dirpath, dirnames, filenames) in os.walk(strInDir):
-        for fn in filenames:
+        for fn in sorted(filenames):
             lsCDR.append(dirpath+fn)
             
     strOutDir = strWorkingDir + "data/out/"

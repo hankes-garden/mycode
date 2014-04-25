@@ -11,36 +11,6 @@ from common_function import *
 import sys
 import math
 
-def getSpeedLevel(dSpeed):
-    
-    # change to km/h, and divide into slots
-    sp = (dSpeed*60.0*60.0/1000.0)/10
-    
-    nLevel = 0
-    if (0.0<sp<=10.0):
-        nLevel = 1
-    if (10.0<sp<=20.0):
-        nLevel = 2
-    if (20.0<sp<=30.0):
-        nLevel = 3
-    if (30.0<sp<=40.0):
-        nLevel = 4
-    if (40.0<sp<=50.0):
-        nLevel = 5
-    if (50.0<sp<=60.0):
-        nLevel = 6
-    if (60.0<sp<=70.0):
-        nLevel = 7
-    if (70.0<sp<=80.0):
-        nLevel = 8
-    if (80.0<sp<=90.0):
-        nLevel = 9
-    if (sp>90.0):
-        nLevel = 10
-        
-    return nLevel
-
-
 def appMobility(dcPaths, bySpeed=False):
     '''
         Measure application mobility
