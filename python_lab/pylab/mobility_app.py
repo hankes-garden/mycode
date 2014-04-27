@@ -116,6 +116,66 @@ def drawAll(dfCategoryUserPerMobility, dfCategoryTrafficPerMobility, sPerCapitaT
     axes[2].set_ylabel('traffic contribution')
     
     
+    
+def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
+    fig, axes =  plt.subplots(nrows=1, ncols=2)
+    
+    tpMakers = mk.MarkerStyle().filled_markers
+    lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
+    
+    # cell
+    sUserPerMobility = dfCategoryUserPerCell.sum(axis=1)
+    dfCategoryAccessProb = dfCategoryUserPerCell.div(sUserPerMobility, axis=0)
+    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20) )
+    axes[0].set_xlabel("# cells")
+    axes[0].set_ylabel('access probability')
+    
+    # rog
+    sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
+    dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
+    ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20) )
+    axes[1].set_xlabel("radius of gyration (km)")
+    axes[1].set_ylabel('access probability')
+    
+    fig.figlegend(ax0.get_lines(), dfCategoryAccessProb.columns, 'lower center')
+    plt.show()
+    
+def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
+    fig, axes =  plt.subplots(nrows=1, ncols=2)
+    
+    # cell
+    sPerCapitaTrafficPerCell.plot(ax=axes[0], kind='bar', xlim=(0, 50) )
+    axes[0].set_xlabel("# cell")
+    axes[0].set_ylabel('traffic contribution')
+    
+    # rog
+    sPerCapitaTrafficPerRog.plot(ax=axes[1], kind='bar', xlim=(0, 50) )
+    axes[1].set_xlabel("# cell")
+    axes[1].set_ylabel('traffic contribution')
+    
+def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
+    fig, axes =  plt.subplots(nrows=1, ncols=2)
+    
+    tpMakers = mk.MarkerStyle().filled_markers
+    lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
+    
+    # cell
+    sTrafficPerMobility = dfCategoryTrafficPerCell.sum(axis=1)
+    dfCategoryTrafficProb = dfCategoryTrafficPerCell.div(sTrafficPerMobility, axis=0)
+    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 50) )
+    axes[0].set_xlabel("# cells")
+    axes[0].set_ylabel('traffic contribution')
+    
+    # rog
+    sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
+    dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
+    ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50) )
+    axes[1].set_xlabel("# cells")
+    axes[1].set_ylabel('traffic contribution')
+    
+    fig.figlegend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'lower center')
+    plt.show()
+    
 
 def execute(dcPaths):
     
@@ -128,18 +188,6 @@ def execute(dcPaths):
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     
-    # draw
-    drawAll(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerCell.iloc[:nXlim], "# cells")
-    plt.show()
-    
-    # release memory
-    del dfAppUserPerCell
-    del dfAppTrafficPerCell
-    del dfCategoryUserPerCell
-    del dfCategoryTrafficPerCell
-    del sPerCapitaTrafficPerCell
-    gc.collect()
-    
     # mobility on rog
     print("mobility = rog")
     dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
@@ -148,6 +196,7 @@ def execute(dcPaths):
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     
     # draw
-    drawAll(dfCategoryUserPerRog.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim], "rog")
-    plt.show()
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
+    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim])
 
