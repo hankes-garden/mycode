@@ -136,7 +136,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     axes[1].yaxis.tick_right()
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False)
     axes[1].set_xlabel("radius of gyration (km)")
-    axes[1].set_ylabel('access probability')
+#     axes[1].set_ylabel('access probability')
     
     fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'center')
     plt.show()
@@ -147,12 +147,14 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     # cell
     sPerCapitaTrafficPerCell.plot(ax=axes[0], kind='bar', xlim=(0, 50) )
     axes[0].set_xlabel("# cell")
-    axes[0].set_ylabel('traffic contribution')
+    axes[0].set_ylabel('per capita traffic')
     
     # rog
+#     axes[1].yaxis.tick_right()
     sPerCapitaTrafficPerRog.plot(ax=axes[1], kind='bar', xlim=(0, 50) )
     axes[1].set_xlabel("radius of gyration (km)")
-    axes[1].set_ylabel('traffic contribution')
+    
+#     axes[1].set_ylabel('traffic contribution')
     
     plt.show()
     
@@ -177,7 +179,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     axes[1].yaxis.tick_right()
     ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False )
     axes[1].set_xlabel("radius of gyration (km)")
-    axes[1].set_ylabel('traffic contribution')
+#     axes[1].set_ylabel('traffic contribution')
     
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'center')
     plt.show()
