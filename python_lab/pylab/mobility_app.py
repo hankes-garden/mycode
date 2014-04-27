@@ -78,8 +78,8 @@ def getPerCapitaTrafficOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility)
         Return:
                 series with format: {mobility: per capita traffic with this mobility}
     '''
-    sTotalUserNumPerMobility = dfAppUserPerMobility.sum(axis=1)
-    sTotalTrafficPerMobility = dfAppTrafficPerMobility.sum(axis=1)
+    sTotalUserNumPerMobility = dfAppUserPerMobility.sum(axis=0)
+    sTotalTrafficPerMobility = dfAppTrafficPerMobility.sum(axis=0)
     return sTotalTrafficPerMobility.div(sTotalUserNumPerMobility)
 
 def getCategoryMobility():
@@ -120,23 +120,32 @@ def drawAll(dfCategoryUserPerMobility, dfCategoryTrafficPerMobility, sPerCapitaT
 def execute(dcPaths):
     
     # mobility on cell
+    print("mobility = #cell")
     dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
     dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     
     # draw
-    drawAll(dfCategoryUserPerCell, dfCategoryTrafficPerCell, sPerCapitaTrafficPerCell, "# cells")
+    drawAll(dfCategoryUserPerCell.iloc[:50], dfCategoryTrafficPerCell.iloc[:50], sPerCapitaTrafficPerCell.iloc[:50], "# cells")
+    plt.show()
+    
+    # release memory
+    del dfAppUserPerCell
+    del dfAppTrafficPerCell
+    del dfCategoryUserPerCell
+    del dfCategoryTrafficPerCell
+    del sPerCapitaTrafficPerCell
+    gc.collect()
     
     # mobility on rog
+    print("mobility = rog")
     dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     
-    plt.show()
-        
     # draw
-    drawAll(dfCategoryUserPerRog, dfCategoryTrafficPerRog, sPerCapitaTrafficPerRog, "rog")
+    drawAll(dfCategoryUserPerRog.iloc[:50], dfCategoryTrafficPerRog.iloc[:50], sPerCapitaTrafficPerRog.iloc[:50], "rog")
     plt.show()
 
