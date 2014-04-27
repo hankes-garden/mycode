@@ -29,7 +29,7 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
         if('cell' == mobility_indicator):
             mobility = len(path.m_lsNodes)
         elif ('rog' == mobility_indicator):
-            mobility = calculateRog(path) / 1000.0 # change unit to km
+            mobility = int(calculateRog(path) / 1000.0) # change unit to km, and round up
         
         # user number
         dcAppUserForCurrentMobility = dcAppUserPerMobility.get(mobility, None)
@@ -119,6 +119,8 @@ def drawAll(dfCategoryUserPerMobility, dfCategoryTrafficPerMobility, sPerCapitaT
 
 def execute(dcPaths):
     
+    nXlim = 50
+    
     # mobility on cell
     print("mobility = #cell")
     dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
@@ -127,7 +129,7 @@ def execute(dcPaths):
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     
     # draw
-    drawAll(dfCategoryUserPerCell.iloc[:50], dfCategoryTrafficPerCell.iloc[:50], sPerCapitaTrafficPerCell.iloc[:50], "# cells")
+    drawAll(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerCell.iloc[:nXlim], "# cells")
     plt.show()
     
     # release memory
@@ -146,6 +148,6 @@ def execute(dcPaths):
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     
     # draw
-    drawAll(dfCategoryUserPerRog.iloc[:50], dfCategoryTrafficPerRog.iloc[:50], sPerCapitaTrafficPerRog.iloc[:50], "rog")
+    drawAll(dfCategoryUserPerRog.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim], "rog")
     plt.show()
 

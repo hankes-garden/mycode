@@ -29,8 +29,8 @@ def getMobility(dcPaths):
         nSpeedLevel = getSpeedLevel(path.m_dMaxSpeed)
         dcMobilitySpeed[nSpeedLevel] = dcMobilitySpeed.get(nSpeedLevel, 0) + 1
         
-        dRog = calculateRog(path) / 1000.0 # change unit to km
-        dcMobilityRog[dRog] = dcMobilityRog.get(dRog, 0) + 1
+        nRog = int(calculateRog(path) / 1000.0) # change unit to km, and round up
+        dcMobilityRog[nRog] = dcMobilityRog.get(nRog, 0) + 1
         
     sMobilityCell = pd.Series(dcMobilityCell)
     sMobilitySpeed = pd.Series(dcMobilitySpeed)
