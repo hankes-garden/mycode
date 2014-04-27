@@ -153,6 +153,8 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     axes[1].set_xlabel("# cell")
     axes[1].set_ylabel('traffic contribution')
     
+    plt.show()
+    
     
     
 def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
