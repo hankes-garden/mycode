@@ -151,7 +151,7 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     
     # rog
     sPerCapitaTrafficPerRog.plot(ax=axes[1], kind='bar', xlim=(0, 50) )
-    axes[1].set_xlabel("# cell")
+    axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('traffic contribution')
     
     plt.show()
@@ -176,7 +176,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
     axes[1].yaxis.tick_right()
     ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False )
-    axes[1].set_xlabel("# cells")
+    axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('traffic contribution')
     
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'center')
