@@ -6,11 +6,6 @@ Created on 2014年4月4日
 
 Main entry for all analysis in one
 '''
-
-import data_loader
-import app_usage
-import basic_mobility
-import mobility_app
 from common_function import *
 
 import matplotlib.pyplot as plt
@@ -35,8 +30,9 @@ if __name__ == '__main__':
     bRaw = True if (1 == int(sys.argv[3]) ) else False
     nTopApp = int(sys.argv[4])
     
-    input = raw_input("load data ? >> ")
-    if('yes' == input.strip() ):
+    input = raw_input("load data? [y/n]>> ")
+    if('y' == input.strip() ):
+        import data_loader
         # load data
         dcTotoalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict = \
           data_loader.execute(strSerPathDir, strCellLocPath, bRaw, nTopApp)
@@ -44,22 +40,25 @@ if __name__ == '__main__':
         print("data_loader is finished")
     
     # app usage
-    input = raw_input("basic app usage ? >> ")
-    if('yes' == input.strip() ):
+    input = raw_input("basic app usage? [y/n]>> ")
+    if('y' == input.strip() ):
+        import app_usage
         app_usage.execute(sAppUserNum, dfAggCleaned)
         plt.show()
         print("app_usage is finished")
     
     # basic mobility
-    input = raw_input("basic mobility ? >> ")
-    if('yes' == input.strip() ):
+    input = raw_input("basic mobility? [y/n]>> ")
+    if('y' == input.strip() ):
+        import basic_mobility
         basic_mobility.execute(dcTotoalPaths)
         plt.show()
         print("basic_mobility is finished")
     
     # mobility & usage
-    input = raw_input("mobility_app ? >> ")
-    if('yes' == input.strip() ):
+    input = raw_input("mobility_app? [y/n]>> ")
+    if('y' == input.strip() ):
+        import mobility_app
         mobility_app.execute(dcTotoalPaths)
         plt.show()
         print("mobility_app is finished")
@@ -69,5 +68,5 @@ if __name__ == '__main__':
 #     dcLocalApp = localApp(dfAgg, dcCellLocDict, True)
 #     print("-->Total %d apps, %d are local." % (len(dfAgg.index), len(dcLocalApp)) )
 
-    print("====Analysis is finished====")
+    print("====All the analysis is finished====")
 
