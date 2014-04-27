@@ -12,17 +12,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.markers as mk
 
-def getAppDistributionOnMobility(dcPaths):
+def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     '''
-        return a dataframe like:
-            row = app
-            col = mobility
+        Params:
+                dcPaths - raw dcPaths
+                mobility_indicator = use'cell' or 'org' as mobility indictor
+        Return:
+                Two dataframe:dfAppUserPerMobility, dfAppTrafficPerMobility
+                both format like: row = app, and col = mobility
     '''
     dcAppUserPerMobility = {}
     dcAppTrafficPerMobility = {}
     
     for path in dcPaths.values():
-        mobility = len(path.m_lsNodes)
+        
+        mobility = 0
+        if('cell' == mobility_indicator):
+            mobility = len(path.m_lsNodes)
+        elif ('rog' == mobility_indicator):
+            mobility = calculateRog(path) / 1000.0 # change unit to km
         
         # user number
         dcAppUserOnCurrentMobility = dcAppUserPerMobility.get(mobility, None)
@@ -60,35 +68,6 @@ def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobil
     for tp in app_category.g_dcCategory.items():
         dcCategoryUser[tp[0]] = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(tp[1])].sum(axis=0)
         dcCategoryTraffic[tp[0]] = dfAppTrafficPerMobility.loc[dfAppTrafficPerMobility.index.isin(tp[1])].sum(axis=0)
-    
-#     sUserWebBrowsing = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsWebBrowsing)].sum(axis=0)
-#     sUserP2P = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsP2P)].sum(axis=0)
-#     sUserIM = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsIM)].sum(axis=0)
-#     sUserReading = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsReading)].sum(axis=0)
-#     sUserSNS = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsSNS)].sum(axis=0)
-#     sUserVideo = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsVideo)].sum(axis=0)
-#     sUserMusic = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsMusic)].sum(axis=0)
-#     sUserAppMarket = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsAppMarket)].sum(axis=0)
-#     sUserGame = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsGame)].sum(axis=0)
-#     sUserEmail = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsEmail)].sum(axis=0)
-#     sUserStock = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsStock)].sum(axis=0)
-#     sUserShopping = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsShopping)].sum(axis=0)
-#     sUserMap = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(app_category.g_lsMap)].sum(axis=0)
-#     
-#     
-#     dfCategoryUser[app_category.g_strWebBrowsing] = sUserWebBrowsing
-#     dfCategoryUser[app_category.g_strP2P] = sUserP2P
-#     dfCategoryUser[app_category.g_strIM] = sUserIM
-#     dfCategoryUser[app_category.g_strReading] = sUserReading
-#     dfCategoryUser[app_category.g_strSNS] = sUserSNS
-#     dfCategoryUser[app_category.g_strVideo] = sUserVideo
-#     dfCategoryUser[app_category.g_strMusic] = sUserMusic
-#     dfCategoryUser[app_category.g_strAppMarket] = sUserAppMarket
-#     dfCategoryUser[app_category.g_strGame] = sUserGame
-#     dfCategoryUser[app_category.g_strEmail] = sUserEmail
-#     dfCategoryUser[app_category.g_strStock] = sUserStock
-#     dfCategoryUser[app_category.g_strShopping] = sUserShopping
-#     dfCategoryUser[app_category.g_strMap] = sUserMap
     
     dfCategoryUser = pd.DataFrame(dcCategoryUser)
     dfCategoryTraffic = pd.DataFrame(dcCategoryTraffic)
@@ -128,9 +107,21 @@ def drawCategoryMobility():
     pass
 
 def execute(dcPaths):
-    dfAppUserPerMobility, dfAppTrafficPerMobility = getAppDistributionOnMobility(dcPaths)
-    dfCategoryUser, dfCategoryTraffic = \
-     getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility)
-    drawCategoryAccessProbability(dfCategoryUser)
-    drawCategoryTrafficProbability(dfCategoryTraffic)
+    
+    # mobility on cell
+    dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
+    dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
+     getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
+    
+    # mobility on rog
+    dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
+    dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
+     getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
+     
+    # draw
+    drawCategoryAccessProbability(dfCategoryUserPerCell)
+    drawCategoryTrafficProbability(dfCategoryTrafficPerCell)
+    
+    drawCategoryAccessProbability(dfCategoryUserPerRog)
+    drawCategoryTrafficProbability(dfCategoryTrafficPerRog)
 
