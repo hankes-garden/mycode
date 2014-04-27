@@ -133,6 +133,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     # rog
     sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
     dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
+    axes[1].yaxis.tick_right()
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False)
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('access probability')
@@ -173,6 +174,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     # rog
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
+    axes[1].yaxis.tick_right()
     ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False )
     axes[1].set_xlabel("# cells")
     axes[1].set_ylabel('traffic contribution')
