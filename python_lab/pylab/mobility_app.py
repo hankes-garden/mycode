@@ -137,7 +137,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('access probability')
     
-    fig.figlegend(ax0.get_lines(), dfCategoryAccessProb.columns, 'lower center')
+    fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'lower center')
     plt.show()
     
 def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
@@ -173,7 +173,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     axes[1].set_xlabel("# cells")
     axes[1].set_ylabel('traffic contribution')
     
-    fig.figlegend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'lower center')
+    fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'lower center')
     plt.show()
     
 
