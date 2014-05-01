@@ -87,7 +87,11 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
 def drawCellTypeDistribution(dfCellType):
     ax0 = plt.figure().add_subplot(111)
     sCellNumPerType = dfCellType.groupby('typeID')['lac-cid'].count()
-    sCellNumPerType = pd.Series(sorted(sCellNumPerType.tolist()), index=sorted(region_type.g_dcRegionTypeName.keys()) )
+    lsTypeName  = []
+    for k in sorted(region_type.g_dcRegionTypeName.keys()):
+        name = region_type.g_dcRegionTypeName.get(k, 'unknown')
+        lsTypeName.append(name)
+    sCellNumPerType = pd.Series(sorted(sCellNumPerType.tolist()), index= lsTypeName)
     sCellNumPerType.plot(ax=ax0, kind='bar')
     plt.show()
     
