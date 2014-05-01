@@ -5,7 +5,7 @@ Created on 2014年4月4日
 @author: y00752450
 '''
 from common_function import *
-from role_assigner import *
+from pylab.region_type import *
 
 def localApp(dfAgg, dcCellLocationDict, bDrawCDF=True):
     '''
@@ -35,7 +35,7 @@ def LocateLocalApps(dfLocalApps, dfCellLocRole):
     lsRoleID = []
     for tp in dfLocalApps.itertuples():
         key = tp[2].strip()
-        nRoleID = ID_ROLE_UNKNOWN
+        nRoleID = ID_TYPE_UNKNOWN
         try:
             nRoleID = dfCellLocRole['roleID'].loc[key]
             lsRoleID.append(nRoleID)

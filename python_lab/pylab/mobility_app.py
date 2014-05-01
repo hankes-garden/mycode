@@ -60,7 +60,12 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     return dfAppUserPerMobility, dfAppTrafficPerMobility
 
 def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility):
-    
+    '''
+        calculate user & traffic distribution for each app category
+        
+        Return:
+                dataframe formated as: rows = mobility, columns = categories
+    '''
     dcCategoryUser = {}
     dcCategoryTraffic = {}
     
@@ -70,7 +75,7 @@ def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobil
     
     dfCategoryUser = pd.DataFrame(dcCategoryUser)
     dfCategoryTraffic = pd.DataFrame(dcCategoryTraffic)
-    
+      
     return dfCategoryUser, dfCategoryTraffic
 
 def getPerCapitaTrafficOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility):
@@ -81,6 +86,20 @@ def getPerCapitaTrafficOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility)
     sTotalUserNumPerMobility = dfAppUserPerMobility.sum(axis=0)
     sTotalTrafficPerMobility = dfAppTrafficPerMobility.sum(axis=0)
     return sTotalTrafficPerMobility.div(sTotalUserNumPerMobility)
+
+def correlateCategoryPerCapitaTrafficAndMobility(dfCategoryTraffic, dfCategoryUser):
+    '''
+        calculate the pearson correlation btw per capita traffic of each category and mobility
+        
+        Return:
+                a dataframe containing the coefficient
+    '''
+    dfCategoryPerCapitaTraffic = (dfCategoryTraffic.div(dfCategoryUser)).iloc[:20] # only care about 0 ~ 20 cell or km
+    dfCategoryPerCapitaTraffic['mobility'] = dfCategoryPerCapitaTraffic.index
+    dfCoefficient = dfCategoryPerCapitaTraffic.corr()
+    return dfCoefficient
+    
+    
 
 def getCategoryMobility():
     pass
@@ -133,7 +152,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     # rog
     sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
     dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
-    axes[1].yaxis.tick_right()
+#     axes[1].yaxis.tick_right()
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False)
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('access probability')
@@ -176,7 +195,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     # rog
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
-    axes[1].yaxis.tick_right()
+#     axes[1].yaxis.tick_right()
     ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False )
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('traffic contribution')
@@ -196,12 +215,16 @@ def execute(dcPaths):
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     
+    gc.collect()
+    
     # mobility on rog
     print("mobility = rog")
     dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
+    
+    gc.collect()
     
     # draw
     drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
