@@ -55,6 +55,10 @@ def getAppDistributionOnCells(dcPaths):
 def getCategoryDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     '''
         aggregate apps into categories
+        
+        Params:
+                dfAppUserNumInCells - dataframe in which row = appID, column = lac-cid
+                dfAppTrafficInCells - dataframe in which row = appID, column = lac-cid
     '''
     dcCategoryUser = {}
     dcCategoryTraffic = {}
@@ -74,6 +78,11 @@ def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfC
     '''
         get user number & total traffic distribution on different types of regions
         
+        Params:
+                dfAppUserNumInCells - dataframe in which row = appID, column = lac-cid
+                dfAppTrafficInCells - dataframe in which row = appID, column = lac-cid
+                dfCellType - dataframe in which index = lac-cid, row = cell
+        
         Return:
                 Tow series likes: {typeName: user_num or traffic_value}
     '''
@@ -90,9 +99,9 @@ def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfC
         nUserNum = tpUser[1]
         nType = 0
         try: 
-            nType = dfCellType.loc[strLacCid]['typeID']
+            nType = int(dfCellType.loc[strLacCid]['typeID'])
         except KeyError as err:
-            print err
+            print err.message
             pass
         updateDictBySum(dcRegionUserNum, region_type.g_dcRegionTypeName.get(nType, 'unknown'), nUserNum)
         
@@ -102,9 +111,9 @@ def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfC
         nTraffic = tpTraffic[1]
         nType = 0
         try:
-            nType = dfCellType.loc[strLacCid]['typeID']
+            nType = int(dfCellType.loc[strLacCid]['typeID'])
         except KeyError as err:
-            print err
+            print err.message
             pass
         updateDictBySum(dcRegionTraffic, region_type.g_dcRegionTypeName.get(nType, 'unknown'), nTraffic)
         
