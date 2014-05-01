@@ -68,6 +68,62 @@ def getCategoryDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
       
     return dfCategoryUser, dfCategoryTraffic
 
+
+    
+def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellType):
+    '''
+        get user number & total traffic distribution on different types of regions
+        
+        Return:
+                Tow series likes: {typeName: user_num or traffic_value}
+    '''
+    dcRegionUserNum = {}
+    dcRegionTraffic = {}
+    
+    sTotalUserInCells = dfAppUserNumInCells.sum(axis=0)
+    sTotalTrafficInCells = dfAppTrafficInCells.sum(axis=0)
+    
+    # user number
+
+    for tpUser in sTotalUserInCells.iteritems():
+        strLacCid = tpUser[0]
+        nUserNum = tpUser[1]
+        nType = 0
+        try: 
+            nType = dfCellType.loc[strLacCid]['typeID']
+        except KeyError as err:
+            print err
+            pass
+        updateDictBySum(dcRegionUserNum, region_type.g_dcRegionTypeName.get(nType, 'unknown'), nUserNum)
+        
+    # traffic
+    for tpTraffic in sTotalTrafficInCells.iteritems():
+        strLacCid = tpTraffic[0]
+        nTraffic = tpTraffic[1]
+        nType = 0
+        try:
+            nType = dfCellType.loc[strLacCid]['typeID']
+        except KeyError as err:
+            print err
+            pass
+        updateDictBySum(dcRegionTraffic, region_type.g_dcRegionTypeName.get(nType, 'unknown'), nTraffic)
+        
+    sRegionUserNum = pd.Series(dcRegionUserNum)
+    sRegionTraffic = pd.Series(dcRegionTraffic)
+
+    return sRegionUserNum, sRegionTraffic
+     
+def drawTotalDistributionOnRegions(sRegionUserNum, sRegionTraffic):
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    
+    sRegionUserNum.plot(ax=axes[0], kind='bar')
+    (sRegionTraffic/sRegionTraffic.sum()).plot(ax=axes[1], kind='bar')
+    
+    axes[0].set_ylabel('# users')
+    axes[1].set_ylabel('traffic volume (%)')
+    plt.show()
+    
+    
 def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     
@@ -83,7 +139,7 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     axes[1].set_ylabel('# traffic CDF (%)')
     
     plt.show()
-    
+     
 def drawCellTypeDistribution(dfCellType):
     ax0 = plt.figure().add_subplot(111)
     sCellNumPerType = dfCellType.groupby('typeID')['lac-cid'].count()
@@ -97,12 +153,17 @@ def drawCellTypeDistribution(dfCellType):
     
     
 
-def execute(dcPaths):
-    print("getAppDistributionOnCells...")
+def execute(dcPaths, strCellTypePath):
+    # app distribution on cells
     dfAppUserNumInCells, dfAppTrafficInCells = getAppDistributionOnCells(dcPaths)
     
-    print("drawTotalDistributionOnCells..")
+    # category distribution on cells
     drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells)
+    
+    # total user/traffic distribution on regions
+    dfCellType = pd.read_csv(strCellTypePath, index_col='lac-cid')
+    sRegionUserNum, sRegionTraffic = getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellType)
+    drawTotalDistributionOnRegions(sRegionUserNum, sRegionTraffic)
     
 
 if __name__ == '__main__':
