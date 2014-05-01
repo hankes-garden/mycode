@@ -31,6 +31,13 @@ ID_TYPE_EDU = 3
 ID_TYPE_WORK = 4
 ID_TYPE_ENTERTAINMENT = 5
 
+g_dcRegionTypeName = {ID_TYPE_UNKNOWN: "unknown",\
+                  ID_TYPE_TRANSPORTATION: "transportation",\
+                  ID_TYPE_RESIDENCE: "residence",\
+                  ID_TYPE_EDU: "education",\
+                  ID_TYPE_WORK: "work",\
+                  ID_TYPE_ENTERTAINMENT: "entertainment"}
+
 DEFAULT_REGION_COVERAGE = 2000 # unit = meter
 
 g_dfCellLocType = pd.DataFrame()

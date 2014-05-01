@@ -27,22 +27,22 @@ def getAppDistributionOnCells(dcPaths):
     dcAppTrafficInCells = {}
     for path in dcPaths.values():
         for node in path.m_lsNodes:
-            nCellID = node.m_nCellID
+            strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
             
             # update app user
-            dcAppUserNumInCurrentCell = dcAppUserNumInCells.get(nCellID, None)
+            dcAppUserNumInCurrentCell = dcAppUserNumInCells.get(strKey, None)
             if (None == dcAppUserNumInCurrentCell):
                 dcAppUserNumInCurrentCell = {}
-                dcAppUserNumInCells[nCellID] = dcAppUserNumInCurrentCell
+                dcAppUserNumInCells[strKey] = dcAppUserNumInCurrentCell
                 
             for app in node.m_lsApps:
                 updateDictBySum(dcAppUserNumInCurrentCell, app.m_nServiceType, 1)
             
             # update app traffic
-            dcAppTrafficInCurrentCell = dcAppTrafficInCells.get(nCellID, None)
+            dcAppTrafficInCurrentCell = dcAppTrafficInCells.get(strKey, None)
             if (None == dcAppTrafficInCurrentCell):
                 dcAppTrafficInCurrentCell = {}
-                dcAppTrafficInCells[nCellID] = dcAppTrafficInCurrentCell
+                dcAppTrafficInCells[strKey] = dcAppTrafficInCurrentCell
                 
             updateDictBySumOnAttribute(dcAppTrafficInCurrentCell, node.m_lsApps, "m_nDownBytes")
             
@@ -73,16 +73,25 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     
     # total user number
     sTotalUserNumCDF = dfAppUserNumInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppUserNumInCells.sum(axis=0).sum()
-    sTotalUserNumCDF.plot(ax=axes[0], style='-ro', logx=True, use_index=False)
+    sTotalUserNumCDF.plot(ax=axes[0], style='-ro', use_index=False)
     axes[0].set_xlabel('cell index sorted by # user')
     axes[0].set_ylabel('# user CDF (%)')
     
     sTotalTrafficCDF = dfAppTrafficInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppTrafficInCells.sum(axis=0).sum()
-    sTotalTrafficCDF.plot(ax=axes[1], style='-ro', logx=True, use_index=False)
+    sTotalTrafficCDF.plot(ax=axes[1], style='-ro', use_index=False)
     axes[1].set_xlabel('cell index sorted by # user')
     axes[1].set_ylabel('# traffic CDF (%)')
     
     plt.show()
+    
+def drawCellTypeDistribution(dfCellType):
+    ax0 = plt.figure().add_subplot(111)
+    sCellNumPerType = dfCellType.groupby('typeID')['lac-cid'].count()
+    sCellNumPerType = pd.Series(sorted(sCellNumPerType.tolist()), index=sorted(region_type.g_dcRegionTypeName.keys()) )
+    sCellNumPerType.plot(ax=ax0, kind='bar')
+    plt.show()
+    
+    
 
 def execute(dcPaths):
     print("getAppDistributionOnCells...")
