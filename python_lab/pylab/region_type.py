@@ -82,12 +82,12 @@ def generatePoiType(strPOIPath, strOutPath):
     dfpoi.to_csv(strOutPath)      
     
  
-    print("#unknonw POI = %d " % (len(dfpoi[dfpoi['roleID'] == 0])) )
-    print("#Transportation POI = %d " % (len(dfpoi[dfpoi['roleID'] == 1])) )
-    print("#Residence POI = %d " % (len(dfpoi[dfpoi['roleID'] == 2])) )
-    print("#Edu POI = %d " % (len(dfpoi[dfpoi['roleID'] == 3])) )
-    print("#Work POI = %d " % (len(dfpoi[dfpoi['roleID'] == 4])) )
-    print("#Entertainment POI = %d " % (len(dfpoi[dfpoi['roleID'] == 5])) )
+    print("#unknonw POI = %d " % (len(dfpoi[dfpoi['typeID'] == 0])) )
+    print("#Transportation POI = %d " % (len(dfpoi[dfpoi['typeID'] == 1])) )
+    print("#Residence POI = %d " % (len(dfpoi[dfpoi['typeID'] == 2])) )
+    print("#Edu POI = %d " % (len(dfpoi[dfpoi['typeID'] == 3])) )
+    print("#Work POI = %d " % (len(dfpoi[dfpoi['typeID'] == 4])) )
+    print("#Entertainment POI = %d " % (len(dfpoi[dfpoi['typeID'] == 5])) )
 
     
 def assignType2Cell(dfCellLoc, dfPOI):
