@@ -43,7 +43,7 @@ g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.001,\
                   ID_TYPE_RESIDENCE: 1.0,\
                   ID_TYPE_EDU: 1.0,\
                   ID_TYPE_WORK: 1.5,\
-                  ID_TYPE_ENTERTAINMENT: 0.1}
+                  ID_TYPE_ENTERTAINMENT: 0.05}
 
 DEFAULT_REGION_COVERAGE = 2000 # unit = meter
 
