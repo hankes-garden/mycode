@@ -72,20 +72,23 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     
     # total user number
-    sTotalUserNumCDF = dfAppTrafficInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppTrafficInCells.sum(axis=0).sum()
-    sTotalUserNumCDF.plot(ax=axes[0], style='-ro')
+    sTotalUserNumCDF = dfAppUserNumInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppUserNumInCells.sum(axis=0).sum()
+    sTotalUserNumCDF.plot(ax=axes[0], style='-ro', logx=True)
     axes[0].set_xlabel('cell index sorted by # user')
     axes[0].set_ylabel('# user CDF (%)')
     
     sTotalTrafficCDF = dfAppTrafficInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppTrafficInCells.sum(axis=0).sum()
-    sTotalTrafficCDF.plot(ax=axes[1], style='-ro')
-    axes[0].set_xlabel('cell index sorted by # user')
-    axes[0].set_ylabel('# traffic CDF (%)')
+    sTotalTrafficCDF.plot(ax=axes[1], style='-ro', logx=True)
+    axes[1].set_xlabel('cell index sorted by # user')
+    axes[1].set_ylabel('# traffic CDF (%)')
     
     plt.show()
 
 def execute(dcPaths):
+    print("getAppDistributionOnCells...")
     dfAppUserNumInCells, dfAppTrafficInCells = getAppDistributionOnCells(dcPaths)
+    
+    print("drawTotalDistributionOnCells..")
     drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells)
     
 
