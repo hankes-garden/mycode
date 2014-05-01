@@ -73,12 +73,12 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     
     # total user number
     sTotalUserNumCDF = dfAppUserNumInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppUserNumInCells.sum(axis=0).sum()
-    sTotalUserNumCDF.plot(ax=axes[0], style='-ro', logx=True)
+    sTotalUserNumCDF.plot(ax=axes[0], style='-ro', logx=True, use_index=False)
     axes[0].set_xlabel('cell index sorted by # user')
     axes[0].set_ylabel('# user CDF (%)')
     
     sTotalTrafficCDF = dfAppTrafficInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppTrafficInCells.sum(axis=0).sum()
-    sTotalTrafficCDF.plot(ax=axes[1], style='-ro', logx=True)
+    sTotalTrafficCDF.plot(ax=axes[1], style='-ro', logx=True, use_index=False)
     axes[1].set_xlabel('cell index sorted by # user')
     axes[1].set_ylabel('# traffic CDF (%)')
     
