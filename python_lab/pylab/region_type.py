@@ -38,6 +38,13 @@ g_dcRegionTypeName = {ID_TYPE_UNKNOWN: "unknown",\
                   ID_TYPE_WORK: "work",\
                   ID_TYPE_ENTERTAINMENT: "entertainment"}
 
+g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.003226,\
+                  ID_TYPE_TRANSPORTATION: 0.494150,\
+                  ID_TYPE_RESIDENCE: 0.400324,\
+                  ID_TYPE_EDU: 0.056779,\
+                  ID_TYPE_WORK: 0.044356,\
+                  ID_TYPE_ENTERTAINMENT: 0.001165}
+
 DEFAULT_REGION_COVERAGE = 2000 # unit = meter
 
 g_dfCellLocType = pd.DataFrame()
@@ -115,10 +122,15 @@ def assignType2Cell(dfCellLoc, dfPOI):
         # set cell role
         nCellType = ID_TYPE_UNKNOWN
         nTypeCount = 0
-        dcPoiTypeCount[ID_TYPE_ENTERTAINMENT] = int(dcPoiTypeCount[ID_TYPE_ENTERTAINMENT]*ENTERTAIN_POI_WEIGHT)
+        
+        # change scale first
+        for k in dcPoiTypeCount.keys():
+            dcPoiTypeCount[k] = int(dcPoiTypeCount[k] * g_dcRegionWeight.get(k, 1.0))
+        
         for tp in dcPoiTypeCount.items():
             if (tp[1] >nTypeCount ):
                 nCellType = tp[0]
+                
         lsCellType.append(nCellType)
     
     dfCellLoc['typeID'] = lsCellType
@@ -176,5 +188,5 @@ if __name__ == '__main__':
     print("start to generate poi role...")
     dfCellLoc = pd.read_csv(strCellLocFilled, index_col='lac-cid')
     dfPoi = pd.read_csv(strPoiRolePath, index_col='_id')
-    assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['roleID'] != 0], strCellLocRole)
+    assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellLocRole)
     print("assignType2CellInParallel is finished.")
