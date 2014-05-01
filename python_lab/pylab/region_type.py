@@ -39,11 +39,11 @@ g_dcRegionTypeName = {ID_TYPE_UNKNOWN: "unknown",\
                   ID_TYPE_ENTERTAINMENT: "entertainment"}
 
 g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.003226,\
-                  ID_TYPE_TRANSPORTATION: 0.494150,\
+                  ID_TYPE_TRANSPORTATION: 0.394150,\
                   ID_TYPE_RESIDENCE: 0.400324,\
                   ID_TYPE_EDU: 0.056779,\
                   ID_TYPE_WORK: 0.044356,\
-                  ID_TYPE_ENTERTAINMENT: 0.001165}
+                  ID_TYPE_ENTERTAINMENT: 0.011165}
 
 DEFAULT_REGION_COVERAGE = 2000 # unit = meter
 
