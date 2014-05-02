@@ -246,8 +246,10 @@ if __name__ == '__main__':
     AssignType2Poi(strPoiPath, strPoiTypePath)
     
     #generate cell_loc_role
-    print("start to assign type to cells in parallel...")
+    print("start to assign type to cells...")
     dfCellLoc = pd.read_csv(strCellLocFilled, index_col='lac-cid')
-    dfPoi = pd.read_csv(strPoiTypePath, index_col='_id')
-    assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellTypePath)
+#     dfPoi = pd.read_csv(strPoiTypePath, index_col='_id')
+#     assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellTypePath)
+    dfCellLocType = assignType2CellManually(dfCellLoc)
+    dfCellLocType.to_csv(strCellTypePath)
     print("assignType2CellInParallel is finished.")
