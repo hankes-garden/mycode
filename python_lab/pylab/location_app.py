@@ -23,7 +23,7 @@ def getLocalApps(dfAgg, dcCellLoc):
     for nServiceType in dfAgg.index:
         sAppSorted = dfAgg.loc[nServiceType].order(ascending=False)
         sAppCDF = sAppSorted.cumsum() / sAppSorted.sum()
-        if(sAppCDF.iloc[10] >= 0.8): # use top10 CDF as rank critearia
+        if(sAppCDF.iloc[20] >= 0.8): # use top20 CDF as rank critearia
             lsTopCells = []
             for cid in sAppSorted.index[:10]:
                 loc = dcCellLoc.get(cid, (0.0, 0.0))
@@ -34,19 +34,5 @@ def getLocalApps(dfAgg, dcCellLoc):
             
     return dcLocalApps
     
-def getLocalAppRegionType(dfLocalApps, dfCellLocType):
-    lsTypeID = []
-    for tp in dfLocalApps.itertuples():
-        key = tp[2].strip()
-        nTypeID = region_type.ID_TYPE_UNKNOWN
-        try:
-            nTypeID = dfCellLocType['typeID'].loc[key]
-            lsTypeID.append(nTypeID)
-            if(tp[3]==0 or tp[4]==0):
-                dfLocalApps['lat'].loc[tp[0]] = dfCellLocType['lat'].loc[key]
-                dfLocalApps['long'].loc[tp[0]] = dfCellLocType['long'].loc[key]
-        except KeyError as err:
-            print(err.message)
-            pass
-    dfLocalApps['typeID'] = lsTypeID
-    return dfLocalApps     
+def getLocalAppRegionType(dcLocalApps, dfCellLocType):
+    pass
