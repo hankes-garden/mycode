@@ -55,8 +55,10 @@ MAX_CELL_PER_PROC = 1000
 
 ENTERTAIN_POI_WEIGHT = 0.3
 
-g_dcTransportation = {'guangzhou station': (23.147958, 113.257746), \
-                      'guangzhou east station': (23.150228, 113.324825)}
+g_dcTransportation = {'guangzhou_station': (23.147958, 113.257746), \
+                      'guangzhou_east_station': (23.150228, 113.324825), \
+                      'guangzhou_south_station': (22.992369, 113.268629), \
+                      'baiyun_airport': (23.374559, 113.299875)}
 
 g_dcEdu = {'scut': (23.151658, 113.344774) ,\
            'sysu': (23.092337, 113.293082) ,\
@@ -64,18 +66,23 @@ g_dcEdu = {'scut': (23.151658, 113.344774) ,\
            'university_town_scut': (23.046826, 113.402906), \
            'university_town_SYSU': (23.066826, 113.391941), \
            'university_town_gzu': (23.038918, 113.369332) ,\
-           'gdfu': (23.201333, 113.289276)    }
+           'gdfu': (23.201333, 113.289276) ,\
+           'jnu': (23.128214, 113.347565)   }
 
 g_dcWork = {'tianhe_sci_park': (23.124177, 113.372569), \
             'tianhebei': (23.136342, 113.329021), \
             'tianhe_rd': (23.133505, 113.335533), \
-            'tianhe_rd_2': (23.134068, 113.328967)}
+            'tianhe_rd_2': (23.134068, 113.328967), \
+            'tianhebei_rd': (23.141499, 113.343865), \
+            'tianhe_software_park': (23.124167, 113.372563),\
+            'cheyueda_automobile_maintenance_center': (23.098685, 113.444092)}
 
 g_dcEntertainment = {'gongyuanqian': (23.125720, 113.264127), \
                      'haixinsha': (23.112475, 113.324092), \
                      'tianhe_city_shopping_center': (23.132360, 113.322699), \
                      'tianhe_tee_fasion_mall': (23.130725, 113.320133), \
-                     'beijin_rd': (23.119112, 113.270136) }
+                     'beijin_rd': (23.119112, 113.270136), \
+                     'grandview_mall':(23.132219, 113.326985) }
 
 def assignType2CellManually(dfCellLoc):
     lsCellType = []
