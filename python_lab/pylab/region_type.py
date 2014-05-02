@@ -93,15 +93,15 @@ def assignType2CellManually(dfCellLoc):
                 
         for loc in g_dcEdu.values():
             if (calculateDistance(loc[0], loc[1], dCellLat, dCellLong) <= DEFAULT_REGION_COVERAGE ):
-                nCellType = ID_TYPE_TRANSPORTATION
+                nCellType = ID_TYPE_EDU
                 
         for loc in g_dcWork.values():
             if (calculateDistance(loc[0], loc[1], dCellLat, dCellLong) <= DEFAULT_REGION_COVERAGE ):
-                nCellType = ID_TYPE_TRANSPORTATION
+                nCellType = ID_TYPE_WORK
                 
         for loc in g_dcEntertainment.values():
             if (calculateDistance(loc[0], loc[1], dCellLat, dCellLong) <= DEFAULT_REGION_COVERAGE ):
-                nCellType = ID_TYPE_TRANSPORTATION
+                nCellType = ID_TYPE_ENTERTAINMENT
         
         lsCellType.append(nCellType)
     
