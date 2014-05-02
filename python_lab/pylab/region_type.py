@@ -45,7 +45,7 @@ g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.001,\
                   ID_TYPE_WORK: 1.5,\
                   ID_TYPE_ENTERTAINMENT: 0.005}
 
-DEFAULT_REGION_COVERAGE = 2000 # unit = meter
+DEFAULT_REGION_COVERAGE = 1000 # unit = meter
 
 g_dfCellLocType = pd.DataFrame()
 g_nCellNum = 0
