@@ -17,7 +17,7 @@ DC_TYPE_RESIDENCE = dict.fromkeys([46,47,48,49])
 
 DC_TYPE_EDU = dict.fromkeys([52,53,54,55,56,57])
 
-DC_TYPE_WORK = dict.fromkeys([45,59,60,61,62,63,263,265,266,657,658,661,663,664,668,670])
+DC_TYPE_WORK = dict.fromkeys([45,59,60,61,62,63,258,259,263,265,266, 657,658,661,663,664,668,670])
 DC_TYPE_WORK.update(dict.fromkeys(range(608,647)))
 
 #DC_TYPE_ENTERTAINMENT = dict.fromkeys(range(64,149))
@@ -40,10 +40,10 @@ g_dcRegionTypeName = {ID_TYPE_UNKNOWN: "unknown",\
 
 g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.001,\
                   ID_TYPE_TRANSPORTATION: 2.0,\
-                  ID_TYPE_RESIDENCE: 1.0,\
+                  ID_TYPE_RESIDENCE: 2.0,\
                   ID_TYPE_EDU: 1.0,\
                   ID_TYPE_WORK: 1.5,\
-                  ID_TYPE_ENTERTAINMENT: 0.05}
+                  ID_TYPE_ENTERTAINMENT: 0.005}
 
 DEFAULT_REGION_COVERAGE = 2000 # unit = meter
 
@@ -55,7 +55,7 @@ MAX_CELL_PER_PROC = 1000
 
 ENTERTAIN_POI_WEIGHT = 0.3
 
-def generatePoiType(strPOIPath, strOutPath):
+def AssignType2Poi(strPOIPath, strOutPath):
     '''
         generate a poi_type_dict as:
         name, addr, citycode,lat,long,pid,pid-parentPID,poiName, typeID
@@ -114,10 +114,10 @@ def assignType2Cell(dfCellLoc, dfPOI):
         for ptp in dfPOI.itertuples():
             dPoiLat = ptp[5]
             dPoiLong = ptp[4]
-            nPoiRole = ptp[9]
+            nPoiType = ptp[9]
             dDis = calculateDistance(dCellLat, dCellLong, dPoiLat, dPoiLong)
             if(dDis <= DEFAULT_REGION_COVERAGE):
-                dcPoiTypeCount[nPoiRole] += 1
+                dcPoiTypeCount[nPoiType] += 1
         
         # set cell role
         nCellType = ID_TYPE_UNKNOWN
@@ -175,18 +175,18 @@ def assignType2CellInParallel(dfCellLoc, dfPOI, strOutPath):
 
 if __name__ == '__main__':
     # setup
-    strPoiRolePath = "../../data/weibo_poi_role_gz.txt"
+    strPoiTypePath = "../../data/weibo_poi_gz_type.txt"
     strPoiPath = "../../data/weibo_poi_gz.txt"
     strCellLocFilled = "../../data/cell_loc_filled.txt"
-    strCellLocRole = "../../data/cell_loc_role.txt"
+    strCellTypePath = "../../data/cell_type.txt"
 
     # generate poi_role_dict
-    print("start to generate poi role...")
-    generatePoiType(strPoiPath, strPoiRolePath)
+    print("start to assign type to POIs...")
+    AssignType2Poi(strPoiPath, strPoiTypePath)
     
     #generate cell_loc_role
-    print("start to generate poi role...")
+    print("start to assign type to cells in parallel...")
     dfCellLoc = pd.read_csv(strCellLocFilled, index_col='lac-cid')
-    dfPoi = pd.read_csv(strPoiRolePath, index_col='_id')
-    assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellLocRole)
+    dfPoi = pd.read_csv(strPoiTypePath, index_col='_id')
+    assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellTypePath)
     print("assignType2CellInParallel is finished.")
