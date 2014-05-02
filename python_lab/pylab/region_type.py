@@ -232,10 +232,8 @@ def assignType2CellInParallel(dfCellLoc, dfPOI, strOutPath):
     
     g_dfCellLocType.to_csv(strOutPath)
     
-    
-
-if __name__ == '__main__':
-    # setup
+def execute():    
+     # setup
     strPoiTypePath = "../../data/weibo_poi_gz_type.txt"
     strPoiPath = "../../data/weibo_poi_gz.txt"
     strCellLocFilled = "../../data/cell_loc_filled.txt"
@@ -253,3 +251,5 @@ if __name__ == '__main__':
     dfCellLocType = assignType2CellManually(dfCellLoc)
     dfCellLocType.to_csv(strCellTypePath)
     print("assignType2CellInParallel is finished.")
+
+   
