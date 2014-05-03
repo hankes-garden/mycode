@@ -46,22 +46,28 @@ def getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, d
                 dfAppTrafficInCells - row=serviceType, column='lac-cid'
                 
         Return:
-                dfCategoryUserInRegions    - row = categoryName, column = region_type_name
-                dfCategoryTrafficInRegions - row = categoryName, column = region_type_name
+                dfCategoryUserInCells      - row = 'lac-cid', column = category_name
+                dfCategoryTrafficInCells   - row = 'lac-cid', column = category_name 
+                dfCategoryUserInRegions    - row = category_name, column = region_type_name
+                dfCategoryTrafficInRegions - row = category_name, column = region_type_name
     '''
-    dfCategoryUserInRegions = pd.DataFrame()
-    dfCategoryTrafficInRegions = pd.DataFrame()
     
-    # divide by category
-    dfCategoryUserInCells = pd.DataFrame()
-    dfCategoryTrafficInCells = pd.DataFrame()
+    
+    # group by category
+    dfCategoryUserInCells = pd.DataFrame(index=dfAppUserNumInCells.columns)
+    dfCategoryTrafficInCells = pd.DataFrame(index=dfAppTrafficInCells.columns)
     for tp in app_category.g_dcCategory.items():
         dfCategoryUserInCells[tp[0]] = dfAppUserNumInCells.loc[dfAppUserNumInCells.index.isin(tp[1])].sum(axis=0)
         dfCategoryTrafficInCells[tp[0]] = dfAppTrafficInCells.loc[dfAppTrafficInCells.index.isin(tp[1])].sum(axis=0)
     
+    # group by region type
+    dfCategoryUserInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
+    dfCategoryTrafficInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
     for tp in region_type.g_dcRegionTypeName.items():
-        dfCategoryUserInRegions[tp[1]] = (dfCategoryUserInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
-        dfCategoryTrafficInRegions[tp[1]] = (dfCategoryTrafficInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+        dfCategoryUserInRegions[tp[1]] = \
+          (dfCategoryUserInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+        dfCategoryTrafficInRegions[tp[1]] = \
+          (dfCategoryTrafficInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
         
     return dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions
 
