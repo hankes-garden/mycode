@@ -87,7 +87,10 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
         
     dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
     
-    dfCategoryAccProb.plot(kind='bar')
+    ax0 = plt.figure().add_subplot(111)
+    dfCategoryAccProb.plot(ax=ax0, kind='bar')
+    ax0.set_ylabel = 'access probability (%)'
+    ax0.legend(loc='lower center')
     
     plt.show()
     
@@ -99,6 +102,11 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
     dfCategoryPerCapitaTrafficInRegions = dfCategoryTrafficInRegions.T.div(dfCategoryUserInRegions.T)
+    
+    ax0 = plt.figure().add_subplot(111)
     dfCategoryPerCapitaTrafficInRegions.plot(kind='bar')
+    ax0.set_ylabel = 'per capita traffic'
+    ax0.legend(loc='lower center')
+    
     plt.show()
     
