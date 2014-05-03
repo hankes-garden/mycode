@@ -56,8 +56,6 @@ def getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, d
                 dfCategoryUserInRegions    - row = category_name, column = region_type_name
                 dfCategoryTrafficInRegions - row = category_name, column = region_type_name
     '''
-    
-    
     # group by category
     dfCategoryUserInCells = pd.DataFrame(index=dfAppUserNumInCells.columns)
     dfCategoryTrafficInCells = pd.DataFrame(index=dfAppTrafficInCells.columns)
@@ -100,8 +98,9 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     # plot
-    dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
-    ax0.set_ylabel = 'access probability (%)'
+    dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False, \
+                           color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
+    ax0.set_ylabel = 'access probability (%%)'
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
@@ -132,7 +131,8 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    dfCategoryPerCapitaTrafficInRegions.plot(ax=ax0, kind='bar', color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    dfCategoryPerCapitaTrafficInRegions.plot(ax=ax0, kind='bar', \
+                                             color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
     ax0.set_ylabel = 'per capita traffic'
     
     # hatches
