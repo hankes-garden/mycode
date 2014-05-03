@@ -7,6 +7,7 @@ Created on 2014年4月4日
 from common_function import *
 import region_type
 import app_category
+import basic_location
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as mplcm
@@ -132,13 +133,13 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     dfCategoryPerCapitaTrafficInRegions.plot(ax=ax0, kind='bar', \
-                                             color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
+                                             color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     ax0.set_ylabel = 'per capita traffic'
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
     bars = filter(pred, ax0.get_children())
-    hatches = ''.join(h*len(dfCategoryPerCapitaTrafficInRegions) for h in 'oO/\\|-+x.*')
+    hatches = ''.join(h*len(dfCategoryPerCapitaTrafficInRegions) for h in '|oO/\\-x.*+')
 
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
@@ -146,4 +147,27 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     ax0.legend(loc='upper right')
     
     plt.show()
+    
+def execute(dcPaths, dfCellLocType):
+    
+    # get app distribution of cells
+    dfAppUserNumInCells, dfAppTrafficInCells = basic_location.getAppDistributionOnCells(dcPaths)
+    
+    # get category distribution of regions
+    dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions = \
+      getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
+
+    # del unless columns 
+    try:
+        del dfCategoryUserInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_UNKNOWN)]
+        del dfCategoryUserInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_RESIDENCE)]
+        
+        del dfCategoryTrafficInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_UNKNOWN)]
+        del dfCategoryTrafficInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_RESIDENCE)]
+    except KeyError:
+        pass
+    
+    # draw
+    drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions)
+    drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions)
     
