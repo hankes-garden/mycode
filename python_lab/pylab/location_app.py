@@ -9,6 +9,8 @@ import region_type
 import app_category
 
 import matplotlib.pyplot as plt
+import matplotlib.cm as mplcm
+import matplotlib.colors as colors
 import matplotlib
 
 def getLocalApps(dfAgg, dfCellLocType):
@@ -89,17 +91,28 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
     
     ax0 = plt.figure().add_subplot(111)
+    
+    # color
+    nColorCount = len(dfCategoryUserInRegions.index)
+
+    cm = plt.get_cmap('gist_rainbow')
+    cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
+    scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
+    ax0.set_color_cycle([scalarMap.to_rgba(i) for i in range(nColorCount)])
+    
+    # plot
     dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False)
     ax0.set_ylabel = 'access probability (%)'
     
+    # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
     bars = filter(pred, ax0.get_children())
-    hatches = ''.join(h*len(dfCategoryAccProb) for h in 'x/O.')
+    hatches = ''.join(h*len(dfCategoryAccProb) for h in '/\\|-+xoO.*')
 
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
 
-    ax0.legend(loc='center right', bbox_to_anchor=(1, 1), ncol=4)
+    ax0.legend(loc='upper right', bbox_to_anchor=(1, 1), ncol=4)
     
     plt.show()
     
