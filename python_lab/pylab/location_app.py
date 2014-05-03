@@ -6,6 +6,7 @@ Created on 2014年4月4日
 '''
 from common_function import *
 import region_type
+import app_category
 
 def getLocalApps(dfAgg, dfCellLocType):
     '''
@@ -36,5 +37,32 @@ def getLocalApps(dfAgg, dfCellLocType):
             
     return dcLocalApps
     
-def getLocalAppRegionType(dcLocalApps):
-    pass
+def getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType):
+    '''
+        get user & traffic distribution of regions for each app category
+        
+        Params:
+                dfAppUserNumInCells - row=serviceType, column='lac-cid'
+                dfAppTrafficInCells - row=serviceType, column='lac-cid'
+                
+        Return:
+                dfCategoryUserInRegions    - row = categoryName, column = region_type_name
+                dfCategoryTrafficInRegions - row = categoryName, column = region_type_name
+    '''
+    dfCategoryUserInRegions = pd.DataFrame()
+    dfCategoryTrafficInRegions = pd.DataFrame()
+    
+    # divide by category
+    dfCategoryUserInCells = pd.DataFrame()
+    dfCategoryTrafficInCells = pd.DataFrame()
+    for tp in app_category.g_dcCategory.items():
+        dfCategoryUserInCells[tp[0]] = dfAppUserNumInCells.loc[dfAppUserNumInCells.index.isin(tp[1])].sum(axis=0)
+        dfCategoryTrafficInCells[tp[0]] = dfAppTrafficInCells.loc[dfAppTrafficInCells.index.isin(tp[1])].sum(axis=0)
+    
+    for tp in region_type.g_dcRegionTypeName.items():
+        dfCategoryUserInRegions[tp[1]] = (dfCategoryUserInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+        dfCategoryTrafficInRegions[tp[1]] = (dfCategoryTrafficInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+        
+    return dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions
+
+        
