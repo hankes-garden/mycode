@@ -250,6 +250,6 @@ def execute():
 #     assignType2CellInParallel(dfCellLoc, dfPoi[dfPoi['typeID'] != 0], strCellTypePath)
     dfCellLocType = assignType2CellManually(dfCellLoc)
     dfCellLocType.to_csv(strCellTypePath)
-    print("assignType2CellInParallel is finished.")
+    print("assignType2Cell is finished.")
 
    

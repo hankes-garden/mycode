@@ -93,7 +93,6 @@ def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfC
     sTotalTrafficInCells = dfAppTrafficInCells.sum(axis=0)
     
     # user number
-
     for tpUser in sTotalUserInCells.iteritems():
         strLacCid = tpUser[0]
         nUserNum = tpUser[1]
@@ -144,7 +143,7 @@ def drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells):
     
     sTotalTrafficCDF = dfAppTrafficInCells.sum(axis=0).order(ascending=False).cumsum()/dfAppTrafficInCells.sum(axis=0).sum()
     sTotalTrafficCDF.plot(ax=axes[1], style='-ro', use_index=False)
-    axes[1].set_xlabel('cell index sorted by # user')
+    axes[1].set_xlabel('cell index sorted by traffic volume')
     axes[1].set_ylabel('# traffic CDF (%)')
     
     plt.show()
@@ -165,7 +164,6 @@ def drawCellTypeDistribution(dfCellType):
 def execute(dcPaths, strCellTypePath):
     # app distribution on cells
     dfAppUserNumInCells, dfAppTrafficInCells = getAppDistributionOnCells(dcPaths)
-    
     drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells)
     
     # total user/traffic distribution on regions
