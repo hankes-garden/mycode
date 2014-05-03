@@ -125,8 +125,8 @@ def getTotoalDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfC
 def drawTotalDistributionOnRegions(sRegionUserNum, sRegionTraffic):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     
-    sRegionUserNum.plot(ax=axes[0], kind='bar')
-    (sRegionTraffic/sRegionTraffic.sum()).plot(ax=axes[1], kind='bar')
+    sRegionUserNum[sRegionUserNum.index != 0].plot(ax=axes[0], kind='bar')
+    sRegionTraffic[sRegionTraffic.index != 0].plot(ax=axes[1], kind='bar')
     
     axes[0].set_ylabel('# users')
     axes[1].set_ylabel('traffic volume (%)')
@@ -166,7 +166,6 @@ def execute(dcPaths, strCellTypePath):
     # app distribution on cells
     dfAppUserNumInCells, dfAppTrafficInCells = getAppDistributionOnCells(dcPaths)
     
-    # category distribution on cells
     drawTotalDistributionOnCells(dfAppUserNumInCells, dfAppTrafficInCells)
     
     # total user/traffic distribution on regions

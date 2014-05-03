@@ -31,21 +31,21 @@ ID_TYPE_EDU = 3
 ID_TYPE_WORK = 4
 ID_TYPE_ENTERTAINMENT = 5
 
-g_dcRegionTypeName = {ID_TYPE_UNKNOWN: "unknown",\
-                  ID_TYPE_TRANSPORTATION: "transportation",\
-                  ID_TYPE_RESIDENCE: "residence",\
-                  ID_TYPE_EDU: "education",\
-                  ID_TYPE_WORK: "work",\
-                  ID_TYPE_ENTERTAINMENT: "entertainment"}
+g_dcRegionTypeName = { ID_TYPE_UNKNOWN: "unknown",\
+                       ID_TYPE_TRANSPORTATION: "transportation",\
+                       ID_TYPE_RESIDENCE: "residence",\
+                       ID_TYPE_EDU: "education",\
+                       ID_TYPE_WORK: "work",\
+                       ID_TYPE_ENTERTAINMENT: "entertainment"}
 
-g_dcRegionWeight = {ID_TYPE_UNKNOWN: 0.001,\
-                  ID_TYPE_TRANSPORTATION: 2.0,\
-                  ID_TYPE_RESIDENCE: 3.0,\
-                  ID_TYPE_EDU: 1.0,\
-                  ID_TYPE_WORK: 1.5,\
-                  ID_TYPE_ENTERTAINMENT: 0.005}
+g_dcRegionWeight = { ID_TYPE_UNKNOWN: 0.001,\
+                     ID_TYPE_TRANSPORTATION: 2.0,\
+                     ID_TYPE_RESIDENCE: 3.0,\
+                     ID_TYPE_EDU: 1.0,\
+                     ID_TYPE_WORK: 1.5,\
+                     ID_TYPE_ENTERTAINMENT: 0.005 }
 
-DEFAULT_REGION_COVERAGE = 1000 # unit = meter
+DEFAULT_REGION_COVERAGE = 500 # unit = meter
 
 g_dfCellLocType = pd.DataFrame()
 g_nCellNum = 0
@@ -237,7 +237,7 @@ def execute():
     strPoiTypePath = "../../data/weibo_poi_gz_type.txt"
     strPoiPath = "../../data/weibo_poi_gz.txt"
     strCellLocFilled = "../../data/cell_loc_filled.txt"
-    strCellTypePath = "../../data/cell_type.txt"
+    strCellTypePath = "../../data/cell_loc_type.txt"
 
     # generate poi_role_dict
     print("start to assign type to POIs...")
