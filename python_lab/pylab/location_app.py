@@ -9,6 +9,7 @@ import region_type
 import app_category
 
 import matplotlib.pyplot as plt
+import matplotlib
 
 def getLocalApps(dfAgg, dfCellLocType):
     '''
@@ -88,9 +89,17 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
     
     ax0 = plt.figure().add_subplot(111)
-    dfCategoryAccProb.plot(ax=ax0, kind='bar')
+    dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False)
     ax0.set_ylabel = 'access probability (%)'
-    ax0.legend(loc='upper right')
+    
+    pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
+    bars = filter(pred, ax0.get_children())
+    hatches = ''.join(h*len(dfCategoryAccProb) for h in 'x/O.')
+
+    for bar, hatch in zip(bars, hatches):
+        bar.set_hatch(hatch)
+
+    ax0.legend(loc='center right', bbox_to_anchor=(1, 1), ncol=4)
     
     plt.show()
     
