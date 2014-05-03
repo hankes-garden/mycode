@@ -8,6 +8,8 @@ from common_function import *
 import region_type
 import app_category
 
+import matplotlib.pyplot as plt
+
 def getLocalApps(dfAgg, dfCellLocType):
     '''
         Find out those local apps whose 80% traffic is generated in top 10 cells
@@ -71,4 +73,32 @@ def getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, d
         
     return dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions
 
+def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
+    '''
+        get access probability distribution of regions for each app categories
         
+        Params:
+                dfCategoryUserInRegions - row = category_name, column = region_type_name
+    '''
+    dfUserBaseInRegions = pd.DataFrame(index = dfCategoryUserInRegions.columns)
+    
+    for cate in dfCategoryUserInRegions.index:
+        dfUserBaseInRegions[cate] = dfCategoryUserInRegions.sum(axis=0)
+        
+    dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
+    
+    dfCategoryAccProb.plot(kind='bar')
+    
+    plt.show()
+    
+def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions):
+    '''
+        get access probability distribution of regions for each app categories
+        
+        Params:
+                dfCategoryUserInRegions - row = category_name, column = region_type_name
+    '''
+    dfCategoryPerCapitaTrafficInRegions = dfCategoryTrafficInRegions.T.div(dfCategoryUserInRegions.T)
+    dfCategoryPerCapitaTrafficInRegions.plot(kind='bar')
+    plt.show()
+    
