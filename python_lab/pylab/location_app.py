@@ -7,13 +7,13 @@ Created on 2014年4月4日
 from common_function import *
 import region_type
 
-def getLocalApps(dfAgg, dcCellLoc):
+def getLocalApps(dfAgg, dfCellLocType):
     '''
         Find out those local apps whose 80% traffic is generated in top 10 cells
         
         Params:       
-                dfAgg     - row=serviceType, column=cell_id
-                dcCellLoc - dict of cell & location
+                dfAgg         - row=serviceType, column=cell_id
+                dfCellLocType - dataframe of cell & location & typeID
                 
         Return:
                 a dict like {serviceType: list[(lac-cid, (lat, long), traffic)...], }
@@ -26,13 +26,15 @@ def getLocalApps(dfAgg, dcCellLoc):
         if(sAppCDF.iloc[20] >= 0.8): # use top20 CDF as rank critearia
             lsTopCells = []
             for cid in sAppSorted.index[:10]:
-                loc = dcCellLoc.get(cid, (0.0, 0.0))
+                dLat = dfCellLocType.loc[cid]['lat']
+                dLong = dfCellLocType.loc[cid]['long']
+                nTypeID = dfCellLocType.loc[cid]['typeID']
                 attribute = sAppSorted.loc[cid]
-                tp = (cid, loc, attribute)
+                tp = (cid, dLat, dLong, nTypeID, attribute)
                 lsTopCells.append(tp)
             dcLocalApps[nServiceType]=lsTopCells
             
     return dcLocalApps
     
-def getLocalAppRegionType(dcLocalApps, dfCellLocType):
+def getLocalAppRegionType(dcLocalApps):
     pass
