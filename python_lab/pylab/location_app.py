@@ -82,13 +82,13 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
         Params:
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
+    # calculate access probability
     dfUserBaseInRegions = pd.DataFrame(index = dfCategoryUserInRegions.columns)
-    
     for cate in dfCategoryUserInRegions.index:
         dfUserBaseInRegions[cate] = dfCategoryUserInRegions.sum(axis=0)
-        
     dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
     
+    # prepare to draw
     ax0 = plt.figure().add_subplot(111)
     
     # color
@@ -101,12 +101,12 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     # plot
     dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False, \
                            color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
-    ax0.set_ylabel = 'access probability (%%)'
+    ax0.set_ylabel = 'access probability (%)'
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
     bars = filter(pred, ax0.get_children())
-    hatches = ''.join(h*len(dfCategoryAccProb) for h in 'oO/\\|-+x.*')
+    hatches = ''.join(h*len(dfCategoryAccProb) for h in '|oO/\\-x.*+')
 
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
@@ -123,7 +123,10 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
     dfCategoryPerCapitaTrafficInRegions = dfCategoryTrafficInRegions.T.div(dfCategoryUserInRegions.T)
+    dfCategoryPerCapitaTrafficInRegions = \
+        dfCategoryPerCapitaTrafficInRegions.div(dfCategoryPerCapitaTrafficInRegions.sum(axis=1) )
     
+    # prepare to draw
     ax0 = plt.figure().add_subplot(111)
     
     # color
@@ -144,7 +147,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
     
-    ax0.legend(loc='upper right')
+    ax0.legend(loc='upper right', bbox_to_anchor=(1, 1), ncol=4)
     
     plt.show()
     
