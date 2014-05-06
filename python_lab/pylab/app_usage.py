@@ -34,7 +34,7 @@ def getCategoryTraffic(dfAgg):
     dcAppCategoryTraffic['web_browsing'] = \
     dfAgg.loc[dfAgg.index.isin(app_category.g_lsWebBrowsing)].sum(axis=1).sum()/nTotalTraffic
     
-    dcAppCategoryTraffic['p2p_downloading'] = \
+    dcAppCategoryTraffic['p2p'] = \
     dfAgg.loc[dfAgg.index.isin(app_category.g_lsP2P)].sum(axis=1).sum()/nTotalTraffic
     
     dcAppCategoryTraffic['im'] = \
