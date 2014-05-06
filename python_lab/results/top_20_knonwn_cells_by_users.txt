@@ -1,0 +1,86 @@
+Top 10 Cells(order by # user)
+==============================
+lat        23.14855
+long      113.26080
+typeID      1.00000
+Name: 10315-29842, dtype: float64,
+ lat        23.13406
+long      113.32814
+typeID      5.00000
+Name: 9495-23244, dtype: float64,
+ lat        23.12933
+long      113.34502
+typeID      3.00000
+Name: 9426-15107, dtype: float64,
+ lat        23.13692
+long      113.33064
+typeID      4.00000
+Name: 9474-14259, dtype: float64,
+ lat        23.13692
+long      113.33064
+typeID      4.00000
+Name: 9474-14258, dtype: float64,
+ lat        23.12799
+long      113.26412
+typeID      5.00000
+Name: 10316-52257, dtype: float64,
+ lat        23.11761
+long      113.27411
+typeID      5.00000
+Name: 9484-1841, dtype: float64,
+ lat        23.11761
+long      113.27410
+typeID      5.00000
+Name: 9484-901, dtype: float64,
+ lat        23.13889
+long      113.32787
+typeID      4.00000
+Name: 9495-22928, dtype: float64,
+ lat        23.13889
+long      113.32787
+typeID      4.00000
+Name: 9495-22927, dtype: float64,
+ lat        23.12778
+long      113.26000
+typeID      5.00000
+Name: 10009-19002, dtype: float64,
+ lat        23.12361
+long      113.26433
+typeID      5.00000
+Name: 10316-50804, dtype: float64,
+ lat        23.14855
+long      113.26080
+typeID      1.00000
+Name: 10315-54295, dtype: float64,
+ lat        23.12552
+long      113.26767
+typeID      5.00000
+Name: 9508-37298, dtype: float64,
+ lat        23.12934
+long      113.26510
+typeID      5.00000
+Name: 9508-30095, dtype: float64,
+ lat        23.12778
+long      113.26000
+typeID      5.00000
+Name: 10009-19001, dtype: float64,
+ lat        23.13412
+long      113.33753
+typeID      4.00000
+Name: 9472-27361, dtype: float64,
+ lat        23.093677
+long      113.289301
+typeID      3.000000
+Name: 9454-28663, dtype: float64,
+ lat        23.13781
+long      113.34450
+typeID      4.00000
+Name: 9459-40712, dtype: float64,
+ lat        23.13571
+long      113.32653
+typeID      5.00000
+Name: 9495-29194, dtype: float64,
+ lat        23.12097
+long      113.27084
+typeID      5.00000
+Name: 9508-31977, dtype: float64
