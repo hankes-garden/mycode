@@ -52,6 +52,8 @@ def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
     axes[0].set_xlabel('a. # uniqure users of app categories')
     axes[1].set_ylabel('traffic volume (%)')
     axes[1].set_xlabel('b. normalized traffic volume of app categories')
+    
+    plt.show()
         
 def getAppCategoryUserPerHour():
     pass
