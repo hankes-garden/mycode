@@ -49,24 +49,28 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
     sCDFCell = sUserMobilityCell.sort_index().cumsum()*1.0/sUserMobilityCell.sum()
     sCDFCell.plot(ax=axes[0], style='-o', xlim=(1, 50))
     
-    # CDF of mobility by speed
-    sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
-    sCDFSpeed.plot(ax=axes[1], style='-o')
-    
     # CDF of mobility by rog
     sCDFRog = sUserMobilityRog.sort_index().cumsum()*1.0/sUserMobilityRog.sum()
-    sCDFRog.plot(ax=axes[2], style='-o', xlim=(0., 50.))
+    sCDFRog.plot(ax=axes[1], style='-o', xlim=(0., 50.))
+    
+    # CDF of mobility by speed
+    sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
+    sCDFSpeed.plot(ax=axes[2], style='-o')
+    
     
     # set style
-    axes[0].set_xlabel('# cells')
+    axes[0].set_xlabel('a. # cells')
     axes[0].set_ylabel('CDF(%)')
     
-    
-    axes[1].set_xlabel('speed level')
+    axes[1].set_xlabel('b. radius of gyration (km)')
     axes[1].set_ylabel('CDF(%)')
     
-    axes[2].set_xlabel('radius of gyration (km)')
+    axes[2].set_xlabel('c. speed level')
     axes[2].set_ylabel('CDF(%)')
+    
+    plt.show()
+    
+    
         
 
 def execute(dcPaths):
