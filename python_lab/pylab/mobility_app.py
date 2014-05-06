@@ -147,20 +147,20 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     # cell
     sUserPerMobility = dfCategoryUserPerCell.sum(axis=1)
     dfCategoryAccessProb = dfCategoryUserPerCell.div(sUserPerMobility, axis=0)
-    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False)
-    axes[0].set_xlabel("# cells")
-    axes[0].set_ylabel('access probability')
     
-    # rog
-    sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
-    dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
-
     # color
     nColorCount = len(dfCategoryAccessProb.index)
     cm = plt.get_cmap('gist_rainbow')
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
+    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    axes[0].set_xlabel("# cells")
+    axes[0].set_ylabel('access probability')
+    
+    # rog
+    sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
+    dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
 
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
     axes[1].set_xlabel("radius of gyration (km)")
@@ -197,19 +197,21 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     # cell
     sTrafficPerMobility = dfCategoryTrafficPerCell.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerCell.div(sTrafficPerMobility, axis=0)
-    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 50), legend=False )
+    
+    # color
+    nColorCount = len(dfCategoryTrafficProb.index)
+    cm = plt.get_cmap('gist_rainbow')
+    cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
+    scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
+    
+    
+    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 50), legend=False , color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
     # rog
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
-
-    # color
-    nColorCount = len(dfCategoryTrafficProb.index)
-    cm = plt.get_cmap('gist_rainbow')
-    cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
-    scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
     axes[1].set_xlabel("radius of gyration (km)")
