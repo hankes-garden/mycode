@@ -124,7 +124,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     '''
     dfCategoryPerCapitaTrafficInRegions = dfCategoryTrafficInRegions.T.div(dfCategoryUserInRegions.T)
     dfCategoryPerCapitaTrafficInRegions = \
-        dfCategoryPerCapitaTrafficInRegions.div(dfCategoryPerCapitaTrafficInRegions.sum(axis=1) )
+        dfCategoryPerCapitaTrafficInRegions.div(dfCategoryPerCapitaTrafficInRegions.sum(axis=1), axis=0)
     
     # prepare to draw
     ax0 = plt.figure().add_subplot(111)
@@ -148,6 +148,26 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
         bar.set_hatch(hatch)
     
     ax0.legend(loc='upper right', bbox_to_anchor=(1, 1), ncol=4)
+    
+    plt.show()
+    
+def drawTotoalDistribution(dfAppUserNumInCells, dfAppTrafficInCells):
+    '''
+        
+    '''
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    
+    sAppUser = dfAppUserNumInCells.sum(axis=1)
+    sAppTraffic = dfAppTrafficInCells.sum(axis=1) * 1.0 / dfAppTrafficInCells.sum().sum()
+    
+    sAppUser.order(ascending=False)[:200].plot(ax=axes[0], kind='bar', use_index=False)
+    sAppTraffic.order(ascending=False)[:200].plot(ax=axes[1], kind='bar', use_index=False)
+    
+    axes[0].set_xlabel('a. distribution of users')
+    axes[0].set_ylabel('# users')
+    
+    axes[1].set_xlabel('a. distribution of traffic volume')
+    axes[1].set_ylabel('traffic volume (%)')
     
     plt.show()
     
