@@ -2,19 +2,23 @@
 '''
 Created on 2014年4月4日
 
+This module analyze the relationship btw app usage and location
+
 @author: y00752450
 '''
 from common_function import *
+
 import region_type
 import app_category
 import basic_location
 
+import math
 import matplotlib.pyplot as plt
 import matplotlib.cm as mplcm
 import matplotlib.colors as colors
 import matplotlib
 
-def getLocalApps(dfAgg, dfCellLocType):
+def findLocalApps(dfAgg, dfCellLocType):
     '''
         Find out those local apps whose 80% traffic is generated in top 10 cells
         
@@ -173,6 +177,54 @@ def drawTotoalDistribution(dfAppUserNumInCells, dfAppTrafficInCells):
     
     plt.show()
     
+def calculateSimiliarity(sCell1, sCell2):
+    '''
+        calculate the Euclidean distance and use it as a similarity metrics
+    '''
+    dDis = math.sqrt( (sCell1-sCell2).pow(2).sum() )
+    return dDis
+    
+def CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType):
+    '''
+        Calculate the correlation of App usage among locations of same type
+        
+        Params:
+                dfAppUserNumInCells - row=serviceType, column='lac-cid'
+                dfAppTrafficInCells - row=serviceType, column='lac-cid'
+                
+        return:
+                dfSimilarity - row = cell_id*cell_id, columns=['same_type','distance', 'similarity']
+    '''
+    dfPerCapitaTraffic = dfAppTrafficInCells.div(dfAppUserNumInCells)
+    
+    dcSim = {}
+    for i in range(0, len(dfPerCapitaTraffic.columns)-1):
+        sTarget = dfPerCapitaTraffic.iloc[:,i]
+        for j in range(i+1, len(dfPerCapitaTraffic.columns)-1):
+            sCompare = dfPerCapitaTraffic.loc[:,j]
+            
+            # get location information
+            sTargetLoc = 0   # location information of targe cell
+            sCompareLoc = 0  # location information of targe cell
+            try:
+                sTargetLoc = dfCellLocType.loc[sTarget.name]
+                sCompareLoc = dfCellLocType.loc[sCompare.name]
+            except KeyError:
+                continue
+            
+            # if the type of both cells are known, then calculate the similarity
+            if(sTargetLoc.typeID != region_type.ID_TYPE_UNKNOWN 
+               and sCompareLoc.typeID != region_type.ID_TYPE_UNKNOWN):
+                strID = "%s*%s" % (sTarget.name, sCompare.name)
+                dSimilarity = calculateSimiliarity(sTarget, sCompare)
+                nSameType = 1 if sTargetLoc.typeID == sCompareLoc.typeID else 0
+                dDistance = calculateDistance(sTargetLoc.lat, sTargetLoc.long, sCompareLoc.lat, sCompareLoc.long)
+                dcTemp = {'same_type': nSameType, 'distance': dDistance, 'similarity':dSimilarity}
+                dcSim[strID] = dcTemp
+                
+    return pd.DataFrame(dcSim).T
+    
+    
 def execute(dcPaths, dfCellLocType):
     
     # get app distribution of cells
@@ -181,6 +233,10 @@ def execute(dcPaths, dfCellLocType):
     # get category distribution of regions
     dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions = \
       getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
+      
+      
+    # calculate app usage similarity
+    dfSimilarty = CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
 
     # del unless columns 
     try:
@@ -195,4 +251,6 @@ def execute(dcPaths, dfCellLocType):
     # draw
     drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions)
     drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions)
+    
+    return dfSimilarty
     

@@ -63,10 +63,14 @@ if __name__ == '__main__':
         plt.show()
         print("mobility_app is finished")
     
-#     # local App
-#     print("Start to analyse local apps...")
-#     dcLocalApp = localApp(dfAgg, dcCellLocDict, True)
-#     print("-->Total %d apps, %d are local." % (len(dfAgg.index), len(dcLocalApp)) )
+    # local App
+    input = raw_input("location_app? [y/n]>> ")
+    if('y' == input.strip() ):
+        import location_app
+        dfCellLocType = pd.read_csv("../../data/cell_loc_type.txt", index_col='lac-cid')
+        dfSimilarity = location_app.execute(dcTotoalPaths, dfCellLocType)
+        plt.show()
+        print("mobility_app is finished")
 
     print("====All the analysis is finished====")
 
