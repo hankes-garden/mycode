@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def getMobility(dcPaths):
+def getMobilityDistribution(dcPaths):
     '''
         calculate mobility from raw dcPaths
         
@@ -70,15 +70,19 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
     
     plt.show()
     
-def getRogDistributionOnCellNum(dcPaths):
+def getMobility(dcPaths):
     '''
         get Rog and cell number for each user
+        
+        return:
+                a dataframe: row = imei, columns = cell_num, rog, speed
     '''
     lsData = []
     for path in dcPaths.values():
         nCellNum = len(path.m_lsNodes)
         nRog = int(calculateRog(path)/1000.0) # change unit to km, and round up
-        lsData.append({'imei':path.m_strIMEI, 'cell_num':nCellNum, 'rog':nRog})
+        dSpeed = path.m_dMaxSpeed
+        lsData.append({'imei':path.m_strIMEI, 'cell_num':nCellNum, 'rog':nRog, 'speed':dSpeed})
         
     dfRogCellNum = pd.DataFrame(lsData)
     dfRogCellNum.set_index(keys='imei', inplace=True)
@@ -100,7 +104,7 @@ def drawRogDistributionOnCellNum(dfRogCellNum):
     plt.show()
 
 def execute(dcPaths):
-    sMobilityCell, sMobilitySpeed, sMobilityRog = getMobility(dcPaths)
+    sMobilityCell, sMobilitySpeed, sMobilityRog = getMobilityDistribution(dcPaths)
     drawCDFofMobility(sMobilityCell, sMobilitySpeed, sMobilityRog)
 
 if __name__ == '__main__':
