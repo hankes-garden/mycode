@@ -84,16 +84,19 @@ def getMobility(dcPaths):
         dSpeed = path.m_dMaxSpeed
         lsData.append({'imei':path.m_strIMEI, 'cell_num':nCellNum, 'rog':nRog, 'speed':dSpeed})
         
-    dfRogCellNum = pd.DataFrame(lsData)
-    dfRogCellNum.set_index(keys='imei', inplace=True)
+    dfMobility = pd.DataFrame(lsData)
+    dfMobility.set_index(keys='imei', inplace=True)
     
-    return dfRogCellNum
+    return dfMobility
 
-def drawRogDistributionOnCellNum(dfRogCellNum):
+def drawRogDistributionOnCellNum(dfMobility):
     '''
         draw a scatter graph for Rog distribution on cell number
+        
+        param:
+                dfMobility - a dataframe: row = imei, columns = cell_num, rog, speed
     '''
-    plt.scatter(dfRogCellNum['cell_num'], dfRogCellNum['rog'])
+    plt.scatter(dfMobility['cell_num'], dfMobility['rog'])
     
     plt.xlim((1, 100))
     plt.xlabel('# cells')

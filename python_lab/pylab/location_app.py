@@ -197,11 +197,11 @@ def CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCel
     '''
     dfPerCapitaTraffic = dfAppTrafficInCells.div(dfAppUserNumInCells)
     
-    dcSim = {}
+    lsData = []
     for i in range(0, len(dfPerCapitaTraffic.columns)-1):
         sTarget = dfPerCapitaTraffic.iloc[:,i]
         for j in range(i+1, len(dfPerCapitaTraffic.columns)-1):
-            sCompare = dfPerCapitaTraffic.loc[:,j]
+            sCompare = dfPerCapitaTraffic.iloc[:,j]
             
             # get location information
             sTargetLoc = 0   # location information of targe cell
@@ -213,16 +213,18 @@ def CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCel
                 continue
             
             # if the type of both cells are known, then calculate the similarity
-            if(sTargetLoc.typeID != region_type.ID_TYPE_UNKNOWN 
-               and sCompareLoc.typeID != region_type.ID_TYPE_UNKNOWN):
+            if(sTargetLoc['typeID'] != region_type.ID_TYPE_UNKNOWN 
+               and sCompareLoc['typeID'] != region_type.ID_TYPE_UNKNOWN):
                 strID = "%s*%s" % (sTarget.name, sCompare.name)
                 dSimilarity = calculateSimiliarity(sTarget, sCompare)
-                nSameType = 1 if sTargetLoc.typeID == sCompareLoc.typeID else 0
-                dDistance = calculateDistance(sTargetLoc.lat, sTargetLoc.long, sCompareLoc.lat, sCompareLoc.long)
-                dcTemp = {'same_type': nSameType, 'distance': dDistance, 'similarity':dSimilarity}
-                dcSim[strID] = dcTemp
+                nSameType = 1 if sTargetLoc['typeID'] == sCompareLoc['typeID'] else 0
+                dDistance = calculateDistance(sTargetLoc['lat'], sTargetLoc['long'], sCompareLoc['lat'], sCompareLoc['long'])
+                dcTemp = {'imei*imei':strID, 'same_type': nSameType, 'distance': dDistance, 'similarity':dSimilarity}
+                lsData.append(dcTemp)
                 
-    return pd.DataFrame(dcSim).T
+    dfSimilarity = pd.DataFrame(lsData)
+    dfSimilarity.set_index(keys='imei*imei', inplace=True)
+    return dfSimilarity
     
     
 def execute(dcPaths, dfCellLocType):
