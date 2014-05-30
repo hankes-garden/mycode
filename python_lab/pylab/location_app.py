@@ -197,11 +197,16 @@ def CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCel
     '''
     dfPerCapitaTraffic = dfAppTrafficInCells.div(dfAppUserNumInCells)
     
+    # select cells whose type is known
+    lsKnownCells = dfCellLocType[dfCellLocType['typeID'] != region_type.ID_TYPE_UNKNOWN ].index.tolist()
+    dfPerCapitaTrafficInKnownCell = dfPerCapitaTraffic.loc[:, lsKnownCells]
+    
+    
     lsData = []
-    for i in range(0, len(dfPerCapitaTraffic.columns)-1):
-        sTarget = dfPerCapitaTraffic.iloc[:,i]
-        for j in range(i+1, len(dfPerCapitaTraffic.columns)-1):
-            sCompare = dfPerCapitaTraffic.iloc[:,j]
+    for i in range(0, len(dfPerCapitaTrafficInKnownCell.columns)-1):
+        sTarget = dfPerCapitaTrafficInKnownCell.iloc[:,i]
+        for j in range(i+1, len(dfPerCapitaTrafficInKnownCell.columns)-1):
+            sCompare = dfPerCapitaTrafficInKnownCell.iloc[:,j]
             
             # get location information
             sTargetLoc = 0   # location information of targe cell
