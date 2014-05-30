@@ -70,8 +70,28 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
     
     plt.show()
     
-    
+def getRogDistributionOnCellNum(dcPaths):
+    '''
+        get Rog and cell number for each user
+    '''
+    lsData = []
+    for path in dcPaths.values():
+        nCellNum = len(path.m_lsNodes)
+        nRog = int(calculateRog(path)) # round up
+        lsData.append({'imei':path.m_strIMEI, 'cell_num':nCellNum, 'rog':nRog})
         
+    dfRogCellNum = pd.DataFrame(lsData)
+    dfRogCellNum.set_index(keys='imei', inplace=True)
+    
+    return dfRogCellNum
+
+def DrawRogDistributionOnCellNum(dfRogCellNum):
+    '''
+        draw a scatter graph for Rog distribution on cell number
+    '''
+    # prepare to draw
+    plt.scatter(dfRogCellNum['cell_num'], dfRogCellNum['rog'])
+    plt.show()
 
 def execute(dcPaths):
     sMobilityCell, sMobilitySpeed, sMobilityRog = getMobility(dcPaths)
