@@ -77,7 +77,7 @@ def getRogDistributionOnCellNum(dcPaths):
     lsData = []
     for path in dcPaths.values():
         nCellNum = len(path.m_lsNodes)
-        nRog = int(calculateRog(path)) # round up
+        nRog = int(calculateRog(path)/1000.0) # change unit to km, and round up
         lsData.append({'imei':path.m_strIMEI, 'cell_num':nCellNum, 'rog':nRog})
         
     dfRogCellNum = pd.DataFrame(lsData)
@@ -85,12 +85,15 @@ def getRogDistributionOnCellNum(dcPaths):
     
     return dfRogCellNum
 
-def DrawRogDistributionOnCellNum(dfRogCellNum):
+def drawRogDistributionOnCellNum(dfRogCellNum):
     '''
         draw a scatter graph for Rog distribution on cell number
     '''
-    # prepare to draw
-    plt.scatter(dfRogCellNum['cell_num'], dfRogCellNum['rog'])
+    ax0 = plt.Figure().add_subplot(111)
+    dfRogCellNum.plot(ax=ax0, x='cell_num', y='rog', xlim=(0,100), ylim=(0, 100), kind='scatter')
+    ax0.set_xlabel = '# cells'
+    ax0.set_ylabel = 'RoG'
+    
     plt.show()
 
 def execute(dcPaths):
