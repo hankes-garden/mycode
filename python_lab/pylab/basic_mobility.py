@@ -89,9 +89,14 @@ def drawRogDistributionOnCellNum(dfRogCellNum):
     '''
         draw a scatter graph for Rog distribution on cell number
     '''
-    ax0 = plt.figure().add_subplot(111)
-    dfRogCellNum.plot(ax=ax0, x='cell_num', y='rog', xlim=(0,100), ylim=(0, 100), kind='scatter')
+    ax0 = plt.Figure().add_subplot(111)
+    
+    ax0.scatter(dfRogCellNum['cell_num'], dfRogCellNum['rog'])
+    
+    ax0.set_xlim((0, 100))
     ax0.set_xlabel = '# cells'
+    
+    ax0.set_ylim((0, 100))
     ax0.set_ylabel = 'RoG'
     
     plt.show()
