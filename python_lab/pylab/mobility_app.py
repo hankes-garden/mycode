@@ -222,6 +222,12 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     
 
 def execute(dcPaths):
+    '''
+        include measurements on:
+            1. access probability of each app vs. mobility
+            2. traffic contribution of each app vs. mobility
+            3. per capita traffic of each app vs. mobility
+    '''
     
     nXlim = 50
     

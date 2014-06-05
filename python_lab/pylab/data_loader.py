@@ -88,7 +88,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
         for fn in sorted(filenames):
             lsSerPath.append(dirpath+fn)
     
-    dcTotoalPaths = {}
+    dcTotalPaths = {}
     dcAggData = {}
     dcAggAppUserNum = {}
     for sp in lsSerPath: 
@@ -102,7 +102,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
         AggregateAppUserNumIncrementally(dcPaths, dcAggAppUserNum)
         
         if(True == bRaw):
-            dcTotoalPaths.update(dcPaths)
+            dcTotalPaths.update(dcPaths)
         
         del dcPaths
         gc.collect()
@@ -123,7 +123,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     # release memory      
     gc.collect()
     
-    return dcTotoalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict
+    return dcTotalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict
 
 import sys
 if __name__ == '__main__':

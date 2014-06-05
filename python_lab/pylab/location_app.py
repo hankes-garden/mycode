@@ -224,15 +224,20 @@ def CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCel
                 dSimilarity = calculateSimiliarity(sTarget, sCompare)
                 nSameType = 1 if sTargetLoc['typeID'] == sCompareLoc['typeID'] else 0
                 dDistance = calculateDistance(sTargetLoc['lat'], sTargetLoc['long'], sCompareLoc['lat'], sCompareLoc['long'])
-                dcTemp = {'imei*imei':strID, 'same_type': nSameType, 'distance': dDistance, 'similarity':dSimilarity}
+                dcTemp = {'cid*cid':strID, 'same_type': nSameType, 'distance': dDistance, 'similarity':dSimilarity}
                 lsData.append(dcTemp)
                 
     dfSimilarity = pd.DataFrame(lsData)
-    dfSimilarity.set_index(keys='imei*imei', inplace=True)
+    dfSimilarity.set_index(keys='cid*cid', inplace=True)
     return dfSimilarity
     
     
 def execute(dcPaths, dfCellLocType):
+    '''
+        1. access probability of each app category vs. location
+        2. per capita traffic of each app category vs. location
+        3. app traffic similarity btw cells vs. distance & location types [disabled by default] 
+    '''
     
     # get app distribution of cells
     dfAppUserNumInCells, dfAppTrafficInCells = basic_location.getAppDistributionOnCells(dcPaths)
@@ -243,7 +248,8 @@ def execute(dcPaths, dfCellLocType):
       
       
     # calculate app usage similarity
-    dfSimilarty = CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
+    dfSimilarity = None
+    # dfSimilarity = CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
 
     # del unless columns 
     try:
@@ -259,5 +265,5 @@ def execute(dcPaths, dfCellLocType):
     drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions)
     drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions)
     
-    return dfSimilarty
+    return dfSimilarity
     
