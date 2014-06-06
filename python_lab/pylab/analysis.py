@@ -56,7 +56,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
         plt.show()
         print("location_app is finished")
         
-    # Heavy Users
+    # ---- Heavy Users ----
     input = raw_input("heavy users ? [y/n]>> ")
     if('y' == input.strip() ):
         import heavy_user
@@ -84,7 +84,13 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
         input = raw_input("mobility_app? [y/n]>> ")
         if('y' == input.strip() ):
             import mobility_app
+            
+            print("heavy subscriber")
             mobility_app.execute(dcHeavyUserPaths)
+            plt.show()
+            
+            print("normal subscriber")
+            mobility_app.execute(dcNormalUserPaths)
             plt.show()
             print("mobility_app is finished")
     
@@ -93,7 +99,13 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
         if('y' == input.strip() ):
             import location_app
             dfCellLocType = pd.read_csv("../../data/cell_loc_type.txt", index_col='lac-cid')
+            
+            print("heavy subscriber")
             dfSimilarity = location_app.execute(dcHeavyUserPaths, dfCellLocType)
+            plt.show()
+            
+            print("normal subscriber")
+            dfSimilarity = location_app.execute(dcNormalUserPaths, dfCellLocType)
             plt.show()
             print("location_app is finished")
         
@@ -126,20 +138,32 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
         input = raw_input("mobility_app? [y/n]>> ")
         if('y' == input.strip() ):
             import mobility_app
+            
+            print("2G subscriber")
             mobility_app.execute(dc2G)
             plt.show()
             
+            print("3G subscriber")
             mobility_app.execute(dc3G)
             plt.show()
+            
             print("mobility_app is finished")
     
         # location & App usage
         input = raw_input("location_app ? [y/n]>> ")
         if('y' == input.strip() ):
             import location_app
+            
             dfCellLocType = pd.read_csv("../../data/cell_loc_type.txt", index_col='lac-cid')
+            
+            print("2G subscriber")
             dfSimilarity = location_app.execute(dc2G, dfCellLocType)
             plt.show()
+            
+            print("3G subscriber")
+            dfSimilarity = location_app.execute(dc3G, dfCellLocType)
+            plt.show()
+            
             print("location_app is finished")
 
 
