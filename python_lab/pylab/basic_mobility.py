@@ -73,7 +73,7 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog, \
     if (bDraw):
         if (strLable != None):
             for ax in axes:
-                ax.legend()
+                ax.legend(loc='lower right')
         plt.show()
     
     

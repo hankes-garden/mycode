@@ -13,23 +13,7 @@ import matplotlib.pyplot as plt
 import sys
 
 
-if __name__ == '__main__':
-    '''
-        sys.argv[1] - dir of serialized paths
-        sys.argv[2] - path of cell_loc_dict
-        sys.argv[3] - 1 means save the raw dcPaths in memory
-        sys.argv[4] - #Top App when cleaning data
-         
-    '''
-    
-    # input checking
-    if (len(sys.argv) != 5):
-        raise MyError("Usage: %run analysis.py strSerPathDir strCellLocPath bRaw nTopApp")
-    
-    strSerPathDir = sys.argv[1]
-    strCellLocPath = sys.argv[2]
-    bRaw = True if (1 == int(sys.argv[3]) ) else False
-    nTopApp = int(sys.argv[4])
+def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
     
     # load data
     input = raw_input("load data? [y/n]>> ")
@@ -118,6 +102,25 @@ if __name__ == '__main__':
     if('y' == input.strip() ):
         import network_type
         dc2G, dc3G = network_type.getNetworks(dcTotalPaths)
+        
+        # basic mobility
+        input = raw_input("basic mobility? [y/n]>> ")
+        if('y' == input.strip() ):
+            import basic_mobility
+            
+            fig, axes = plt.subplots(nrows=1, ncols=3)
+            
+            sMobilityCell2G, sMobilitySpeed2G, sMobilityRog2G = \
+                basic_mobility.getMobilityDistribution(dc2G)
+            sMobilityCell3G, sMobilitySpeed3G, sMobilityRog3G = \
+                basic_mobility.getMobilityDistribution(dc3G)
+                
+            basic_mobility.drawCDFofMobility(sMobilityCell2G, sMobilitySpeed2G, sMobilityRog2G,\
+                                             axes=axes, strLable='2.5G subscriber', bDraw=False)
+            basic_mobility.drawCDFofMobility(sMobilityCell3G, sMobilitySpeed3G, sMobilityRog3G,\
+                                             axes=axes, strLable='3G subscriber', bDraw=True)
+            print("basic_mobility is finished")
+        
         
         # mobility & usage
         input = raw_input("mobility_app? [y/n]>> ")
