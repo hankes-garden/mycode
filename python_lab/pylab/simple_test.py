@@ -5,9 +5,11 @@ Created on 2014年1月14日
 @author: jason
 '''
 from common_function import *
-import pandas as pd
 
 import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
  
 def constructCellLocFromAdditionalSource(strPath):
@@ -27,6 +29,17 @@ def constructCellLocFromAdditionalSource(strPath):
             dcNew[strKey] = loc
 
     return dcNew
+
+
+def test(df):
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    df['c1'].plot(ax=axes[0], label='c1')
+    df['c2'].plot(ax=axes[0], label='c2')
+    df['c3'].plot(ax=axes[1], label='c3')
+    plt.legend()
+    plt.show()
+
+
 
   
 def findDiff(dfPrevious, dcNew):
@@ -52,4 +65,4 @@ def ensurePathExist(f):
         os.makedirs(d)
 
 if __name__ == '__main__':
-    ensure_dir(".\\dd\\ss74\\test.txt")
+    pass

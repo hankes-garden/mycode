@@ -35,12 +35,15 @@ def findHeavyUser(dcTotalPaths, nTop):
     
     lsHeavyUsers = dfUserTraffic.iloc[:nTop].index
     dcHeavyUserPaths = {}
+    dcNormalUserPaths = {}
     for tp in dcTotalPaths.items():
         if tp[0] in lsHeavyUsers:
             dcHeavyUserPaths[tp[0]] = tp[1]
+        else:
+            dcNormalUserPaths[tp[0]] = tp[1]
     
     
-    return dfUserTraffic, dcHeavyUserPaths
+    return dfUserTraffic, dcHeavyUserPaths, dcNormalUserPaths
     
 
 

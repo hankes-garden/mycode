@@ -39,23 +39,25 @@ def getMobilityDistribution(dcPaths):
     return sMobilityCell, sMobilitySpeed, sMobilityRog
     
 
-def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
+def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog, \
+                      axes=None, strLable=None, bDraw=True):
     '''
         draw user CDF of mobility
     '''
-    fig, axes = plt.subplots(nrows=1, ncols=3)
+    if (None == axes):
+        fig, axes = plt.subplots(nrows=1, ncols=3)
     
     # CDF of mobility by cell_num
     sCDFCell = sUserMobilityCell.sort_index().cumsum()*1.0/sUserMobilityCell.sum()
-    sCDFCell.plot(ax=axes[0], style='-o', xlim=(1, 50))
+    sCDFCell.plot(ax=axes[0], style='-o', xlim=(1, 50), label=strLable)
     
     # CDF of mobility by rog
     sCDFRog = sUserMobilityRog.sort_index().cumsum()*1.0/sUserMobilityRog.sum()
-    sCDFRog.plot(ax=axes[1], style='-o', xlim=(0., 50.))
+    sCDFRog.plot(ax=axes[1], style='-o', xlim=(0., 50.), label=strLable)
     
     # CDF of mobility by speed
     sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
-    sCDFSpeed.plot(ax=axes[2], style='-o')
+    sCDFSpeed.plot(ax=axes[2], style='-o', label=strLable)
     
     
     # set style
@@ -68,7 +70,12 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog):
     axes[2].set_xlabel('c. speed level')
     axes[2].set_ylabel('CDF(%)')
     
-    plt.show()
+    if (bDraw):
+        if (strLable != None):
+            for ax in axes:
+                ax.legend()
+        plt.show()
+    
     
 def getMobility(dcPaths):
     '''
@@ -108,7 +115,8 @@ def drawRogDistributionOnCellNum(dfMobility):
 
 def execute(dcPaths):
     sMobilityCell, sMobilitySpeed, sMobilityRog = getMobilityDistribution(dcPaths)
-    drawCDFofMobility(sMobilityCell, sMobilitySpeed, sMobilityRog)
+    drawCDFofMobility(sMobilityCell, sMobilitySpeed, sMobilityRog, bDraw=True)
+    
 
 if __name__ == '__main__':
     pass

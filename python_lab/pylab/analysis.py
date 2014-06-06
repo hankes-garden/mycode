@@ -76,14 +76,24 @@ if __name__ == '__main__':
     input = raw_input("heavy users ? [y/n]>> ")
     if('y' == input.strip() ):
         import heavy_user
-        dfUserTraffic, dcHeavyUserPaths = heavy_user.findHeavyUser(dcTotalPaths, 10000)
+        dfUserTraffic, dcHeavyUserPaths, dcNormalUserPaths = heavy_user.findHeavyUser(dcTotalPaths, 10000)
         
         # basic mobility
         input = raw_input("basic mobility? [y/n]>> ")
         if('y' == input.strip() ):
             import basic_mobility
-            basic_mobility.execute(dcHeavyUserPaths)
-            plt.show()
+            
+            fig, axes = plt.subplots(nrows=1, ncols=3)
+            
+            sMobilityCellHeavy, sMobilitySpeedHeavy, sMobilityRogHeavy = \
+                basic_mobility.getMobilityDistribution(dcHeavyUserPaths)
+            sMobilityCellNormal, sMobilitySpeedNormal, sMobilityRogNormal = \
+                basic_mobility.getMobilityDistribution(dcNormalUserPaths)
+                
+            basic_mobility.drawCDFofMobility(sMobilityCellHeavy, sMobilitySpeedHeavy, sMobilityRogHeavy,\
+                                             axes=axes, strLable='heavy subscriber', bDraw=False)
+            basic_mobility.drawCDFofMobility(sMobilityCellNormal, sMobilitySpeedNormal, sMobilityRogNormal,\
+                                             axes=axes, strLable='normal subscriber', bDraw=True)
             print("basic_mobility is finished")
         
         # mobility & usage
