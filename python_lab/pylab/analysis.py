@@ -12,6 +12,7 @@ import sys
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     
+    dcTotalPaths = 0
     # load data
     input = raw_input("load data? [y/n]>> ")
     if('y' == input.strip() ):
