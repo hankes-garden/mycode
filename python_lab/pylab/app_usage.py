@@ -88,7 +88,7 @@ def execute(sAppUserNum = None, dfCleanedData = None, dcPaths = None, strAttribN
         dfAgg = pd.DataFrame(dcData)
         sAppUserNum = pd.Series(dcAggAppNum)
     
-        dfAggCleaned = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
+        dfCleanedData = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
     
     sCategoryUserNum = getCategoryUserNum(sAppUserNum)
     sCategoryTraffic = getCategoryTraffic(dfCleanedData)
