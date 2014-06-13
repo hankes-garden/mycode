@@ -10,7 +10,7 @@ from common_function import *
 import matplotlib.pyplot as plt
 import sys
 
-def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
+def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     
     # load data
     input = raw_input("load data? [y/n]>> ")
@@ -192,4 +192,6 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
 
 
     print("====All the analysis is finished====")
+    
+    return dcTotalPaths
 
