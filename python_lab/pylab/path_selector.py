@@ -35,7 +35,7 @@ def selectPathByMobility(dcTotalPaths, nTop, strMobilityIndicator='cell_num'):
     dfUserMobility.set_index('imei', inplace=True)
     
     # find top users by mobility
-    dfUserMobility.sort(column = strMobilityIndicator, ascending=False, inplace=True)
+    dfUserMobility.sort(columns = strMobilityIndicator, ascending=False, inplace=True)
     
     lsHeavyUsers = dfUserMobility.iloc[:nTop].index
     dcHeavyUserPaths = {}
@@ -73,7 +73,7 @@ def selectPathByTraffic(dcTotalPaths, nTop):
     dfUserTraffic.set_index('imei', inplace=True)
     
     # find top users by traffic
-    dfUserTraffic.sort(column = 'down_bytes', ascending=False, inplace=True)
+    dfUserTraffic.sort(columns = 'down_bytes', ascending=False, inplace=True)
     
     lsHeavyUsers = dfUserTraffic.iloc[:nTop].index
     dcHeavyUserPaths = {}

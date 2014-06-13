@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import sys
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
+    global dcTotalPaths
     
-    dcTotalPaths = 0
     # load data
     input = raw_input("load data? [y/n]>> ")
     if('y' == input.strip() ):
@@ -194,5 +194,3 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
 
     print("====All the analysis is finished====")
     
-    return dcTotalPaths
-
