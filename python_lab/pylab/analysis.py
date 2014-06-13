@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 2014年4月4日
-
-@author: yanglin
-
 This module is the main entry for all analysis
 
+@author: yanglin
 '''
+
 from common_function import *
 
 import matplotlib.pyplot as plt
 import sys
-
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
     
@@ -56,11 +53,11 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
         plt.show()
         print("location_app is finished")
         
-    # ---- Heavy Users ----
-    input = raw_input("heavy users ? [y/n]>> ")
+    # ---- Heavy traffic users ----
+    input = raw_input("heavy traffic users ? [y/n]>> ")
     if('y' == input.strip() ):
-        import heavy_user
-        dfUserTraffic, dcHeavyUserPaths, dcNormalUserPaths = heavy_user.findHeavyUser(dcTotalPaths, 10000)
+        import path_selector
+        dfUserTraffic, dcHeavyUserPaths, dcNormalUserPaths = path_selector.selectPathByTraffic(dcTotalPaths, 400000)
         
         # basic mobility
         input = raw_input("basic mobility? [y/n]>> ")
@@ -109,11 +106,39 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
             plt.show()
             print("location_app is finished")
         
-    # 2G vs. 3G
+    # ---- Heavy mobile users ----
+    input = raw_input("heavy mobile users ? [y/n]>> ")
+    if('y' == input.strip() ):
+        import path_selector
+        dfUserMobility, dcHeavyUserPaths, dcNormalUserPaths = path_selector.selectPathByMobility(dcTotalPaths, 400000)
+        
+        # basic app usage
+        input = raw_input("basic app usage? [y/n]>>")
+        if ('y' == input.strip() ):
+            import app_usage
+            app_usage.execute(dcPaths=dcHeavyUserPaths, strAttribName='m_nDownBytes')
+            
+        # location & App usage
+        input = raw_input("location_app ? [y/n]>> ")
+        if('y' == input.strip() ):
+            import location_app
+            dfCellLocType = pd.read_csv("../../data/cell_loc_type.txt", index_col='lac-cid')
+            
+            print("heavy subscriber")
+            dfSimilarity = location_app.execute(dcHeavyUserPaths, dfCellLocType)
+            plt.show()
+            
+            print("normal subscriber")
+            dfSimilarity = location_app.execute(dcNormalUserPaths, dfCellLocType)
+            plt.show()
+            print("location_app is finished")
+        
+    
+    #---- 2G vs. 3G ----
     input = raw_input("2G vs. 3G ? [y/n]>> ")
     if('y' == input.strip() ):
-        import network_type
-        dc2G, dc3G = network_type.getNetworks(dcTotalPaths)
+        import path_selector
+        dc2G, dc3G = path_selector.selectPathByNetwork(dcTotalPaths)
         
         # basic mobility
         input = raw_input("basic mobility? [y/n]>> ")
@@ -121,7 +146,6 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, dcTotalPaths):
             import basic_mobility
             
             fig, axes = plt.subplots(nrows=1, ncols=3)
-            
             sMobilityCell2G, sMobilitySpeed2G, sMobilityRog2G = \
                 basic_mobility.getMobilityDistribution(dc2G)
             sMobilityCell3G, sMobilitySpeed3G, sMobilityRog3G = \

@@ -9,6 +9,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import app_category
+import data_loader
+from my_error import *
 
 def getCategoryUserNum(sAppUser):
     '''
@@ -64,7 +66,30 @@ def getAppCategoryCorrelation():
 def drawCategoryTrafficDynamics():
     pass
 
-def execute(sAppUserNum, dfCleanedData):
+def execute(sAppUserNum = None, dfCleanedData = None, dcPaths = None, strAttribName='m_nDownBytes', nTopApp = 200):
+    '''
+        This function computes and draws the user number and traffic volume of each app category 
+        w.r.t. given dcPaths
+        If No dcPaths is given, then the sAppUserNum & dfCleanedData should not be None
+    '''
+    if (sAppUserNum == None or dfCleanedData == None):
+        if (dcPaths == None):
+            raise MyError("dcPaths should not be None if sAppUserNum = None or dfCleanedData = None.")
+        
+        dcData = {}
+        dcAggAppNum = {}
+        
+        # traffic of each app
+        data_loader.aggregateDataIncrementally(dcPaths, dcData)
+    
+        # user number of each app
+        data_loader.aggregateAppUserNumIncrementally(dcPaths, dcAggAppNum)
+        
+        dfAgg = pd.DataFrame(dcData)
+        sAppUserNum = pd.Series(dcAggAppNum)
+    
+        dfAggCleaned = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
+    
     sCategoryUserNum = getCategoryUserNum(sAppUserNum)
     sCategoryTraffic = getCategoryTraffic(dfCleanedData)
     drawCategoryPopularity(sCategoryUserNum, sCategoryTraffic)

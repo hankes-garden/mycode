@@ -39,7 +39,7 @@ def aggregateDataIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
 
 
 
-def AggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
+def aggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
     '''
         Aggregate App User Num Incrementally
         
@@ -99,7 +99,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
         aggregateDataIncrementally(dcPaths, dcAggData)
         
         print("Start to aggregate user number...")
-        AggregateAppUserNumIncrementally(dcPaths, dcAggAppUserNum)
+        aggregateAppUserNumIncrementally(dcPaths, dcAggAppUserNum)
         
         if(True == bRaw):
             dcTotalPaths.update(dcPaths)
