@@ -17,7 +17,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     input = raw_input("load data? [y/n]>> ")
     if('y' == input.strip() ):
         import data_loader
-        dcTotalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict = \
+        dcTotalPaths, sAppUserNum, dfCleanedAppTraffic, dcCellLocDict = \
           data_loader.execute(strSerPathDir, strCellLocPath, bRaw, nTopApp)
         print("data_loader is finished")
     
@@ -25,7 +25,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     input = raw_input("basic app usage? [y/n]>> ")
     if('y' == input.strip() ):
         import app_usage
-        app_usage.execute(sAppUserNum, dfAggCleaned)
+        app_usage.execute(sAppUserNum, dfCleanedAppTraffic)
         plt.show()
         print("app_usage is finished")
     

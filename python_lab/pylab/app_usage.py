@@ -40,6 +40,23 @@ def getCategoryTraffic(dfAgg):
     
     sAppCategoryTraffic = pd.Series(dcAppCategoryTraffic)
     return sAppCategoryTraffic
+
+def drawAppUserTrafficDistribution(sAppUser, sAppTraffic):
+    fig, axes = plt.subplots(nrows=1, ncols=2)
+    
+    sAppUser.sort(ascending=False)
+    sAppUser.plot(ax=axes[0], style='r-')
+    
+    sAppTraffic.sort(ascending=False)
+    sAppTraffic = sAppTraffic / 1024.0
+    sAppTraffic.plot(ax=axes[1], style='r-')
+    
+    axes[0].set_ylabel('# users')
+    axes[0].set_xlabel('sorted app index')
+    axes[1].set_ylabel('traffic volume (KB)')
+    axes[1].set_xlabel('sorted app index')
+    
+    plt.show()
     
 def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
     '''
@@ -66,15 +83,15 @@ def getAppCategoryCorrelation():
 def drawCategoryTrafficDynamics():
     pass
 
-def execute(sAppUserNum = None, dfCleanedData = None, dcPaths = None, strAttribName='m_nDownBytes', nTopApp = 200):
+def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strAttribName='m_nDownBytes', nTopApp = 200):
     '''
         This function computes and draws the user number and traffic volume of each app category 
         w.r.t. given dcPaths
-        If No dcPaths is given, then the sAppUserNum & dfCleanedData should not be None
+        If No dcPaths is given, then the sAppUserNum & dfCleanedAppTraffic should not be None
     '''
-    if (sAppUserNum == None or dfCleanedData == None):
+    if (sAppUserNum == None or dfCleanedAppTraffic == None):
         if (dcPaths == None):
-            raise MyError("dcPaths should not be None if sAppUserNum = None or dfCleanedData = None.")
+            raise MyError("dcPaths should not be None if sAppUserNum = None or dfCleanedAppTraffic = None.")
         
         dcData = {}
         dcAggAppNum = {}
@@ -88,11 +105,11 @@ def execute(sAppUserNum = None, dfCleanedData = None, dcPaths = None, strAttribN
         dfAgg = pd.DataFrame(dcData)
         sAppUserNum = pd.Series(dcAggAppNum)
     
-        dfCleanedData = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
+        dfCleanedAppTraffic = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
+    
+    drawAppUserTrafficDistribution(sAppUserNum, dfCleanedAppTraffic.sum(1))
     
     sCategoryUserNum = getCategoryUserNum(sAppUserNum)
-    sCategoryTraffic = getCategoryTraffic(dfCleanedData)
+    sCategoryTraffic = getCategoryTraffic(dfCleanedAppTraffic)
     drawCategoryPopularity(sCategoryUserNum, sCategoryTraffic)
 
-if __name__ == '__main__':
-    pass

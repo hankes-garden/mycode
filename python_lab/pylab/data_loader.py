@@ -61,7 +61,7 @@ def cleanData(dfAggAll, sAppUserNum, nTopApp):
     '''
         Clean data based on some criteria:
             1. all user-intended apps(network_related_apps are excluded)
-            2. top 100 app based on #user
+            2. top n app based on #user
     '''
     lsLabel = []
     for lb in dfAggAll.index:
@@ -114,7 +114,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     del dcAggAppUserNum
     
     print("Start to clean data...")
-    dfAggCleaned = cleanData(dfAgg, sAppUserNum, nTopApp)
+    dfCleanedAppTraffic = cleanData(dfAgg, sAppUserNum, nTopApp)
     del dfAgg
     
     print("Start to construct cell-location dict...")
@@ -123,7 +123,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     # release memory      
     gc.collect()
     
-    return dcTotalPaths, sAppUserNum, dfAggCleaned, dcCellLocDict
+    return dcTotalPaths, sAppUserNum, dfCleanedAppTraffic, dcCellLocDict
 
 import sys
 if __name__ == '__main__':
