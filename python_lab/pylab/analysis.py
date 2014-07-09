@@ -59,6 +59,12 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
         import path_selector
         dfUserTraffic, dcHeavyUserPaths, dcNormalUserPaths = path_selector.selectPathByTraffic(dcTotalPaths, 400000)
         
+        # basic app usage
+        input = raw_input("basic app usage? [y/n]>>")
+        if ('y' == input.strip() ):
+            import app_usage
+            app_usage.execute(dcPaths=dcHeavyUserPaths, strAttribName='m_nDownBytes')
+        
         # basic mobility
         input = raw_input("basic mobility? [y/n]>> ")
         if('y' == input.strip() ):
@@ -72,9 +78,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
                 basic_mobility.getMobilityDistribution(dcNormalUserPaths)
                 
             basic_mobility.drawCDFofMobility(sMobilityCellHeavy, sMobilitySpeedHeavy, sMobilityRogHeavy,\
-                                             axes=axes, strLable='heavy subscriber', bDraw=False)
+                                             axes=axes, strLable='heavy subscriber', strStyle= 'r-', bDraw=False)
             basic_mobility.drawCDFofMobility(sMobilityCellNormal, sMobilitySpeedNormal, sMobilityRogNormal,\
-                                             axes=axes, strLable='normal subscriber', bDraw=True)
+                                             axes=axes, strLable='normal subscriber', strStyle= '-+', bDraw=True)
             print("basic_mobility is finished")
         
         # mobility & usage
@@ -152,9 +158,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
                 basic_mobility.getMobilityDistribution(dc3G)
                 
             basic_mobility.drawCDFofMobility(sMobilityCell2G, sMobilitySpeed2G, sMobilityRog2G,\
-                                             axes=axes, strLable='2.5G subscriber', bDraw=False)
+                                             axes=axes, strLable='2.5G subscriber',  strStyle= 'r-', bDraw=False)
             basic_mobility.drawCDFofMobility(sMobilityCell3G, sMobilitySpeed3G, sMobilityRog3G,\
-                                             axes=axes, strLable='3G subscriber', bDraw=True)
+                                             axes=axes, strLable='3G subscriber', strStyle= '-+', bDraw=True)
             print("basic_mobility is finished")
         
         
