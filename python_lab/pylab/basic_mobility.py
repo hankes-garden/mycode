@@ -49,15 +49,15 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog, \
     
     # CDF of mobility by cell_num
     sCDFCell = sUserMobilityCell.sort_index().cumsum()*1.0/sUserMobilityCell.sum()
-    sCDFCell.plot(ax=axes[0], style='-o', xlim=(1, 50), label=strLable)
+    sCDFCell.plot(ax=axes[0], style='-', xlim=(1, 50), label=strLable)
     
     # CDF of mobility by rog
     sCDFRog = sUserMobilityRog.sort_index().cumsum()*1.0/sUserMobilityRog.sum()
-    sCDFRog.plot(ax=axes[1], style='-o', xlim=(0., 50.), label=strLable)
+    sCDFRog.plot(ax=axes[1], style='-', xlim=(0., 50.), label=strLable)
     
     # CDF of mobility by speed
     sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
-    sCDFSpeed.plot(ax=axes[2], style='-o', label=strLable)
+    sCDFSpeed.plot(ax=axes[2], style='-', label=strLable)
     
     
     # set style
