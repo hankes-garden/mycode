@@ -259,17 +259,25 @@ def calculateRog(path):
     if(len(path.m_lsNodes) != 0):
         dMassLat = 0.0
         dMassLong = 0.0
-        for node in path.m_lsNodes:
-            dMassLat += node.m_dLat
-            dMassLong += node.m_dLong
-        dMassLat = dMassLat / len(path.m_lsNodes)
-        dMassLong = dMassLong / len(path.m_lsNodes)
+        nKnownNodeNum = 0
         
-        dVariance = 0.0
         for node in path.m_lsNodes:
-            dDis = calculateDistance(node.m_dLat, node.m_dLong, dMassLat, dMassLong)
-            dVariance += math.pow(dDis, 2)
-        dRog = math.sqrt(dVariance / len(path.m_lsNodes) )
+            if (node.m_dLat != 0.0 and node.m_dLong != 0.0):
+                nKnownNodeNum += 1
+                dMassLat += node.m_dLat
+                dMassLong += node.m_dLong
+                
+        if (nKnownNodeNum > 0 ):
+            dMassLat = dMassLat / nKnownNodeNum
+            dMassLong = dMassLong / nKnownNodeNum
+            
+            dVariance = 0.0
+            for node in path.m_lsNodes:
+                if (node.m_dLat != 0.0 and node.m_dLong != 0.0):
+                    dDis = calculateDistance(node.m_dLat, node.m_dLong, dMassLat, dMassLong)
+                    dVariance += math.pow(dDis, 2)
+            dRog = math.sqrt(dVariance/nKnownNodeNum)
+
         
     return dRog
 

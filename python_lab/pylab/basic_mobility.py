@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 def getMobilityDistribution(dcPaths):
     '''
-        calculate mobility from raw dcPaths
+        This function computes mobility from raw dcPaths
         
         return
             a tuple of series like: {mobility: #user}
