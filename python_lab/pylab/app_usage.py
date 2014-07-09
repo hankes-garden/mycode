@@ -97,7 +97,7 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
         dcAggAppNum = {}
         
         # traffic of each app
-        data_loader.aggregateDataIncrementally(dcPaths, dcData)
+        data_loader.aggregateDataInAppCellIncrementally(dcPaths, dcData)
     
         # user number of each app
         data_loader.aggregateAppUserNumIncrementally(dcPaths, dcAggAppNum)

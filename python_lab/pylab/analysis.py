@@ -26,7 +26,6 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     if('y' == input.strip() ):
         import app_usage
         app_usage.execute(sAppUserNum, dfCleanedAppTraffic)
-        plt.show()
         print("app_usage is finished")
     
     # basic mobility

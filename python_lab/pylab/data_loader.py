@@ -16,15 +16,17 @@ from node import *
 from common_function import *
 
 
-def aggregateDataIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
+def aggregateDataInAppCellIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
     '''
-        Aggregate data from dcPaths w.r.t given attribute incrementally
+        This function aggregate all subscribers' volume of given attribute in 
+        serviceType-cell-format incrementally
+        
         Params:
                 dcPath - piece of dcPath
-                dcAgg - the dcAgg which stored previous aggregated data
+                dcAgg - the dcAgg which stored previous aggregated data, 
+                        format: row=serviceType, column=cell, value=given_attribute
                 strAttributeName - the attribute name
-        Return:
-                format: row=serviceType, column=cell, value=given_attribute
+                
     '''
     for path in dcPaths.values():
         for node in path.m_lsNodes:
@@ -34,14 +36,10 @@ def aggregateDataIncrementally(dcPaths, dcAgg, strAttributeName="m_nDownBytes"):
                 dcAppsInCell = {}
                 dcAgg[strKey] = dcAppsInCell
             updateDictBySumOnAttribute(dcAppsInCell, node.m_lsApps, strAttributeName)
-   
-
-
-
 
 def aggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
     '''
-        Aggregate App User Num Incrementally
+        Aggregate App User Num in format of app-cell format incrementally
         
         Params:
                 dcPaths - piece of dcPaths
@@ -57,30 +55,37 @@ def aggregateAppUserNumIncrementally(dcPaths, dcAppUserNum):
             updateDictBySum(dcAppUserNum, tp[0], tp[1])
 
 
-def cleanData(dfAggAll, sAppUserNum, nTopApp):
+def cleanData(dfAggData, sAppUserNum, nTopApp):
     '''
         Clean data based on some criteria:
             1. all user-intended apps(network_related_apps are excluded)
             2. top n app based on #user
     '''
     lsLabel = []
-    for lb in dfAggAll.index:
+    for lb in dfAggData.index:
         nLb = int(lb)
         if(nLb>=17000 and nLb<=21000): #exclude all network_related_apps
             continue
         lsLabel.append(lb)
     
     sSelectedApps = sAppUserNum.loc[lsLabel].order(ascending=False)[:nTopApp]
-    dfAggAllCleaned = dfAggAll.loc[sSelectedApps.index]
+    dfAggAllCleaned = dfAggData.loc[sSelectedApps.index]
     return dfAggAllCleaned
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     '''
+        This function aggregate user number and downlink traffic of each app
+        in the format of app-cell format, and then filter out the unqualified apps
+        
+        param:
+                strSerPathDir - path of all serialized roaming path
+                strCellLocPath - path of cell - location mapping
+                nTopApp - number of top apps to analyze
         return a tuple of three data:
-        tp[0] - dcTotalPaths
-        tp[1] - sAppUserNum
-        tp[2] - cleaned data
-        tp[3] - dcCellLoc
+                tp[0] - dcTotalPaths
+                tp[1] - sAppUserNum
+                tp[2] - cleaned data
+                tp[3] - dcCellLoc
     '''
     
     lsSerPath = []
@@ -89,14 +94,14 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
             lsSerPath.append(dirpath+fn)
     
     dcTotalPaths = {}
-    dcAggData = {}
+    dcAggDLTraffic = {}
     dcAggAppUserNum = {}
     for sp in lsSerPath: 
         print("Start to deserialize from %s" % sp) 
         dcPaths = deserializeFromFile(sp)
          
         print("Start to aggregate data by m_nDownBytes...")
-        aggregateDataIncrementally(dcPaths, dcAggData)
+        aggregateDataInAppCellIncrementally(dcPaths, dcAggDLTraffic)
         
         print("Start to aggregate user number...")
         aggregateAppUserNumIncrementally(dcPaths, dcAggAppUserNum)
@@ -108,14 +113,14 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
         gc.collect()
     print("Data Aggregation is finished")  
     
-    dfAgg = pd.DataFrame(dcAggData)
+    dfAggDLTraffic = pd.DataFrame(dcAggDLTraffic)
     sAppUserNum = pd.Series(dcAggAppUserNum)
-    del dcAggData
+    del dcAggDLTraffic
     del dcAggAppUserNum
     
     print("Start to clean data...")
-    dfCleanedAppTraffic = cleanData(dfAgg, sAppUserNum, nTopApp)
-    del dfAgg
+    dfCleanedDLTraffic = cleanData(dfAggDLTraffic, sAppUserNum, nTopApp)
+    del dfAggDLTraffic
     
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(strCellLocPath)
@@ -123,7 +128,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     # release memory      
     gc.collect()
     
-    return dcTotalPaths, sAppUserNum, dfCleanedAppTraffic, dcCellLocDict
+    return dcTotalPaths, sAppUserNum, dfCleanedDLTraffic, dcCellLocDict
 
 import sys
 if __name__ == '__main__':
