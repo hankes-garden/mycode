@@ -176,7 +176,7 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20))
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 20))
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
@@ -268,8 +268,7 @@ def execute(dcPaths):
             3. per capita traffic of each app vs. mobility
     '''
     
-    nCellLim = 20
-    nRogLim = 21
+    nXLim = 20
     
     # mobility on cell
     print("mobility = #cell")
@@ -290,10 +289,10 @@ def execute(dcPaths):
     
     
     # draw
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nCellLim], sPerCapitaTrafficPerRog.iloc[:nRogLim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim])
     
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:nCellLim], dfCategoryUserPerRog.iloc[:nRogLim])
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXLim], dfCategoryUserPerRog.iloc[:nXLim])
     
-    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nCellLim], dfCategoryTrafficPerRog.iloc[:nRogLim])
+    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXLim], dfCategoryTrafficPerRog.iloc[:nXLim])
     
 
