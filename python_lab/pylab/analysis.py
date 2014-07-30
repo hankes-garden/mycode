@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 import sys
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
+    '''
+        If it needs to rerun with existed dcTotalPath, just run it again and skip the data loading
+    '''
     global dcTotalPaths
     global sAppUserNum
     global dfDLTraffic

@@ -176,7 +176,7 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 20))
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19))
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
@@ -289,7 +289,7 @@ def execute(dcPaths):
     
     
     # draw
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1])
     
     drawAccessProbability(dfCategoryUserPerCell.iloc[:nXLim], dfCategoryUserPerRog.iloc[:nXLim])
     

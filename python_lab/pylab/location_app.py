@@ -143,6 +143,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTra
     dfCategoryPerCapitaTrafficInRegions.plot(ax=ax0, kind='bar', \
                                              color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     ax0.set_ylabel = 'per capita traffic'
+    ax0.set_xticklabels(dfCategoryPerCapitaTrafficInRegions.index, rotation=0)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
