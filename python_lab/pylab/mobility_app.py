@@ -268,7 +268,8 @@ def execute(dcPaths):
             3. per capita traffic of each app vs. mobility
     '''
     
-    nXlim = 20
+    nCellLim = 20
+    nRogLim = 21
     
     # mobility on cell
     print("mobility = #cell")
@@ -289,10 +290,10 @@ def execute(dcPaths):
     
     
     # draw
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nCellLim], sPerCapitaTrafficPerRog.iloc[:nRogLim])
     
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:nCellLim], dfCategoryUserPerRog.iloc[:nRogLim])
     
-    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim])
+    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nCellLim], dfCategoryTrafficPerRog.iloc[:nRogLim])
     
 
