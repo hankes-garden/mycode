@@ -172,17 +172,17 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center')
     plt.show()
     
-def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sAvgTrafficSDPerCell, sPerCapitaTrafficPerRog, sAvgTrafficSDPerRog):
+def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20), yerr=(sAvgTrafficSDPerCell/1024.0) )
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20))
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), yerr=(sAvgTrafficSDPerRog/1024.0) )
+    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20))
     axes[1].set_xlabel("radius of gyration (km)")
     
 #     axes[1].set_ylabel('traffic contribution')
@@ -275,7 +275,7 @@ def execute(dcPaths):
     dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
-    sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
+#     sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
     
     # mobility on rog
@@ -284,12 +284,11 @@ def execute(dcPaths):
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
-    sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
+#     sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
     
     # draw
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sAvgTrafficSDPerCell[:nXlim], \
-                         sPerCapitaTrafficPerRog.iloc[:nXlim], sAvgTrafficSDPerRog[:nXlim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim])
     
     drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
     
