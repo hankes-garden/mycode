@@ -288,8 +288,11 @@ def execute(dcPaths):
     
     
     # draw
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
-    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim])
     drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sAvgTrafficSDPerCell[:nXlim], \
                          sPerCapitaTrafficPerRog.iloc[:nXlim], sAvgTrafficSDPerRog[:nXlim])
+    
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
+    
+    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim])
+    
 
