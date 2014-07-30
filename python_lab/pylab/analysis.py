@@ -12,6 +12,8 @@ import sys
 
 def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     global dcTotalPaths
+    global sAppUserNum
+    global dfDLTraffic
     
     # load data
     input = raw_input("load data? [y/n]>> ")

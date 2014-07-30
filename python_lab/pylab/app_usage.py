@@ -89,8 +89,8 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
         w.r.t. given dcPaths
         If No dcPaths is given, then the sAppUserNum & dfCleanedAppTraffic should not be None
     '''
-    if (sAppUserNum == None or dfCleanedAppTraffic == None):
-        if (dcPaths == None):
+    if (sAppUserNum is None or dfCleanedAppTraffic is None):
+        if (dcPaths is None):
             raise MyError("dcPaths should not be None if sAppUserNum = None or dfCleanedAppTraffic = None.")
         
         dcData = {}
