@@ -157,7 +157,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('access probability')
     
@@ -165,7 +165,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
     dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
 
-    ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
+    ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('access probability')
     
@@ -209,7 +209,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     
-    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
@@ -217,7 +217,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
     
-    ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
+    ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('traffic contribution')
     
