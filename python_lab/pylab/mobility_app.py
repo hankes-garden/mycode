@@ -176,13 +176,13 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sAvgTrafficSDPerCell, sPerCap
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20), yerr=sAvgTrafficSDPerCell)
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20), yerr=(sAvgTrafficSDPerCell/1024.0) )
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), yerr=sAvgTrafficSDPerRog)
+    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), yerr=(sAvgTrafficSDPerRog/1024.0) )
     axes[1].set_xlabel("radius of gyration (km)")
     
 #     axes[1].set_ylabel('traffic contribution')
