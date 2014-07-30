@@ -256,7 +256,7 @@ def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_i
     
     sSDPerMobility.apply(np.sqrt)
     
-    return sSDPerMobility
+    return sSDPerMobility.apply(np.sqrt)
         
 
 def execute(dcPaths):
