@@ -184,6 +184,7 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
 #     axes[1].yaxis.tick_right()
     (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20))
     axes[1].set_xlabel("radius of gyration (km)")
+    axes[1].set_ylabel('average traffic (KB)')
     
 #     axes[1].set_ylabel('traffic contribution')
     
