@@ -45,11 +45,11 @@ def drawAppUserTrafficDistribution(sAppUser, sAppTraffic):
     fig, axes = plt.subplots(nrows=1, ncols=2)
     
     sAppUser.sort(ascending=False)
-    sAppUser.plot(ax=axes[0], style='-')
+    sAppUser.plot(ax=axes[0], style='-r')
     
     sAppTraffic.sort(ascending=False)
     sAppTraffic = sAppTraffic / 1024.0
-    sAppTraffic.plot(ax=axes[1], style='-')
+    sAppTraffic.plot(ax=axes[1], style='-r')
     
     axes[0].set_ylabel('# users')
     axes[0].set_xlabel('sorted app index')
@@ -96,7 +96,7 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
         dcData = {}
         dcAggAppNum = {}
         
-        # traffic of each app
+        # traffic of each app: app_id v.s cell_id
         data_loader.aggregateDataInAppCellIncrementally(dcPaths, dcData)
     
         # user number of each app

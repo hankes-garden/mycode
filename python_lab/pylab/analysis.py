@@ -17,15 +17,15 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     input = raw_input("load data? [y/n]>> ")
     if('y' == input.strip() ):
         import data_loader
-        dcTotalPaths, sAppUserNum, dfCleanedAppTraffic, dcCellLocDict = \
-          data_loader.execute(strSerPathDir, strCellLocPath, bRaw, nTopApp)
+        dcTotalPaths, sAppUserNum, dfDLTraffic, dcCellLocDict = \
+          data_loader.execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, False) # don't clear data
         print("data_loader is finished")
     
     # basic app usage
     input = raw_input("basic app usage? [y/n]>> ")
     if('y' == input.strip() ):
         import app_usage
-        app_usage.execute(sAppUserNum, dfCleanedAppTraffic)
+        app_usage.execute(sAppUserNum, dfDLTraffic)
         print("app_usage is finished")
     
     # basic mobility

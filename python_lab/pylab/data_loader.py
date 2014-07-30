@@ -70,9 +70,9 @@ def cleanData(dfAggData, sAppUserNum, nTopApp):
     
     sSelectedApps = sAppUserNum.loc[lsLabel].order(ascending=False)[:nTopApp]
     dfAggAllCleaned = dfAggData.loc[sSelectedApps.index]
-    return dfAggAllCleaned
+    return dfAggAllCleaned, sSelectedApps
 
-def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
+def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100, bClean=True):
     '''
         This function aggregate user number and downlink traffic of each app
         in the format of app-cell format, and then filter out the unqualified apps
@@ -118,9 +118,12 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     del dcAggDLTraffic
     del dcAggAppUserNum
     
-    print("Start to clean data...")
-    dfCleanedDLTraffic = cleanData(dfAggDLTraffic, sAppUserNum, nTopApp)
-    del dfAggDLTraffic
+    if(bClean):
+        print("Start to clean data...")
+        dfCleanedDLTraffic, sCleanedUserNum = cleanData(dfAggDLTraffic, sAppUserNum, nTopApp)
+    else:
+        dfCleanedDLTraffic = dfAggDLTraffic
+        sCleanedUserNum = sAppUserNum
     
     print("Start to construct cell-location dict...")
     dcCellLocDict = constructCellLocDict(strCellLocPath)
@@ -128,7 +131,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100):
     # release memory      
     gc.collect()
     
-    return dcTotalPaths, sAppUserNum, dfCleanedDLTraffic, dcCellLocDict
+    return dcTotalPaths, sCleanedUserNum, dfCleanedDLTraffic, dcCellLocDict
 
 import sys
 if __name__ == '__main__':

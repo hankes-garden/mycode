@@ -9,6 +9,7 @@ from common_function import *
 import app_category
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.markers as mk
 import matplotlib.cm as mplcm
@@ -32,6 +33,8 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
             mobility = len(path.m_lsNodes)
         elif ('rog' == mobility_indicator):
             mobility = int(calculateRog(path) / 1000.0) # change unit to km, and round up
+        else:
+            print("unknown mobility indicator")
         
         # user number
         dcAppUserForCurrentMobility = dcAppUserPerMobility.get(mobility, None)
@@ -169,17 +172,17 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center')
     plt.show()
     
-def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
+def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sAvgTrafficSDPerCell, sPerCapitaTrafficPerRog, sAvgTrafficSDPerRog):
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    sPerCapitaTrafficPerCell.plot(ax=axes[0], kind='bar', xlim=(0, 50) )
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 20), yerr=sAvgTrafficSDPerCell)
     axes[0].set_xlabel("# cell")
-    axes[0].set_ylabel('per capita traffic')
+    axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    sPerCapitaTrafficPerRog.plot(ax=axes[1], kind='bar', xlim=(0, 50) )
+    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), yerr=sAvgTrafficSDPerRog)
     axes[1].set_xlabel("radius of gyration (km)")
     
 #     axes[1].set_ylabel('traffic contribution')
@@ -205,7 +208,7 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     
-    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 50), legend=False , color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    ax0 = dfCategoryTrafficProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
@@ -213,13 +216,48 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
     
-    ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 50), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
+    ax1 = dfCategoryTrafficProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, color=[scalarMap.to_rgba(i) for i in range(nColorCount)] )
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('traffic contribution')
     
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'upper center')
     plt.show()
     
+def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_indicator='cell'):
+    '''
+        this function calculate standard deviation of average traffic per mobility
+    '''
+    
+    dcDeviationSumPerMobility = {}
+    dcUserNumPerMobility = {}
+    
+    for path in dcPaths.values():
+        mobility = 0
+        if('cell' == mobility_indicator):
+            mobility = len(path.m_lsNodes)
+        elif ('rog' == mobility_indicator):
+            mobility = int(calculateRog(path) / 1000.0) # change unit to km, and round up
+        else:
+            print("unknown mobility_indicator")
+            
+        dTraffic = 0.0
+        for node in path.m_lsNodes:
+            for app in node.m_lsApps:
+                dTraffic += app.m_nDownBytes
+                
+        dAvgTraffic = sPerCapitaTrafficPerMobility.iloc[mobility]
+        
+        dcDeviationSumPerMobility[mobility] += pow((dTraffic-dAvgTraffic), 2)
+        dcUserNumPerMobility[mobility] += 1.0
+        
+    sDeviationSumPerMobility = pd.Series(dcDeviationSumPerMobility)
+    sUserNumPerMobility = pd.Series(dcUserNumPerMobility)
+    sSDPerMobility = sDeviationSumPerMobility.div(sUserNumPerMobility)
+    
+    sSDPerMobility.apply(np.sqrt)
+    
+    return sSDPerMobility
+        
 
 def execute(dcPaths):
     '''
@@ -229,7 +267,7 @@ def execute(dcPaths):
             3. per capita traffic of each app vs. mobility
     '''
     
-    nXlim = 50
+    nXlim = 20
     
     # mobility on cell
     print("mobility = #cell")
@@ -237,8 +275,8 @@ def execute(dcPaths):
     dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
+    sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
-    gc.collect()
     
     # mobility on rog
     print("mobility = rog")
@@ -246,11 +284,12 @@ def execute(dcPaths):
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
+    sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
-    gc.collect()
     
     # draw
     drawAccessProbability(dfCategoryUserPerCell.iloc[:nXlim], dfCategoryUserPerRog.iloc[:nXlim])
     drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXlim], dfCategoryTrafficPerRog.iloc[:nXlim])
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sPerCapitaTrafficPerRog.iloc[:nXlim])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXlim], sAvgTrafficSDPerCell[:nXlim], \
+                         sPerCapitaTrafficPerRog.iloc[:nXlim], sAvgTrafficSDPerRog[:nXlim])
 
