@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.markers as mk
 import matplotlib.cm as mplcm
 import matplotlib.colors as colors
+from enaml.wx.wx_upstream.aui.aui_constants import up
 
 def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     '''
@@ -247,8 +248,8 @@ def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_i
                 
         dAvgTraffic = sPerCapitaTrafficPerMobility.iloc[mobility]
         
-        dcDeviationSumPerMobility[mobility] += pow((dTraffic-dAvgTraffic), 2)
-        dcUserNumPerMobility[mobility] += 1.0
+        updateDictBySum(dcDeviationSumPerMobility, mobility, pow((dTraffic-dAvgTraffic), 2) )
+        updateDictBySum(dcUserNumPerMobility, mobility, 1.0) 
         
     sDeviationSumPerMobility = pd.Series(dcDeviationSumPerMobility)
     sUserNumPerMobility = pd.Series(dcUserNumPerMobility)

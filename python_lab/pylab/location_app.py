@@ -106,6 +106,7 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False, \
                            color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
     ax0.set_ylabel = 'access probability (%)'
+    ax0.set_xticklabels(dfCategoryAccProb.index, rotation=0)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
