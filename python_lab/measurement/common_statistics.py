@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import pandas as pd
-import matplotlib.pylab as plt
+import measurement as np
+import measurement as pd
+import measurement as plt
 
 def drawCDF(dfData, nXStart=0, nXStop=0, nXStep=1, strTitle="CDF"):
     '''
