@@ -111,6 +111,10 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
         3. extract path in parallel
         4. serialize path to disk
         5. conduct statistic or sub-domain measurement
+        
+        return:
+            this function returns nothing, but it will serialize result to disks.
+            the result is a dict which <key, value> is <strIMEI, CPath instance>
     '''
     print("====Begin Path Extraction====")
     print(" cell_loc_dict: %s\n distinct_imei: %s\n input_path: %s\n output_path:%s\n max_proc: %d\n #user_per_proc: %s\n bAll: %s\n" % \
@@ -138,7 +142,10 @@ def extract(strCellLocDictPath, strDistinctImeiPath, strInDir, lsCDR, strOutDir,
     extractPathinParallel(dcCellLoc, lsImeis, strInDir, lsCDR, strOutDir)
     print("path extraction is finished")
     
-#     # serialize roaming path
+    #===========================================================================
+    # No need serialization here, we've already done it in callback function
+    #===========================================================================
+#     # serialize roaming path 
 #     print("start serialization of path...")
 #     strPathListName = "serPath_%d_%s_%s" % \
 #     (len(lsImeis), lsCDR[0].split('.')[0].split('-')[2], lsCDR[-1].split('.')[0].split('-')[2])

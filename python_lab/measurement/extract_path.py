@@ -18,10 +18,16 @@ MIN_NODE_UP_BYTES = 100
 MIN_NODE_DOWN_BYTES = 100
 
 
-# NOTE: this function will create an empty list for each given IMEI, this means if
-#       there is no path was extracted for this imei, it will still return an CPath
-#       instance with an empty list for this IMEI
+
 def constructUserDict(lsImeis):
+    '''
+        generate a dict for each element in lsImeis.
+        <key = strIMEI,  value = CPath instance>
+        
+        NOTE: this function will create an empty list for each given IMEI, this means if
+        there is no path was extracted for this imei, it will still return an CPath
+        instance with an empty list for this IMEI
+    '''
     dict = {}
     for strImei in lsImeis:
         path = CPath(strImei)
@@ -65,7 +71,17 @@ import gc
 import time
 def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
     '''
-        extract roaming path of given IMEIs from CDR
+        This functions extracts roaming path of given IMEIs from CDR dataset.
+        
+        Params:
+            dcCellLoc - cell-location mapping dict
+            lsImeis   - list of IMEIs to extract
+            strInDir  - directory of input files
+            lsInFiles - list of input files
+            strOutDir - directory of output file
+            
+        return:
+            a dict of <strIMEI, CPath object>
     '''
     if len(lsInFiles) == 0 :
         raise MyError("Error: empty input file list")
@@ -88,7 +104,7 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
                     it = line.split(',')
                     if (len(it) != ELEMENT_NUM_EACH_LINE): # unqualified line(invalid formated), skip it !
                         continue 
-                    path = dcPaths.get(it[4].strip())
+                    path = dcPaths.get(it[4].strip()) # not in lsImeis, skip it!
                     if(None == path):
                         continue
                     
@@ -122,9 +138,9 @@ def extractPath(dcCellLoc, lsImeis, strInDir, lsInFiles, strOutDir):
 
        
     # refine the path
-    for tuple in dcPaths.items():
-        refinePath(tuple[1])
-        tuple[1].updatePathInfo() # update path info
+    for tp in dcPaths.items():
+        refinePath(tp[1])
+        tp[1].updatePathInfo() # update path info
     
     return dcPaths
 

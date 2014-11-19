@@ -57,7 +57,7 @@ def calculateMobilitySpeed(node1, node2):
     
     nDistance = calculateDistance(node1.m_dLat, node1.m_dLong, node2.m_dLat, node2.m_dLong)
     dDuration = node1.m_dDuration + node2.m_dDuration
-    dSpeed = 2.0*nDistance//dDuration
+    dSpeed = 2.0*nDistance//dDuration # distance is only the radius, thus need multiply by 2
     if dSpeed < 0:
         raise MyError("invalid speed,duration=%.2f, distance=%d, n1.start=%s, n2.end=%s" % \
                             (dDuration, nDistance, get_time_str(node1.m_firstTime), get_time_str(node2.m_endTime) ) )

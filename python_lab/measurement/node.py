@@ -32,10 +32,16 @@ class CNode(object):
         self.m_lsApps = list() # here is an empty list
         
     def findAppIndex(self, app):
+#         index = -1
+#         for i in self.m_lsApps:
+#             if i.m_nServiceType == app.m_nServiceType:
+#                 index = self.m_lsApps.index(i)
         index = -1
-        for i in self.m_lsApps:
-            if i.m_nServiceType == app.m_nServiceType:
-                index = self.m_lsApps.index(i)
+        nAppListLen = len(self.m_lsApps)
+        for i in xrange(nAppListLen):
+            if (app.m_nServiceType == self.m_lsApps[i].m_nServiceType):
+                index = i
+                break
         
         return index
     
