@@ -78,14 +78,16 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp = 100, bClean=True):
         in the format of app-cell format, and then filter out the unqualified apps
         
         param:
-                strSerPathDir - path of all serialized roaming path
-                strCellLocPath - path of cell - location mapping
-                nTopApp - number of top apps to analyze
+                strSerPathDir     - path of all serialized roaming path
+                strCellLocPath    - path of cell - location mapping file
+                bRaw              - if True, the dcTotalPaths in return params contains roaming path of all users
+                nTopApp           - number of top apps to analyze
+                bClean            - True for cleaning unqualified apps
         return a tuple of three data:
-                tp[0] - dcTotalPaths
-                tp[1] - sAppUserNum
-                tp[2] - cleaned data
-                tp[3] - dcCellLoc
+                tp[0] - dcTotalPaths, if bRaw is true, then this dict contains roaming paths of all users
+                tp[1] - sCleanedUserNum, User number statistics
+                tp[2] - dfCleanedDLTraffic, pd.DataFrame of cleaned downlink traffic volume
+                tp[3] - dcCellLocDict, dict of cell-location mapping
     '''
     
     lsSerPath = []

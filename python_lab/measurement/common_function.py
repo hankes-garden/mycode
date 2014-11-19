@@ -253,9 +253,15 @@ def getSpeedLevel(dSpeed):
 
 def calculateRog(path):
     '''
+        This function computes radius of gyration for a roaming path
         rog = sqrt(1/n*sum(power(dis(mass, node), 2) ) )
+        
+        return:
+            knownRatio - #known_node/#node
+            dRog       - rog
     '''
     dRog = 0.0
+    dSupportRatio = 0.0
     if(len(path.m_lsNodes) != 0):
         dMassLat = 0.0
         dMassLong = 0.0
@@ -263,7 +269,7 @@ def calculateRog(path):
         
         for node in path.m_lsNodes:
             if (node.m_dLat != 0.0 and node.m_dLong != 0.0 \
-                and node.m_dLat < 30.0 and node.m_dLong < 120.0):
+                and node.m_dLat < 30.0 and node.m_dLong < 120.0): # valid latitude/longitude
                 nKnownNodeNum += 1
                 dMassLat += node.m_dLat
                 dMassLong += node.m_dLong
@@ -279,9 +285,10 @@ def calculateRog(path):
                     dDis = calculateDistance(node.m_dLat, node.m_dLong, dMassLat, dMassLong)
                     dVariance += math.pow(dDis, 2)
             dRog = math.sqrt(dVariance/nKnownNodeNum)
+            dSupportRatio = nKnownNodeNum * 1.0 / len(path.m_lsNodes)
 
         
-    return dRog
+    return dSupportRatio, dRog
 
 
 def updateDictBySum(dc, key, newValue):

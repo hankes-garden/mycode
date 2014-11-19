@@ -37,8 +37,9 @@ def getCategoryTraffic(dfAgg):
     for tp in app_category.g_dcCategory.items():
         dcAppCategoryTraffic[tp[0]] = \
             dfAgg.loc[dfAgg.index.isin(tp[1])].sum(axis=1).sum()/nTotalTraffic
-    
+            
     sAppCategoryTraffic = pd.Series(dcAppCategoryTraffic)
+    
     return sAppCategoryTraffic
 
 def drawAppUserTrafficDistribution(sAppUser, sAppTraffic):
@@ -63,8 +64,9 @@ def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
     '''
     fig, axes = plt.subplots(nrows=1, ncols=2)
     
-    sAppCategoryUserNum.plot(ax=axes[0], kind='bar')
-    sAppCategoryTraffic.plot(ax=axes[1], kind='bar')
+    # sort by given order before drawing
+    sAppCategoryUserNum.reindex(app_category.g_lsSortedCategoryIndex).plot(ax=axes[0], kind='bar')
+    sAppCategoryTraffic.reindex(app_category.g_lsSortedCategoryIndex).plot(ax=axes[1], kind='bar')
     
     axes[0].set_ylabel('# unique users')
     axes[0].set_xlabel('a. # uniqure users of app categories')
@@ -88,6 +90,10 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
         w.r.t. given dcPaths
         If No dcPaths is given, then the sAppUserNum & dfCleanedAppTraffic should not be None
     '''
+    
+    #===========================================================================
+    # If no pre-computed aggregated data is given, then aggregate here!
+    #===========================================================================
     if (sAppUserNum is None or dfCleanedAppTraffic is None):
         if (dcPaths is None):
             raise MyError("dcPaths should not be None if sAppUserNum = None or dfCleanedAppTraffic = None.")
@@ -106,6 +112,9 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
     
         dfCleanedAppTraffic = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
     
+    #===========================================================================
+    # draw
+    #===========================================================================
     drawAppUserTrafficDistribution(sAppUserNum, dfCleanedAppTraffic.sum(1))
     
     sCategoryUserNum = getCategoryUserNum(sAppUserNum)

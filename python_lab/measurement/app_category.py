@@ -72,3 +72,6 @@ g_dcCategory = {g_strWebBrowsing:g_lsWebBrowsing, \
                 g_strStock: g_lsStock, \
                 g_strShopping: g_lsShopping, \
                 g_strMap: g_lsMap }
+
+g_lsSortedCategoryIndex = [g_strWebBrowsing, g_strIM, g_strP2P, g_strSNS, g_strGame, g_strVideo, \
+                           g_strMusic, g_strAppMarket, g_strEmail, g_strMap, g_strShopping, g_strStock, g_strReading]

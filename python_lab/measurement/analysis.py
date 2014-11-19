@@ -18,7 +18,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     global sAppUserNum
     global dfDLTraffic
     
+    #===========================================================================
     # load data
+    #===========================================================================
     input = raw_input("load data? [y/n]>> ")
     if('y' == input.strip() ):
         import data_loader
@@ -26,14 +28,18 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
           data_loader.execute(strSerPathDir, strCellLocPath, bRaw, nTopApp, False) # don't clear data
         print("data_loader is finished")
     
+    #===========================================================================
     # basic app usage
+    #===========================================================================
     input = raw_input("basic app usage? [y/n]>> ")
     if('y' == input.strip() ):
         import app_usage
         app_usage.execute(sAppUserNum, dfDLTraffic)
         print("app_usage is finished")
     
+    #===========================================================================
     # basic mobility
+    #===========================================================================
     input = raw_input("basic mobility? [y/n]>> ")
     if('y' == input.strip() ):
         import basic_mobility
@@ -41,7 +47,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
         plt.show()
         print("basic_mobility is finished")
     
+    #===========================================================================
     # mobility & App usage
+    #===========================================================================
     input = raw_input("mobility_app? [y/n]>> ")
     if('y' == input.strip() ):
         import mobility_app
@@ -49,7 +57,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
         plt.show()
         print("mobility_app is finished")
     
+    #===========================================================================
     # location & app usage
+    #===========================================================================
     input = raw_input("location_app? [y/n]>> ")
     if('y' == input.strip() ):
         import location_app
@@ -58,7 +68,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
         plt.show()
         print("location_app is finished")
         
-    # ---- Heavy traffic users ----
+    #===========================================================================
+    # Heavy traffic users
+    #===========================================================================
     input = raw_input("heavy traffic users ? [y/n]>> ")
     if('y' == input.strip() ):
         import path_selector
@@ -117,7 +129,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
             plt.show()
             print("location_app is finished")
         
-    # ---- Heavy mobile users ----
+    #===========================================================================
+    # Heavy mobile users
+    #===========================================================================
     input = raw_input("heavy mobile users ? [y/n]>> ")
     if('y' == input.strip() ):
         import path_selector
@@ -145,7 +159,9 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
             print("location_app is finished")
         
     
-    #---- 2G vs. 3G ----
+    #===========================================================================
+    # 2G vs. 3G
+    #===========================================================================
     input = raw_input("2G vs. 3G ? [y/n]>> ")
     if('y' == input.strip() ):
         import path_selector
