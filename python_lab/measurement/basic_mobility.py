@@ -29,8 +29,8 @@ def getMobilityDistribution(dcPaths):
         nSpeedLevel = getSpeedLevel(path.m_dMaxSpeed)
         dcMobilitySpeed[nSpeedLevel] = dcMobilitySpeed.get(nSpeedLevel, 0) + 1
         
-        dSupportRatio, dRog = calculateRog(path)
-        if dSupportRatio >= 0.5: # only compute rog for paths in which at least 50% of nodes are known
+        dSupportingRatio, dRog = calculateRog(path)
+        if dSupportingRatio >= 0.5: # only compute rog for paths in which at least 50% of nodes are known
             nRog = int( dRog/ 1000.0) # change unit to km, and round up
             dcMobilityRog[nRog] = dcMobilityRog.get(nRog, 0) + 1
         

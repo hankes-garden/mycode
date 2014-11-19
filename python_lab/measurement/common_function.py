@@ -261,7 +261,7 @@ def calculateRog(path):
             dRog       - rog
     '''
     dRog = 0.0
-    dSupportRatio = 0.0
+    dSupportingRatio = 0.0
     if(len(path.m_lsNodes) != 0):
         dMassLat = 0.0
         dMassLong = 0.0
@@ -285,10 +285,10 @@ def calculateRog(path):
                     dDis = calculateDistance(node.m_dLat, node.m_dLong, dMassLat, dMassLong)
                     dVariance += math.pow(dDis, 2)
             dRog = math.sqrt(dVariance/nKnownNodeNum)
-            dSupportRatio = nKnownNodeNum * 1.0 / len(path.m_lsNodes)
+            dSupportingRatio = nKnownNodeNum * 1.0 / len(path.m_lsNodes)
 
         
-    return dSupportRatio, dRog
+    return dSupportingRatio, dRog
 
 
 def updateDictBySum(dc, key, newValue):
