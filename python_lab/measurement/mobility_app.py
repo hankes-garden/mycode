@@ -79,7 +79,7 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     
     return srTotalUserPerMobility, dfAppUserPerMobility, dfAppTrafficPerMobility
 
-def getCategoryDistributionOnMobility(dcPaths, mobility_indicator='cell'):
+def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
     '''
         This function computes user number and traffic distribution of 
         app categories on mobility
@@ -394,22 +394,26 @@ def execute(dcPaths):
     
     nXLim = 20 # limitation on mobility
     
+    #===========================================================================
     # mobility on cell
+    #===========================================================================
     print("mobility = #cell")
     srTotalUserPerCell, dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
     
     dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
-     getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
+     getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
      
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfAppTrafficPerCell)
 #     sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
     
+    #===========================================================================
     # mobility on rog
+    #===========================================================================
     print("mobility = rog")
     srTotalUserPerRog, dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
-     getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
+     getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfAppTrafficPerRog)
 #     sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
