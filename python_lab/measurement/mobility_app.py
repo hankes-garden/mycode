@@ -134,10 +134,10 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
                 strCategoryName = app_category.getAppCategory(app.m_nServiceType)
                 updateDictBySum(dcCategoryTrafficForCurrentMobility, strCategoryName, app.m_nDownBytes)
         
-        dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)
-        dfCategoryTrafficPerMobility = pd.DataFrame(dcCategoryTrafficPerMobility)
-        
-        return dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
+    dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)
+    dfCategoryTrafficPerMobility = pd.DataFrame(dcCategoryTrafficPerMobility)
+    
+    return dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
       
 
 def getPerCapitaTrafficOnMobility(srTotalUserPerMobility, dfAppTrafficPerMobility):
@@ -253,13 +253,13 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19) ) # , ylim=(200, 450)
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19), ylim=(1500, 5000) )
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20)) # , ylim=(200, 450) 
+    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), ylim=(1500, 5000) )
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('average traffic (KB)')
     
@@ -317,7 +317,17 @@ def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
                 dfCategoryTrafficPerRog  - row:mobility, col:category
                 
     '''
+    
+    # test these 
+    ax = plt.axes() 
+    upper, lower = axes_broken_y(ax, ybounds=[-2., 2.9, 22.1, 30.]) 
+    upper.plot(range(30), range(30)) 
+    lower.plot(range(30), range(30)) 
+    upper.set_ylabel('Data') 
+    plt.show()
     # TODO: add truncated axis support
+    
+    
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     tpMakers = mk.MarkerStyle().filled_markers
@@ -331,6 +341,8 @@ def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     cm = plt.get_cmap('gist_rainbow')
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
+    # axis
+    upperPerCell, lowerPerCell = axes_broken_y(ax, ybounds=[0, 2000, 3000, 6000]) 
     
     
     ax0 = dfCategoryTrafficPerCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
