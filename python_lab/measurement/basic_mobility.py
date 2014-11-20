@@ -38,7 +38,6 @@ def getMobilityDistribution(dcPaths):
         #=======================================================================
         cellNum, dConfidenceRatio = computeSubscriberMobility(path, g_strMobilityInCell)
         if (dConfidenceRatio < g_dMinConfidenceRatio):
-            nUnconvincingPathCount += 1
             continue # mobility information is not convincing, skip it
         dcUserNumPerCell[cellNum] = dcUserNumPerCell.get(cellNum, 0) + 1
         
@@ -53,6 +52,7 @@ def getMobilityDistribution(dcPaths):
         #=======================================================================
         rog, dConfidenceRatio = computeSubscriberMobility(path, g_strMobilityInRog)
         if (dConfidenceRatio < g_dMinConfidenceRatio):
+            nUnconvincingPathCount += 1
             continue # mobility information is not convincing, skip it
         dcUserNumPerRog[rog] = dcUserNumPerRog.get(rog, 0) + 1
         
