@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 import matplotlib.markers as mk
 import matplotlib.cm as mplcm
 import matplotlib.colors as colors
-from measurement.app_category import getAppCategory
 
 def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     '''
@@ -116,7 +115,7 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator='cell'):
         dcCategoryUserForCurrentUser = {}
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
-                strCategoryName = getAppCategory(app.m_nServiceType)
+                strCategoryName = app_category.getAppCategory(app.m_nServiceType)
                 dcCategoryTrafficPerMobility[strCategoryName] = 1
         
         for (k,v) in dcCategoryUserForCurrentUser.iteritems():
@@ -132,7 +131,7 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator='cell'):
             
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
-                strCategoryName = getAppCategory(app.m_nServiceType)
+                strCategoryName = app_category.getAppCategory(app.m_nServiceType)
                 updateDictBySum(dcCategoryTrafficForCurrentMobility, strCategoryName, app.m_nDownBytes)
         
         dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)

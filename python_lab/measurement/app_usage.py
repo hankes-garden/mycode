@@ -69,9 +69,9 @@ def drawCategoryPopularity(sAppCategoryUserNum, sAppCategoryTraffic):
     sAppCategoryTraffic.reindex(app_category.g_lsSortedCategoryIndex).plot(ax=axes[1], kind='bar')
     
     axes[0].set_ylabel('# unique users')
-    axes[0].set_xlabel('a. # uniqure users of app categories')
+    axes[0].set_xlabel('# uniqure users of app categories')
     axes[1].set_ylabel('traffic volume (%)')
-    axes[1].set_xlabel('b. normalized traffic volume of app categories')
+    axes[1].set_xlabel('normalized traffic volume of app categories')
     
     plt.show()
         

@@ -38,6 +38,7 @@ def getMobilityDistribution(dcPaths):
         #=======================================================================
         cellNum, dConfidenceRatio = computeSubscriberMobility(path, g_strMobilityInCell)
         if (dConfidenceRatio < g_dMinConfidenceRatio):
+            nUnconvincingPathCount += 1
             continue # mobility information is not convincing, skip it
         dcUserNumPerCell[cellNum] = dcUserNumPerCell.get(cellNum, 0) + 1
         

@@ -170,11 +170,11 @@ def drawTotoalDistribution(dfAppUserNumInCells, dfAppTrafficInCells):
     sAppTraffic.order(ascending=False)[:200].plot(ax=axes[1], kind='bar', use_index=False, logy=True)
     
     axes[0].set_yscale('log')
-    axes[0].set_xlabel('a. distribution of users')
+    axes[0].set_xlabel('distribution of users')
     axes[0].set_ylabel('# users')
     
     axes[1].set_yscale('log')
-    axes[1].set_xlabel('a. distribution of traffic volume')
+    axes[1].set_xlabel('distribution of traffic volume')
     axes[1].set_ylabel('traffic volume (KB)')
     
     plt.show()
