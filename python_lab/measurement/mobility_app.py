@@ -93,16 +93,24 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
                     
     '''
     
+    dcTotalUserPerMobility = {}
     dcCategoryUserPerMobility = {}
     dcCategoryTrafficPerMobility = {}
     
+    nUnconvincingPaths = 0
     for path in dcPaths.values():
         #=======================================================================
         # compute mobility
         #=======================================================================
         mobility, dConfidenceRatio = computeSubscriberMobility(path, mobility_indicator)
         if (dConfidenceRatio < g_dMinConfidenceRatio):
+            nUnconvincingPaths += 1
             continue # mobility information is not convincing, skip it
+        
+        #=======================================================================
+        # total user number
+        #=======================================================================
+        updateDictBySum(dcTotalUserPerMobility, mobility, 1)
             
         #=======================================================================
         # Category user number, {mobility_value: {category_name: user_number, ...}, ...}
@@ -116,7 +124,7 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
         for node in path.m_lsNodes:
             for app in node.m_lsApps:
                 strCategoryName = app_category.getAppCategory(app.m_nServiceType)
-                dcCategoryTrafficPerMobility[strCategoryName] = 1
+                dcCategoryUserForCurrentUser[strCategoryName] = 1
         
         for (k,v) in dcCategoryUserForCurrentUser.iteritems():
             updateDictBySum(dcCategoryUserForCurrentMobility, k, v)
@@ -134,13 +142,15 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
                 strCategoryName = app_category.getAppCategory(app.m_nServiceType)
                 updateDictBySum(dcCategoryTrafficForCurrentMobility, strCategoryName, app.m_nDownBytes)
         
+    print ("%d of %d roaming paths are unconvincing!" % (nUnconvincingPaths, len(dcPaths) ) )
+    srTotalUserPerMobility = pd.Series(dcTotalUserPerMobility)
     dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)
     dfCategoryTrafficPerMobility = pd.DataFrame(dcCategoryTrafficPerMobility)
     
-    return dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
+    return srTotalUserPerMobility, dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
       
 
-def getPerCapitaTrafficOnMobility(srTotalUserPerMobility, dfAppTrafficPerMobility):
+def getPerCapitaTrafficOnMobility(srTotalUserPerMobility, dfCategoryTrafficPerMobility):
     '''
         Computes average traffic per user of different mobility
         Params:
@@ -149,7 +159,7 @@ def getPerCapitaTrafficOnMobility(srTotalUserPerMobility, dfAppTrafficPerMobilit
         Return:
                 series with format: {mobility: per capita traffic with this mobility}
     '''
-    sTotalTrafficPerMobility = dfAppTrafficPerMobility.sum(axis=0)
+    sTotalTrafficPerMobility = dfCategoryTrafficPerMobility.sum(axis=0)
     return sTotalTrafficPerMobility.div(srTotalUserPerMobility)
 
 def correlateCategoryPerCapitaTrafficAndMobility(dfCategoryTraffic, dfCategoryUser):
@@ -404,18 +414,16 @@ def execute(dcPaths):
             3. per capita traffic of each app vs. mobility
     '''
     
-    nXLim = 20 # limitation on mobility
+    nXLim = 50 # limitation on mobility
     
     #===========================================================================
     # mobility on cell
     #===========================================================================
     print("mobility = #cell")
-    srTotalUserPerCell, dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
-    
-    dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
+    srTotalUserPerCell, dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
      
-    sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfAppTrafficPerCell)
+    sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfCategoryTrafficPerCell)
 #     sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
     
@@ -423,10 +431,9 @@ def execute(dcPaths):
     # mobility on rog
     #===========================================================================
     print("mobility = rog")
-    srTotalUserPerRog, dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
-    dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
+    srTotalUserPerRog, dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog)
-    sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfAppTrafficPerRog)
+    sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfCategoryTrafficPerRog)
 #     sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
     
