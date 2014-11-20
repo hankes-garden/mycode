@@ -310,6 +310,33 @@ def updateDictBySumOnAttribute(dcApps, lsApps, strAttributeName):
         else:
             dcApps[app.m_nServiceType] = oldValue + app.__dict__.get(strAttributeName)
 
+
+g_dMinConfidenceRatio = 0.5
+
+g_strMobilityInCell = "cell"
+
+g_strMobilityInRog = "rog"
+
+def computeSubscriberMobility(path, mobility_indicator):
+    '''
+        Computes nMobility
+        
+    '''
+    nMobility = 0
+    dConfidenceRatio = 0.0
+    
+    if(g_strMobilityInCell == mobility_indicator):
+        nMobility = len(path.m_lsNodes)
+        dConfidenceRatio = 1.0
+    elif (g_strMobilityInRog == mobility_indicator):
+        dConfidenceRatio, dRog = calculateRog(path)
+        nMobility = int(dRog / 1000.0) # change unit to km, and round up
+    else:
+        print("unknown nMobility indicator")
+        
+    return nMobility, dConfidenceRatio
+
+
 if __name__ == '__main__':
     print("this is common function")
 #      dc = constructCellLocDict("d:\\playground\\dict.csv")

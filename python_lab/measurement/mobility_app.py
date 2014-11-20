@@ -14,29 +14,42 @@ import matplotlib.pyplot as plt
 import matplotlib.markers as mk
 import matplotlib.cm as mplcm
 import matplotlib.colors as colors
+from measurement.app_category import getAppCategory
 
 def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     '''
         Params:
                 dcPaths - raw dcPaths
-                mobility_indicator = use'cell' or 'org' as mobility indicator
+                mobility_indicator = use'cell' or 'rog' as mobility indicator
         Return:
-                Two dataframe:dfAppUserPerMobility, dfAppTrafficPerMobility
-                both format like: row = app, and col = mobility
+                dfAppUserPerMobility, dfAppTrafficPerMobility, both format like: row = app, and col = mobility
+                srTotalUserPerMobility, row=mobility, column=total_user_number
+        Note:
+                When using rog as mobility indicator, some users' paths are not counted
+                as the supporting ratio is too low, thus the total user number counted
+                by rog can be smaller than the total number counted by #cell. Whenever
+                using the result, be aware of it!
     '''
+    
+    dcTotalUserPerMobility = {}
     dcAppUserPerMobility = {}
     dcAppTrafficPerMobility = {}
     
     for path in dcPaths.values():
-        mobility = 0
-        if('cell' == mobility_indicator):
-            mobility = len(path.m_lsNodes)
-        elif ('rog' == mobility_indicator):
-            mobility = int(calculateRog(path) / 1000.0) # change unit to km, and round up
-        else:
-            print("unknown mobility indicator")
+        #=======================================================================
+        # compute mobility
+        #=======================================================================
+        mobility, dConfidenceRatio = computeSubscriberMobility(path, mobility_indicator)
+        if (dConfidenceRatio < g_dMinConfidenceRatio):
+            continue # mobility information is not convincing, skip it
+        #=======================================================================
+        # total user number
+        #=======================================================================
+        updateDictBySum(dcTotalUserPerMobility, mobility, 1)
         
-        # user number
+        #=======================================================================
+        # app user number, {mobility_value: {app1: user_number, ...}, ...}
+        #=======================================================================
         dcAppUserForCurrentMobility = dcAppUserPerMobility.get(mobility, None)
         if (None == dcAppUserForCurrentMobility):
             dcAppUserForCurrentMobility = {}
@@ -50,7 +63,9 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
         for tp in dcAppUserForCurrentUser.items():
             updateDictBySum(dcAppUserForCurrentMobility, tp[0], tp[1])
             
+        #=======================================================================
         # traffic
+        #=======================================================================
         dcAppTrafficForCurrentMobility = dcAppTrafficPerMobility.get(mobility, None)
         if (None == dcAppTrafficForCurrentMobility):
             dcAppTrafficForCurrentMobility = {}
@@ -59,38 +74,84 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
         for node in path.m_lsNodes:
             updateDictBySumOnAttribute(dcAppTrafficForCurrentMobility, node.m_lsApps, "m_nDownBytes")
     
+    srTotalUserPerMobility = pd.Series(dcTotalUserPerMobility)
     dfAppUserPerMobility = pd.DataFrame(dcAppUserPerMobility)
     dfAppTrafficPerMobility = pd.DataFrame(dcAppTrafficPerMobility) 
     
-    return dfAppUserPerMobility, dfAppTrafficPerMobility
+    return srTotalUserPerMobility, dfAppUserPerMobility, dfAppTrafficPerMobility
 
-def getCategoryDistributionOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility):
+def getCategoryDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     '''
-        calculate user & traffic distribution for each app category
+        This function computes user number and traffic distribution of 
+        app categories on mobility
         
-        Return:
-                dataframe formated as: rows = mobility, columns = categories
+        param:
+                dcPaths             - roaming paths
+                mobility_indicator  - cell or rog
+        return:
+                dfCategoryUserPerMobility    - row:strCategoryName, col:mobility
+                dfCategoryTrafficPerMobility - row:strCategoryName, col:mobility
+                    
     '''
-    dcCategoryUser = {}
-    dcCategoryTraffic = {}
     
-    for tp in app_category.g_dcCategory.items():
-        dcCategoryUser[tp[0]] = dfAppUserPerMobility.loc[dfAppUserPerMobility.index.isin(tp[1])].sum(axis=0)
-        dcCategoryTraffic[tp[0]] = dfAppTrafficPerMobility.loc[dfAppTrafficPerMobility.index.isin(tp[1])].sum(axis=0)
+    dcCategoryUserPerMobility = {}
+    dcCategoryTrafficPerMobility = {}
     
-    dfCategoryUser = pd.DataFrame(dcCategoryUser)
-    dfCategoryTraffic = pd.DataFrame(dcCategoryTraffic)
+    for path in dcPaths.values():
+        #=======================================================================
+        # compute mobility
+        #=======================================================================
+        mobility, dConfidenceRatio = computeSubscriberMobility(path, mobility_indicator)
+        if (dConfidenceRatio < g_dMinConfidenceRatio):
+            continue # mobility information is not convincing, skip it
+            
+        #=======================================================================
+        # Category user number, {mobility_value: {category_name: user_number, ...}, ...}
+        #=======================================================================
+        dcCategoryUserForCurrentMobility = dcCategoryUserPerMobility.get(mobility, None)
+        if (dcCategoryUserForCurrentMobility is None):
+            dcCategoryUserForCurrentMobility = {}
+            dcCategoryUserPerMobility[mobility] = dcCategoryUserForCurrentMobility
+        
+        dcCategoryUserForCurrentUser = {}
+        for node in path.m_lsNodes:
+            for app in node.m_lsApps:
+                strCategoryName = getAppCategory(app.m_nServiceType)
+                dcCategoryTrafficPerMobility[strCategoryName] = 1
+        
+        for (k,v) in dcCategoryUserForCurrentUser.iteritems():
+            updateDictBySum(dcCategoryUserForCurrentMobility, k, v)
+            
+        #=======================================================================
+        # category traffic = {mobility_value: {category_name: traffic_volume, ...}, ...}
+        #=======================================================================
+        dcCategoryTrafficForCurrentMobility = dcCategoryTrafficPerMobility.get(mobility, None)
+        if (dcCategoryTrafficForCurrentMobility is None):
+            dcCategoryTrafficForCurrentMobility = {}
+            dcCategoryTrafficPerMobility[mobility] = dcCategoryTrafficForCurrentMobility
+            
+        for node in path.m_lsNodes:
+            for app in node.m_lsApps:
+                strCategoryName = getAppCategory(app.m_nServiceType)
+                updateDictBySum(dcCategoryTrafficForCurrentMobility, strCategoryName, app.m_nDownBytes)
+        
+        dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)
+        dfCategoryTrafficPerMobility = pd.DataFrame(dcCategoryTrafficPerMobility)
+        
+        return dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
       
-    return dfCategoryUser, dfCategoryTraffic
 
-def getPerCapitaTrafficOnMobility(dfAppUserPerMobility, dfAppTrafficPerMobility):
+def getPerCapitaTrafficOnMobility(srTotalUserPerMobility, dfAppTrafficPerMobility):
     '''
+        Computes average traffic per user of different mobility
+        Params:
+                dfAppUserPerMobility, dfAppTrafficPerMobility, both format like:
+                row=app, column=mobility
         Return:
                 series with format: {mobility: per capita traffic with this mobility}
     '''
-    sTotalUserNumPerMobility = dfAppUserPerMobility.sum(axis=0)
     sTotalTrafficPerMobility = dfAppTrafficPerMobility.sum(axis=0)
-    return sTotalTrafficPerMobility.div(sTotalUserNumPerMobility)
+    return sTotalTrafficPerMobility.div(srTotalUserPerMobility)
 
 def correlateCategoryPerCapitaTrafficAndMobility(dfCategoryTraffic, dfCategoryUser):
     '''
@@ -142,12 +203,22 @@ def drawAll(dfCategoryUserPerMobility, dfCategoryTrafficPerMobility, sPerCapitaT
     
     
 def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
+    '''
+        Plot category access probability on mobility
+        
+        param:
+                dfCategoryUserPerCell - already been sliced and transposed, row:mobility, col:category
+                dfCategoryUserPerRog  - already been sliced and transposed, row:mobility, col:category
+        
+    '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     tpMakers = mk.MarkerStyle().filled_markers
     lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
     
-    # cell
+    #===========================================================================
+    # mobility = #cell
+    #===========================================================================
     sUserPerMobility = dfCategoryUserPerCell.sum(axis=1)
     dfCategoryAccessProb = dfCategoryUserPerCell.div(sUserPerMobility, axis=0)
     
@@ -173,16 +244,23 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     plt.show()
     
 def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
+    '''
+        This function shows the relationship btw traffic and mobility
+        
+        param:
+                sPerCapitaTrafficPerCell - already been sliced by mobility
+                sPerCapitaTrafficPerRog  - already been sliced by mobility
+    '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19))
+    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19) ) # , ylim=(200, 450)
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20))
+    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20)) # , ylim=(200, 450) 
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('average traffic (KB)')
     
@@ -193,12 +271,17 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
     
     
 def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
+    '''
+        Note that dfCategoryTrafficPerCell, dfCategoryTrafficPerRog have already been sliced and tranposed
+    '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
     tpMakers = mk.MarkerStyle().filled_markers
     lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
     
+    #===========================================================================
     # cell
+    #===========================================================================
     sTrafficPerMobility = dfCategoryTrafficPerCell.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerCell.div(sTrafficPerMobility, axis=0)
     
@@ -213,7 +296,9 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
+    #===========================================================================
     # rog
+    #===========================================================================
     sTrafficPerMobility = dfCategoryTrafficPerRog.sum(axis=1)
     dfCategoryTrafficProb = dfCategoryTrafficPerRog.div(sTrafficPerMobility, axis=0)
     
@@ -222,6 +307,46 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
 #     axes[1].set_ylabel('traffic contribution')
     
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'upper center')
+    plt.show()
+    
+def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
+    '''
+        This function draw the absolute traffic volume of each app cateogory on mobility
+        
+        param:
+                dfCategoryTrafficPerCell - row:mobility, col:category
+                dfCategoryTrafficPerRog  - row:mobility, col:category
+                
+    '''
+    # TODO: add truncated axis support
+    fig, axes =  plt.subplots(nrows=1, ncols=2)
+    
+    tpMakers = mk.MarkerStyle().filled_markers
+    lsLineStyle = [ ('-%s' % str(m) ) for m in tpMakers ]
+    
+    #===========================================================================
+    # cell
+    #===========================================================================
+    # color
+    nColorCount = len(dfCategoryTrafficPerCell.index)
+    cm = plt.get_cmap('gist_rainbow')
+    cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
+    scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
+    
+    
+    ax0 = dfCategoryTrafficPerCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
+    axes[0].set_xlabel("# cells")
+    axes[0].set_ylabel('traffic contribution')
+    
+    #===========================================================================
+    # rog
+    #===========================================================================
+    
+    ax1 = dfCategoryTrafficPerRog.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
+    axes[1].set_xlabel("radius of gyration (km)")
+#     axes[1].set_ylabel('traffic contribution')
+    
+    fig.legend(ax0.get_lines(), dfCategoryTrafficPerRog.columns, 'upper center')
     plt.show()
     
 def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_indicator='cell'):
@@ -268,31 +393,33 @@ def execute(dcPaths):
             3. per capita traffic of each app vs. mobility
     '''
     
-    nXLim = 20
+    nXLim = 20 # limitation on mobility
     
     # mobility on cell
     print("mobility = #cell")
-    dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
+    srTotalUserPerCell, dfAppUserPerCell, dfAppTrafficPerCell = getAppDistributionOnMobility(dcPaths, mobility_indicator='cell')
+    
     dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
-    sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(dfAppUserPerCell, dfAppTrafficPerCell)
+     
+    sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfAppTrafficPerCell)
 #     sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
     
     # mobility on rog
     print("mobility = rog")
-    dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
+    srTotalUserPerRog, dfAppUserPerRog, dfAppTrafficPerRog = getAppDistributionOnMobility(dcPaths, mobility_indicator='rog')
     dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
-    sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(dfAppUserPerRog, dfAppTrafficPerRog)
+    sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfAppTrafficPerRog)
 #     sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
     
     # draw
     drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1])
     
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:nXLim], dfCategoryUserPerRog.iloc[:nXLim])
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, dfCategoryUserPerRog.T.iloc[:,:nXLim].T)
     
-    drawTrafficContribution(dfCategoryTrafficPerCell.iloc[:nXLim], dfCategoryTrafficPerRog.iloc[:nXLim])
+    drawTrafficDistribution(dfCategoryTrafficPerCell.iloc[:,:nXLim].T, dfCategoryTrafficPerRog.iloc[:,:nXLim].T)
     
 

@@ -7,38 +7,60 @@ Created on 2014年4月24日
 
 from common_function import *
 
-
 import pandas as pd
 import matplotlib.pyplot as plt
-
 
 def getMobilityDistribution(dcPaths):
     '''
         This function computes subscribers' mobility from raw dcPaths
         
-        return
-            a tuple of series like: {mobility: #user}
+        Param:
+                dcPath - {strIMEI: CPath instance, ...}
+        return:
+                a tuple of series like: {mobility: #user}
+                
+        Note:
+                When computing the rog, some users' paths are not counted as
+                most of its node locations are missing, but when computing #cell,
+                all the paths are counted, Therefore, the total user number counted
+                from rog is smaller than total user number counted from #cell. Whenever
+                using this result, be aware of this difference!
     '''
-    dcMobilityCell = {}
-    dcMobilitySpeed = {}
-    dcMobilityRog = {}
+    dcUserNumPerCell = {}
+    dcUserNumPerSpeed = {}
+    dcUserNumPerRog = {}
     
+    nUnconvincingPathCount = 0
     for path in dcPaths.values():
-        dcMobilityCell[len(path.m_lsNodes)] = dcMobilityCell.get(len(path.m_lsNodes), 0) + 1
         
+        #=======================================================================
+        # mobility in #cell
+        #=======================================================================
+        cellNum, dConfidenceRatio = computeSubscriberMobility(path, g_strMobilityInCell)
+        if (dConfidenceRatio < g_dMinConfidenceRatio):
+            continue # mobility information is not convincing, skip it
+        dcUserNumPerCell[cellNum] = dcUserNumPerCell.get(cellNum, 0) + 1
+        
+        #=======================================================================
+        # mobility in speed
+        #=======================================================================
         nSpeedLevel = getSpeedLevel(path.m_dMaxSpeed)
-        dcMobilitySpeed[nSpeedLevel] = dcMobilitySpeed.get(nSpeedLevel, 0) + 1
+        dcUserNumPerSpeed[nSpeedLevel] = dcUserNumPerSpeed.get(nSpeedLevel, 0) + 1
         
-        dSupportingRatio, dRog = calculateRog(path)
-        if dSupportingRatio >= 0.5: # only compute rog for paths in which at least 50% of nodes are known
-            nRog = int( dRog/ 1000.0) # change unit to km, and round up
-            dcMobilityRog[nRog] = dcMobilityRog.get(nRog, 0) + 1
+        #=======================================================================
+        # mobility in rog
+        #=======================================================================
+        rog, dConfidenceRatio = computeSubscriberMobility(path, g_strMobilityInRog)
+        if (dConfidenceRatio < g_dMinConfidenceRatio):
+            continue # mobility information is not convincing, skip it
+        dcUserNumPerRog[rog] = dcUserNumPerRog.get(rog, 0) + 1
         
-    sMobilityCell = pd.Series(dcMobilityCell)
-    sMobilitySpeed = pd.Series(dcMobilitySpeed)
-    sMobilityRog = pd.Series(dcMobilityRog)
+    print("%s of %s paths are unconvincing" % (nUnconvincingPathCount, len(dcPaths) ) )
+    sUserNumPerCell = pd.Series(dcUserNumPerCell)
+    sUserNumPerSpeed = pd.Series(dcUserNumPerSpeed)
+    sUserNumPerRog = pd.Series(dcUserNumPerRog)
     
-    return sMobilityCell, sMobilitySpeed, sMobilityRog
+    return sUserNumPerCell, sUserNumPerSpeed, sUserNumPerRog
     
 
 def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog, \
@@ -47,30 +69,30 @@ def drawCDFofMobility(sUserMobilityCell, sUserMobilitySpeed, sUserMobilityRog, \
         draw user CDF of mobility
     '''
     if (None == axes):
-        fig, axes = plt.subplots(nrows=1, ncols=3)
+        fig, axes = plt.subplots(nrows=1, ncols=2)
     
     # CDF of mobility by cell_num
     sCDFCell = sUserMobilityCell.sort_index().cumsum()*1.0/sUserMobilityCell.sum()
-    sCDFCell.plot(ax=axes[0], style= strStyle, xlim=(1, 50), label=strLable)
+    sCDFCell.plot(ax=axes[0], style= strStyle, xlim=(1, 50), ylim=(0.3, 1.0), label=strLable)
     
     # CDF of mobility by rog
     sCDFRog = sUserMobilityRog.sort_index().cumsum()*1.0/sUserMobilityRog.sum()
-    sCDFRog.plot(ax=axes[1], style= strStyle, xlim=(0., 50.), label=strLable)
+    sCDFRog.plot(ax=axes[1], style= strStyle, xlim=(0., 50.), ylim=(0.3, 1.0), label=strLable)
     
-    # CDF of mobility by speed
-    sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
-    sCDFSpeed.plot(ax=axes[2], style= strStyle, label=strLable)
+#     # CDF of mobility by speed
+#     sCDFSpeed = sUserMobilitySpeed.sort_index().cumsum()*1.0/sUserMobilitySpeed.sum()
+#     sCDFSpeed.plot(ax=axes[2], style= strStyle, label=strLable)
     
     
     # set style
-    axes[0].set_xlabel('a. # cells')
+    axes[0].set_xlabel('# cells')
     axes[0].set_ylabel('CDF(%)')
     
-    axes[1].set_xlabel('b. radius of gyration (km)')
+    axes[1].set_xlabel('radius of gyration (km)')
     axes[1].set_ylabel('CDF(%)')
-    
-    axes[2].set_xlabel('c. speed level')
-    axes[2].set_ylabel('CDF(%)')
+#     
+#     axes[2].set_xlabel('speed level')
+#     axes[2].set_ylabel('CDF(%)')
     
     if (bDraw):
         if (strLable != None):
@@ -116,8 +138,8 @@ def drawRogDistributionOnCellNum(dfMobility):
     plt.show()
 
 def execute(dcPaths):
-    sMobilityCell, sMobilitySpeed, sMobilityRog = getMobilityDistribution(dcPaths)
-    drawCDFofMobility(sMobilityCell, sMobilitySpeed, sMobilityRog, bDraw=True)
+    sUserNumPerCell, sUserNumPerSpeed, sUserNumPerRog = getMobilityDistribution(dcPaths)
+    drawCDFofMobility(sUserNumPerCell, sUserNumPerSpeed, sUserNumPerRog, bDraw=True)
     
 
 if __name__ == '__main__':
