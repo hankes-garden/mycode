@@ -1,0 +1,4 @@
+education,96208
+entertainment,186463
+transportation,59976
+work,160983
