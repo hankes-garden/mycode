@@ -256,7 +256,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center')
     plt.show()
     
-def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
+def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog, bMovingAverage, nWindowSize):
     '''
         This function shows the relationship btw traffic and mobility
         
@@ -265,6 +265,12 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog):
                 sPerCapitaTrafficPerRog  - already been sliced by mobility
     '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
+    
+    if (bMovingAverage is True):
+        sPerCapitaTrafficPerCell = pd.rolling_mean(sPerCapitaTrafficPerCell, window=nWindowSize, \
+                                                   min_periods=1, center=True)
+        sPerCapitaTrafficPerRog = pd.rolling_mean(sPerCapitaTrafficPerRog, window=nWindowSize, \
+                                                  min_periods=1, center=True)
     
     # cell
     (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19), ylim=(1500, 5000) )
@@ -322,7 +328,8 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'upper center')
     plt.show()
     
-def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPerRog, bMovingAverage=False, nWindowSize=1):
+def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPerRog, \
+                            bMovingAverage=False, nWindowSize=1):
     '''
         This function draw the absolute traffic volume of each app cateogory on mobility
         
@@ -336,9 +343,11 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     #===========================================================================
     if (bMovingAverage is True):
         # cell
-        dfCategoryAvgTrafficPerCell = pd.rolling_mean(dfCategoryAvgTrafficPerCell, 3, 1 ,center=True)
+        dfCategoryAvgTrafficPerCell = pd.rolling_mean(dfCategoryAvgTrafficPerCell, \
+                                                      window=nWindowSize, min_periods=1, center=True)
         # rog
-        dfCategoryAvgTrafficPerRog = pd.rolling_mean(dfCategoryAvgTrafficPerRog, 3, 1, center=True)
+        dfCategoryAvgTrafficPerRog = pd.rolling_mean(dfCategoryAvgTrafficPerRog, \
+                                                     window=nWindowSize, min_periods=1, center=True)
     
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
@@ -436,11 +445,11 @@ def execute(dcPaths):
     
     
     # draw
-    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1])
+    drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1], True, 3)
     
     drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, dfCategoryUserPerRog.iloc[:,:nXLim].T)
     
     
-    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T)
+    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 3)
     
 
