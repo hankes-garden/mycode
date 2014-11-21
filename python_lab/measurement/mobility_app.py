@@ -374,15 +374,15 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    ax0 = (dfCell/1024.0).plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
+    ax0 = (dfCell/1024.0).plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), ylim=(0,2500), legend=False , colormap=cm)
     axes[0].set_xlabel("# cells")
-    axes[0].set_ylabel('traffic contribution')
+    axes[0].set_ylabel('average traffic (KB)')
     
     #===========================================================================
     # rog
     #===========================================================================
     
-    ax1 = (dfRog/1024.0).plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
+    ax1 = (dfRog/1024.0).plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), ylim=(0,2500), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
     
     fig.legend(ax0.get_lines(), dfCategoryAvgTrafficPerRog.columns, 'upper center')
