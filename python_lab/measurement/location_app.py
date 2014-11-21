@@ -46,40 +46,102 @@ def findLocalApps(dfAgg, dfCellLocType):
             dcLocalApps[nServiceType]=lsTopCells
             
     return dcLocalApps
-    
-def getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType):
-    '''
-        get user & traffic distribution of regions for each app category
-        
-        Params:
-                dfAppUserNumInCells - row=serviceType, column='lac-cid'
-                dfAppTrafficInCells - row=serviceType, column='lac-cid'
-                
-        Return:
-                dfCategoryUserInCells      - row = 'lac-cid', column = category_name
-                dfCategoryTrafficInCells   - row = 'lac-cid', column = category_name 
-                dfCategoryUserInRegions    - row = category_name, column = region_type_name
-                dfCategoryTrafficInRegions - row = category_name, column = region_type_name
-    '''
-    # group by category
-    dfCategoryUserInCells = pd.DataFrame(index=dfAppUserNumInCells.columns)
-    dfCategoryTrafficInCells = pd.DataFrame(index=dfAppTrafficInCells.columns)
-    for tp in app_category.g_dcCategory.items():
-        dfCategoryUserInCells[tp[0]] = dfAppUserNumInCells.loc[dfAppUserNumInCells.index.isin(tp[1])].sum(axis=0)
-        dfCategoryTrafficInCells[tp[0]] = dfAppTrafficInCells.loc[dfAppTrafficInCells.index.isin(tp[1])].sum(axis=0)
-    
-    # group by region type
-    dfCategoryUserInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
-    dfCategoryTrafficInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
-    for tp in region_type.g_dcRegionTypeName.items():
-        dfCategoryUserInRegions[tp[1]] = \
-          (dfCategoryUserInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
-        dfCategoryTrafficInRegions[tp[1]] = \
-          (dfCategoryTrafficInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
-        
-    return dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions
 
-def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
+def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
+    '''
+        This function computes:
+            1. total user number in different types of locations;
+            2. category user number in different types of locations;
+            3. category traffic in different types of locations; 
+            
+        param:
+                dcPaths       - roaming paths
+                dfCellLocType - index=lac-cid
+        return:
+               srUserNumPerRegion         - total user number per region, index:region
+               dfCategoryUserNumPerRegion - category user number per region, row:category, col:region
+               dfCategoryTrafficPerRegion - category traffic per region, row:category, col:region
+    '''
+    
+    dcUserNumPerRegion = {}             # total user number in different types of locations;
+    dcCategoryUserNumPerRegion = {}     # category user number in different types of locations;
+    dcCategoryTrafficPerRegion = {}     # category traffic in different types of locations;
+    
+    for path in dcPaths.values():
+        for node in path.m_lsNodes:
+            strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
+            nRegionType = dfCellLocType.loc[strKey]["typeID"]
+            
+            # total user
+            updateDictBySum(dcUserNumPerRegion, strKey, 1)
+            
+            
+            dcCategoryUserNumForCurrentRegion = dcCategoryUserNumPerRegion.get(nRegionType, None)
+            if (dcCategoryUserNumForCurrentRegion is None):
+                dcCategoryUserNumForCurrentRegion = {}
+                dcCategoryUserNumPerRegion[nRegionType] = dcCategoryUserNumForCurrentRegion
+                
+            dcCategoryTrafficForCurrentRegion = dcCategoryTrafficPerRegion.get(nRegionType, None)
+            if (dcCategoryTrafficForCurrentRegion is None):
+                dcCategoryTrafficForCurrentRegion = {}
+                dcCategoryTrafficPerRegion[nRegionType] = dcCategoryTrafficForCurrentRegion
+                
+            dcCategoryUserNumForCurretNode = {} 
+            for app in node.m_lsApps:
+                strCategoryName = app_category.getAppCategory(app.m_nServiceType)
+                dcCategoryUserNumForCurretNode[strCategoryName] = 1
+                
+                updateDictBySum(dcCategoryTrafficForCurrentRegion, strCategoryName, app.m_nDownBytes)
+                
+                
+            for (k,v) in dcCategoryUserNumForCurretNode:
+                updateDictBySum(dcCategoryUserNumForCurrentRegion, k, v)
+                
+        srUserNumPerRegion = pd.Series(dcUserNumPerRegion)
+        dfCategoryUserNumPerRegion = pd.DataFrame(dcCategoryUserNumPerRegion)
+        dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
+        
+        # delete unknown category
+        dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown)
+        dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown)
+        
+        return srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion
+                
+            
+    
+# def _getCategoryDistributionInRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType):
+#     '''
+#         get user & traffic distribution of regions for each app category
+#         
+#         Params:
+#                 dfAppUserNumInCells - row=serviceType, column='lac-cid'
+#                 dfAppTrafficInCells - row=serviceType, column='lac-cid'
+#                 
+#         Return:
+#                 dfCategoryUserInCells      - row = 'lac-cid', column = category_name
+#                 dfCategoryTrafficInCells   - row = 'lac-cid', column = category_name 
+#                 dfCategoryUserInRegions    - row = category_name, column = region_type_name
+#                 dfCategoryTrafficInRegions - row = category_name, column = region_type_name
+#     '''
+#     # group by category
+#     dfCategoryUserInCells = pd.DataFrame(index=dfAppUserNumInCells.columns)
+#     dfCategoryTrafficInCells = pd.DataFrame(index=dfAppTrafficInCells.columns)
+#     for tp in app_category.g_dcCategory.items():
+#         dfCategoryUserInCells[tp[0]] = dfAppUserNumInCells.loc[dfAppUserNumInCells.index.isin(tp[1])].sum(axis=0)
+#         dfCategoryTrafficInCells[tp[0]] = dfAppTrafficInCells.loc[dfAppTrafficInCells.index.isin(tp[1])].sum(axis=0)
+#     
+#     # group by region type
+#     dfCategoryUserInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
+#     dfCategoryTrafficInRegions = pd.DataFrame(index=app_category.g_dcCategory.keys())
+#     for tp in region_type.g_dcRegionTypeName.items():
+#         dfCategoryUserInRegions[tp[1]] = \
+#           (dfCategoryUserInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+#         dfCategoryTrafficInRegions[tp[1]] = \
+#           (dfCategoryTrafficInCells.loc[dfCellLocType[dfCellLocType['typeID']==tp[0]].index]).sum(axis=0)
+#         
+#     return dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions
+
+def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNumPerRegion):
     '''
         get access probability distribution of regions for each app categories
         
@@ -87,16 +149,13 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
     # calculate access probability
-    dfUserBaseInRegions = pd.DataFrame(index = dfCategoryUserInRegions.columns)
-    for cate in dfCategoryUserInRegions.index:
-        dfUserBaseInRegions[cate] = dfCategoryUserInRegions.sum(axis=0)
-    dfCategoryAccProb = dfCategoryUserInRegions.T.div(dfUserBaseInRegions)
+    dfCategoryAccProb = dfCategoryUserNumPerRegion.div(srUserNumPerRegion, axis=1)
     
     # prepare to draw
     ax0 = plt.figure().add_subplot(111)
     
     # color
-    nColorCount = len(dfCategoryUserInRegions.index)
+    nColorCount = len(dfCategoryUserNumPerRegion.index)
 
     cm = plt.get_cmap('gist_rainbow')
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
@@ -120,16 +179,14 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions):
     
     plt.show()
     
-def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions):
+def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerRegion):
     '''
         get access probability distribution of regions for each app categories
         
         Params:
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
-    dfCategoryPerCapitaTrafficInRegions = dfCategoryTrafficInRegions.T.div(dfCategoryUserInRegions.T)
-    dfCategoryPerCapitaTrafficInRegions = \
-        dfCategoryPerCapitaTrafficInRegions.div(dfCategoryPerCapitaTrafficInRegions.sum(axis=1), axis=0)
+    dfCategoryPerCapitaTrafficInRegions = dfCategoryUserInRegions.sum(axis=0).div(srUserNumPerRegion, axis=1)
     
     # prepare to draw
     ax0 = plt.figure().add_subplot(111)
@@ -241,31 +298,13 @@ def execute(dcPaths, dfCellLocType):
         3. app traffic similarity btw cells vs. distance & location types [disabled by default] 
     '''
     
-    # get app distribution of cells
-    dfAppUserNumInCells, dfAppTrafficInCells = basic_location.getAppDistributionOnCells(dcPaths)
-    
-    # get category distribution of regions
-    dfCategoryUserInCells, dfCategoryTrafficInCells, dfCategoryUserInRegions, dfCategoryTrafficInRegions = \
-      getCategoryDistributionOnRegions(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
-      
-      
-    # calculate app usage similarity
-    dfSimilarity = None
-    # dfSimilarity = CalculateAppUsageSimilarityAmongCells(dfAppUserNumInCells, dfAppTrafficInCells, dfCellLocType)
-
-    # del unless columns 
-    try:
-        del dfCategoryUserInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_UNKNOWN)]
-        del dfCategoryUserInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_RESIDENCE)]
-        
-        del dfCategoryTrafficInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_UNKNOWN)]
-        del dfCategoryTrafficInRegions[region_type.g_dcRegionTypeName.get(region_type.ID_TYPE_RESIDENCE)]
-    except KeyError:
-        pass
+    # get category user and traffic distribution
+    srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion = \
+        getCategoryDistributionInRegions(dcPaths, dfCellLocType)
     
     # draw
-    drawCategoryAccessProbabilityInRegions(dfCategoryUserInRegions)
-    drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, dfCategoryTrafficInRegions)
+    drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNumPerRegion)
+    drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, srUserNumPerRegion)
     
-    return dfSimilarity
+    return None
     
