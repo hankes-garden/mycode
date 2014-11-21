@@ -102,8 +102,8 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
     dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
     
     # delete unknown category
-    dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown)
-    dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown)
+    dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown, inplace=True)
+    dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown, inplace=True)
     
     return srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion
                 
@@ -162,8 +162,8 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNum
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     # plot
-    dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False, \
-                           color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.55))
+    dfCategoryAccProb.T.plot(ax=ax0, kind='bar', legend=False, \
+                           color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.8))
     ax0.set_ylabel = 'access probability (%)'
     ax0.set_xticklabels(dfCategoryAccProb.index, rotation=0)
     
@@ -197,7 +197,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerR
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    dfCategoryPerCapitaTrafficInRegions.plot(ax=ax0, kind='bar', \
+    dfCategoryPerCapitaTrafficInRegions.T.plot(ax=ax0, kind='bar', \
                                              color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     ax0.set_ylabel = 'per capita traffic'
     ax0.set_xticklabels(dfCategoryPerCapitaTrafficInRegions.index, rotation=0)
