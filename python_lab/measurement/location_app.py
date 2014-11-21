@@ -71,20 +71,21 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
         for node in path.m_lsNodes:
             strKey = "%d-%d" % (node.m_nLac, node.m_nCellID)
             nRegionType = dfCellLocType.loc[strKey]["typeID"]
+            strRegionName = region_type.g_dcRegionTypeName[nRegionType]
             
             # total user
-            updateDictBySum(dcTotalUserNumPerRegion, nRegionType, 1)
+            updateDictBySum(dcTotalUserNumPerRegion, strRegionName, 1)
             
             
-            dcCategoryUserNumForCurrentRegion = dcCategoryUserNumPerRegion.get(nRegionType, None)
+            dcCategoryUserNumForCurrentRegion = dcCategoryUserNumPerRegion.get(strRegionName, None)
             if (dcCategoryUserNumForCurrentRegion is None):
                 dcCategoryUserNumForCurrentRegion = {}
-                dcCategoryUserNumPerRegion[nRegionType] = dcCategoryUserNumForCurrentRegion
+                dcCategoryUserNumPerRegion[strRegionName] = dcCategoryUserNumForCurrentRegion
                 
-            dcCategoryTrafficForCurrentRegion = dcCategoryTrafficPerRegion.get(nRegionType, None)
+            dcCategoryTrafficForCurrentRegion = dcCategoryTrafficPerRegion.get(strRegionName, None)
             if (dcCategoryTrafficForCurrentRegion is None):
                 dcCategoryTrafficForCurrentRegion = {}
-                dcCategoryTrafficPerRegion[nRegionType] = dcCategoryTrafficForCurrentRegion
+                dcCategoryTrafficPerRegion[strRegionName] = dcCategoryTrafficForCurrentRegion
                 
             dcCategoryUserNumForCurretNode = {} 
             for app in node.m_lsApps:
@@ -165,7 +166,7 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNum
     dfCategoryAccProb.T.plot(ax=ax0, kind='bar', legend=False, \
                            color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.8))
     ax0.set_ylabel = 'access probability (%)'
-    ax0.set_xticklabels(dfCategoryAccProb.index, rotation=0)
+    ax0.set_xticklabels(dfCategoryAccProb.columns.tolist(), rotation=0)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
@@ -175,7 +176,7 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNum
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
 
-    ax0.legend(loc='upper right', bbox_to_anchor=(1, 0.5), ncol=1)
+    ax0.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0), ncol=1)
     
     plt.show()
     
@@ -200,7 +201,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerR
     dfCategoryPerCapitaTrafficInRegions.T.plot(ax=ax0, kind='bar', \
                                              color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
     ax0.set_ylabel = 'per capita traffic'
-    ax0.set_xticklabels(dfCategoryPerCapitaTrafficInRegions.index, rotation=0)
+    ax0.set_xticklabels(dfCategoryPerCapitaTrafficInRegions.columns.tolist(), rotation=0)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
@@ -210,7 +211,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerR
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
     
-    ax0.legend(loc='upper right', bbox_to_anchor=(1, 0.5), ncol=1)
+    ax0.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0), ncol=1)
     
     plt.show()
     
