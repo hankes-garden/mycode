@@ -244,7 +244,7 @@ def drawAccessProbability(dfCategoryUserPerCell, sTotalUserPerCell, dfCategoryUs
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
+    ax0 = dfCategoryAccessProb.plot(ax=axes[0], style=lsLineStyle, xlim=(1, 20), legend=False, colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('access probability')
     
@@ -254,7 +254,7 @@ def drawAccessProbability(dfCategoryUserPerCell, sTotalUserPerCell, dfCategoryUs
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
     
-    fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center')
+    fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center', ncol=7)
     plt.show()
     
 def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog, bMovingAverage, nWindowSize):
@@ -374,7 +374,7 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    ax0 = (dfCell/1024.0).plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), ylim=(0,2500), legend=False , colormap=cm)
+    ax0 = (dfCell/1024.0).plot(ax=axes[0], style=lsLineStyle, xlim=(1, 20), ylim=(0,2500), legend=False , colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('average traffic (KB)')
     
@@ -385,7 +385,7 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     ax1 = (dfRog/1024.0).plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), ylim=(0,2500), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
     
-    fig.legend(ax0.get_lines(), dfCategoryAvgTrafficPerRog.columns, 'upper center')
+    fig.legend(ax0.get_lines(), dfCategoryAvgTrafficPerRog.columns, 'upper center', ncol=7)
     plt.show()
     
 def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_indicator='cell'):
@@ -462,6 +462,7 @@ def execute(dcPaths):
                           dfCategoryUserPerRog.iloc[:,:nXLim].T, srTotalUserPerRog.iloc[:nXLim])
     
     
-    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 5)
+    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, \
+                            dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 5)
     
 
