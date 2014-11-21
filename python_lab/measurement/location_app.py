@@ -73,7 +73,7 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
             nRegionType = dfCellLocType.loc[strKey]["typeID"]
             
             # total user
-            updateDictBySum(dcTotalUserNumPerRegion, strKey, 1)
+            updateDictBySum(dcTotalUserNumPerRegion, nRegionType, 1)
             
             
             dcCategoryUserNumForCurrentRegion = dcCategoryUserNumPerRegion.get(nRegionType, None)
