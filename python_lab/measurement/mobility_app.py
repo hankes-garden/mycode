@@ -462,6 +462,6 @@ def execute(dcPaths):
                           dfCategoryUserPerRog.iloc[:,:nXLim].T, srTotalUserPerRog.iloc[:nXLim])
     
     
-    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 3)
+    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 5)
     
 
