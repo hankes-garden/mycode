@@ -279,13 +279,13 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog, bMov
         sRog = sPerCapitaTrafficPerRog
     
     # cell
-    (sCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 19), ylim=(1500, 5000) )
+    (sCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 19), ylim=(1000, 4500) )
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), ylim=(1500, 5000) )
+    (sRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), ylim=(1000, 4500) )
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('average traffic (KB)')
     
