@@ -63,9 +63,9 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
                dfCategoryTrafficPerRegion - category traffic per region, row:category, col:region
     '''
     
-    dcUserNumPerRegion = {}             # total user number in different types of locations;
-    dcCategoryUserNumPerRegion = {}     # category user number in different types of locations;
-    dcCategoryTrafficPerRegion = {}     # category traffic in different types of locations;
+    dcTotalUserNumPerRegion = {}             # total user number in different types of locations;
+    dcCategoryUserNumPerRegion = {}          # category user number in different types of locations;
+    dcCategoryTrafficPerRegion = {}          # category traffic in different types of locations;
     
     for path in dcPaths.values():
         for node in path.m_lsNodes:
@@ -73,7 +73,7 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
             nRegionType = dfCellLocType.loc[strKey]["typeID"]
             
             # total user
-            updateDictBySum(dcUserNumPerRegion, strKey, 1)
+            updateDictBySum(dcTotalUserNumPerRegion, strKey, 1)
             
             
             dcCategoryUserNumForCurrentRegion = dcCategoryUserNumPerRegion.get(nRegionType, None)
@@ -94,10 +94,10 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
                 updateDictBySum(dcCategoryTrafficForCurrentRegion, strCategoryName, app.m_nDownBytes)
                 
                 
-            for (k,v) in dcCategoryUserNumForCurretNode:
+            for (k,v) in dcCategoryUserNumForCurretNode.iteritems():
                 updateDictBySum(dcCategoryUserNumForCurrentRegion, k, v)
                 
-        srUserNumPerRegion = pd.Series(dcUserNumPerRegion)
+        srUserNumPerRegion = pd.Series(dcTotalUserNumPerRegion)
         dfCategoryUserNumPerRegion = pd.DataFrame(dcCategoryUserNumPerRegion)
         dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
         
@@ -175,7 +175,7 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNum
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
 
-    ax0.legend(loc='upper right', bbox_to_anchor=(1, 1), ncol=4)
+    ax0.legend(loc='upper right', bbox_to_anchor=(1, 0.5), ncol=1)
     
     plt.show()
     
@@ -210,7 +210,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerR
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
     
-    ax0.legend(loc='upper right', bbox_to_anchor=(1, 1), ncol=4)
+    ax0.legend(loc='upper right', bbox_to_anchor=(1, 0.5), ncol=1)
     
     plt.show()
     
@@ -299,12 +299,12 @@ def execute(dcPaths, dfCellLocType):
     '''
     
     # get category user and traffic distribution
-    srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion = \
+    srTotalUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion = \
         getCategoryDistributionInRegions(dcPaths, dfCellLocType)
     
     # draw
-    drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNumPerRegion)
-    drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, srUserNumPerRegion)
+    drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srTotalUserNumPerRegion)
+    drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, srTotalUserNumPerRegion)
     
     return None
     
