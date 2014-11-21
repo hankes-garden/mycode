@@ -267,20 +267,25 @@ def drawPerCapitaTraffic(sPerCapitaTrafficPerCell, sPerCapitaTrafficPerRog, bMov
     '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
+    sCell = None
+    sRog = None
     if (bMovingAverage is True):
-        sPerCapitaTrafficPerCell = pd.rolling_mean(sPerCapitaTrafficPerCell, window=nWindowSize, \
+        sCell = pd.rolling_mean(sPerCapitaTrafficPerCell, window=nWindowSize, \
                                                    min_periods=1, center=True)
-        sPerCapitaTrafficPerRog = pd.rolling_mean(sPerCapitaTrafficPerRog, window=nWindowSize, \
+        sRog = pd.rolling_mean(sPerCapitaTrafficPerRog, window=nWindowSize, \
                                                   min_periods=1, center=True)
+    else:
+        sCell = sPerCapitaTrafficPerCell
+        sRog = sPerCapitaTrafficPerRog
     
     # cell
-    (sPerCapitaTrafficPerCell/1024).plot(ax=axes[0], kind='bar', xlim=(1, 19), ylim=(1500, 5000) )
+    (sCell/1024).plot(ax=axes[0], kind='bar', xlim=(0, 19), ylim=(1500, 5000) )
     axes[0].set_xlabel("# cell")
     axes[0].set_ylabel('average traffic (KB)')
     
     # rog
 #     axes[1].yaxis.tick_right()
-    (sPerCapitaTrafficPerRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), ylim=(1500, 5000) )
+    (sRog/1024).plot(ax=axes[1], kind='bar', xlim=(0, 20), ylim=(1500, 5000) )
     axes[1].set_xlabel("radius of gyration (km)")
     axes[1].set_ylabel('average traffic (KB)')
     
@@ -342,13 +347,18 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     #===========================================================================
     # moving average
     #===========================================================================
+    dfCell = None
+    dfRog = None
     if (bMovingAverage is True):
         # cell
-        dfCategoryAvgTrafficPerCell = pd.rolling_mean(dfCategoryAvgTrafficPerCell, \
+        dfCell = pd.rolling_mean(dfCategoryAvgTrafficPerCell, \
                                                       window=nWindowSize, min_periods=1, center=True)
         # rog
-        dfCategoryAvgTrafficPerRog = pd.rolling_mean(dfCategoryAvgTrafficPerRog, \
+        dfRog = pd.rolling_mean(dfCategoryAvgTrafficPerRog, \
                                                      window=nWindowSize, min_periods=1, center=True)
+    else:
+        dfCell = dfCategoryAvgTrafficPerCell
+        dfRog = dfCategoryAvgTrafficPerRog
     
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
@@ -364,7 +374,7 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    ax0 = dfCategoryAvgTrafficPerCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
+    ax0 = dfCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
@@ -372,9 +382,8 @@ def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPer
     # rog
     #===========================================================================
     
-    ax1 = dfCategoryAvgTrafficPerRog.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
+    ax1 = dfRog.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
-#     axes[1].set_ylabel('traffic contribution')
     
     fig.legend(ax0.get_lines(), dfCategoryAvgTrafficPerRog.columns, 'upper center')
     plt.show()
