@@ -147,6 +147,10 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
     dfCategoryUserPerMobility = pd.DataFrame(dcCategoryUserPerMobility)
     dfCategoryTrafficPerMobility = pd.DataFrame(dcCategoryTrafficPerMobility)
     
+    # remember to delete "unknown" category
+    dfCategoryUserPerMobility.drop(labels=app_category.g_strUnknown)
+    dfCategoryTrafficPerMobility.drop(labels=app_category.g_strUnknown)
+    
     return srTotalUserPerMobility, dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
       
 
@@ -318,25 +322,23 @@ def drawTrafficContribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     fig.legend(ax0.get_lines(), dfCategoryTrafficProb.columns, 'upper center')
     plt.show()
     
-def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
+def drawTrafficDistribution(dfCategoryAvgTrafficPerCell, dfCategoryAvgTrafficPerRog, bMovingAverage=False, nWindowSize=1):
     '''
         This function draw the absolute traffic volume of each app cateogory on mobility
         
         param:
-                dfCategoryTrafficPerCell - row:mobility, col:category
-                dfCategoryTrafficPerRog  - row:mobility, col:category
+                dfCategoryAvgTrafficPerCell - row:mobility, col:category
+                dfCategoryAvgTrafficPerRog  - row:mobility, col:category
                 
     '''
-    
-    # test these 
-    ax = plt.axes() 
-    upper, lower = axes_broken_y(ax, ybounds=[-2., 2.9, 22.1, 30.]) 
-    upper.plot(range(30), range(30)) 
-    lower.plot(range(30), range(30)) 
-    upper.set_ylabel('Data') 
-    plt.show()
-    # TODO: add truncated axis support
-    
+    #===========================================================================
+    # moving average
+    #===========================================================================
+    if (bMovingAverage is True):
+        # cell
+        dfCategoryAvgTrafficPerCell = pd.rolling_mean(dfCategoryAvgTrafficPerCell, 3, 1 ,center=True)
+        # rog
+        dfCategoryAvgTrafficPerRog = pd.rolling_mean(dfCategoryAvgTrafficPerRog, 3, 1, center=True)
     
     fig, axes =  plt.subplots(nrows=1, ncols=2)
     
@@ -347,15 +349,12 @@ def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     # cell
     #===========================================================================
     # color
-    nColorCount = len(dfCategoryTrafficPerCell.index)
+    nColorCount = len(dfCategoryAvgTrafficPerCell.index)
     cm = plt.get_cmap('gist_rainbow')
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
-    # axis
-    upperPerCell, lowerPerCell = axes_broken_y(ax, ybounds=[0, 2000, 3000, 6000]) 
     
-    
-    ax0 = dfCategoryTrafficPerCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
+    ax0 = dfCategoryAvgTrafficPerCell.plot(ax=axes[0], style=lsLineStyle, xlim=(0, 20), legend=False , colormap=cm)
     axes[0].set_xlabel("# cells")
     axes[0].set_ylabel('traffic contribution')
     
@@ -363,11 +362,11 @@ def drawTrafficDistribution(dfCategoryTrafficPerCell, dfCategoryTrafficPerRog):
     # rog
     #===========================================================================
     
-    ax1 = dfCategoryTrafficPerRog.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
+    ax1 = dfCategoryAvgTrafficPerRog.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
 #     axes[1].set_ylabel('traffic contribution')
     
-    fig.legend(ax0.get_lines(), dfCategoryTrafficPerRog.columns, 'upper center')
+    fig.legend(ax0.get_lines(), dfCategoryAvgTrafficPerRog.columns, 'upper center')
     plt.show()
     
 def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_indicator='cell'):
@@ -422,9 +421,8 @@ def execute(dcPaths):
     print("mobility = #cell")
     srTotalUserPerCell, dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
      getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
-     
+    dfCategoryAvgTrafficPerCell = dfCategoryTrafficPerCell.div(dfCategoryUserPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfCategoryTrafficPerCell)
-#     sAvgTrafficSDPerCell = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerCell, 'cell')
     
     
     #===========================================================================
@@ -433,15 +431,16 @@ def execute(dcPaths):
     print("mobility = rog")
     srTotalUserPerRog, dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog)
+    dfCategoryAvgTrafficPerRog = dfCategoryTrafficPerRog.div(dfCategoryUserPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfCategoryTrafficPerRog)
-#     sAvgTrafficSDPerRog = getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerRog, 'rog')
     
     
     # draw
     drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1])
     
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, dfCategoryUserPerRog.T.iloc[:,:nXLim].T)
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, dfCategoryUserPerRog.iloc[:,:nXLim].T)
     
-    drawTrafficDistribution(dfCategoryTrafficPerCell.iloc[:,:nXLim].T, dfCategoryTrafficPerRog.iloc[:,:nXLim].T)
+    
+    drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T)
     
 

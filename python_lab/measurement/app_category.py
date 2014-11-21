@@ -59,6 +59,8 @@ g_strShopping = "shopping"
 
 g_strMap = "map"
 
+g_strUnknown = "unknown"
+
 g_dcCategory = {g_strWebBrowsing:g_lsWebBrowsing, \
                 g_strP2P: g_lsP2P, \
                 g_strIM: g_lsIM, \
@@ -77,7 +79,7 @@ g_lsSortedCategoryIndex = [g_strWebBrowsing, g_strIM, g_strP2P, g_strSNS, g_strG
                            g_strMusic, g_strAppMarket, g_strEmail, g_strMap, g_strShopping, g_strStock, g_strReading]
 
 def getAppCategory(nAppID):
-    strCategoryName = 'Unknown'
+    strCategoryName = g_strUnknown
     for (k, v) in g_dcCategory.iteritems():
         if (nAppID in v):
             strCategoryName = k
