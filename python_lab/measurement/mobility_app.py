@@ -81,8 +81,8 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
 
 def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
     '''
-        This function computes user number and traffic distribution of 
-        app categories on mobility
+        This function computes user number and traffic volume of 
+        app categories in different mobility levels
         
         param:
                 dcPaths             - roaming paths
@@ -215,13 +215,17 @@ def drawAll(dfCategoryUserPerMobility, dfCategoryTrafficPerMobility, sPerCapitaT
     
     
     
-def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
+def drawAccessProbability(dfCategoryUserPerCell, sTotalUserPerCell, dfCategoryUserPerRog, sTotalUserPerRog):
     '''
         Plot category access probability on mobility
         
+        prob(m_i) = categoryUserNumber(m_i) / totalUser(m_i)
+        
         param:
                 dfCategoryUserPerCell - already been sliced and transposed, row:mobility, col:category
+                sTotalUserPerCell     - user number in different #cell
                 dfCategoryUserPerRog  - already been sliced and transposed, row:mobility, col:category
+                sTotalUserPerRog      - user number in different rog
         
     '''
     fig, axes =  plt.subplots(nrows=1, ncols=2)
@@ -232,8 +236,7 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     #===========================================================================
     # mobility = #cell
     #===========================================================================
-    sUserPerMobility = dfCategoryUserPerCell.sum(axis=1)
-    dfCategoryAccessProb = dfCategoryUserPerCell.div(sUserPerMobility, axis=0)
+    dfCategoryAccessProb = dfCategoryUserPerCell.div(sTotalUserPerCell, axis=0)
     
     # color
     nColorCount = len(dfCategoryAccessProb.index)
@@ -246,12 +249,10 @@ def drawAccessProbability(dfCategoryUserPerCell, dfCategoryUserPerRog):
     axes[0].set_ylabel('access probability')
     
     # rog
-    sUserPerMobility = dfCategoryUserPerRog.sum(axis=1)
-    dfCategoryAccessProb = dfCategoryUserPerRog.div(sUserPerMobility, axis=0)
+    dfCategoryAccessProb = dfCategoryUserPerRog.div(sTotalUserPerRog, axis=0)
 
     ax1 = dfCategoryAccessProb.plot(ax=axes[1], style=lsLineStyle, xlim=(0, 20), legend=False, colormap=cm)
     axes[1].set_xlabel("radius of gyration (km)")
-#     axes[1].set_ylabel('access probability')
     
     fig.legend(ax0.get_lines(), dfCategoryAccessProb.columns, 'upper center')
     plt.show()
@@ -427,9 +428,10 @@ def execute(dcPaths):
     #===========================================================================
     # mobility on cell
     #===========================================================================
-    print("mobility = #cell")
+    print("  mobility = #cell")
     srTotalUserPerCell, dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
-     getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
+        getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
+     
     dfCategoryAvgTrafficPerCell = dfCategoryTrafficPerCell.div(dfCategoryUserPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfCategoryTrafficPerCell)
     
@@ -437,7 +439,7 @@ def execute(dcPaths):
     #===========================================================================
     # mobility on rog
     #===========================================================================
-    print("mobility = rog")
+    print("  mobility = rog")
     srTotalUserPerRog, dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
      getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog)
     dfCategoryAvgTrafficPerRog = dfCategoryTrafficPerRog.div(dfCategoryUserPerRog)
@@ -447,7 +449,8 @@ def execute(dcPaths):
     # draw
     drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1], True, 3)
     
-    drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, dfCategoryUserPerRog.iloc[:,:nXLim].T)
+    drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, srTotalUserPerCell.iloc[:nXLim], \
+                          dfCategoryUserPerRog.iloc[:,:nXLim].T, srTotalUserPerRog.iloc[:nXLim])
     
     
     drawTrafficDistribution(dfCategoryAvgTrafficPerCell.iloc[:,:nXLim].T, dfCategoryAvgTrafficPerRog.iloc[:,:nXLim].T, True, 3)
