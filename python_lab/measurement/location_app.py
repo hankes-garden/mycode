@@ -97,15 +97,15 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
             for (k,v) in dcCategoryUserNumForCurretNode.iteritems():
                 updateDictBySum(dcCategoryUserNumForCurrentRegion, k, v)
                 
-        srUserNumPerRegion = pd.Series(dcTotalUserNumPerRegion)
-        dfCategoryUserNumPerRegion = pd.DataFrame(dcCategoryUserNumPerRegion)
-        dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
-        
-        # delete unknown category
-        dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown)
-        dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown)
-        
-        return srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion
+    srUserNumPerRegion = pd.Series(dcTotalUserNumPerRegion)
+    dfCategoryUserNumPerRegion = pd.DataFrame(dcCategoryUserNumPerRegion)
+    dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
+    
+    # delete unknown category
+    dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown)
+    dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown)
+    
+    return srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion
                 
             
     
