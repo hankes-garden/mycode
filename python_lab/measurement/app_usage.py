@@ -115,7 +115,7 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
     #===========================================================================
     # draw
     #===========================================================================
-    drawAppUserTrafficDistribution(sAppUserNum, dfCleanedAppTraffic.sum(1))
+    drawAppUserTrafficDistribution(sAppUserNum, dfCleanedAppTraffic.sum(axis=1))
     
     sCategoryUserNum = getCategoryUserNum(sAppUserNum)
     sCategoryTraffic = getCategoryTraffic(dfCleanedAppTraffic)
