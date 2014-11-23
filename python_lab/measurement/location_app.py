@@ -168,55 +168,57 @@ def drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srUserNum
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
     # plot
-    dfCategoryAccProb.T.plot(ax=ax0, kind='bar', legend=False, \
-                           color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.8))
+    dfCategoryAccProb.plot(ax=ax0, kind='bar', legend=False)
+#                            color=[scalarMap.to_rgba(i) for i in range(nColorCount)], ylim=(0., 0.8))
     ax0.set_ylabel = 'access probability (%)'
-    ax0.set_xticklabels(dfCategoryAccProb.columns.tolist(), rotation=0)
+    ax0.set_xticklabels(dfCategoryAccProb.index.tolist(), rotation=90)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
     bars = filter(pred, ax0.get_children())
-    hatches = ''.join(h*len(dfCategoryAccProb) for h in '|oO/\\-x.*+')
+    hatches = ''.join(h*len(dfCategoryAccProb) for h in '|ox/+*-.\\O')
 
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
 
-    ax0.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0), ncol=1)
+    ax0.legend(loc='upper left', ncol=1)
     
     plt.show()
     
-def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerRegion):
+def drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, dfCategoryUserNumPerRegion):
     '''
-        get access probability distribution of regions for each app categories
+        draw category traffic contribution in regions
         
         Params:
-                dfCategoryUserInRegions - row = category_name, column = region_type_name
+                dfCategoryTrafficPerRegion - row = category_name, column = region_type_name
     '''
-    dfCategoryPerCapitaTrafficInRegions = dfCategoryUserInRegions.div(srUserNumPerRegion, axis=1)
+    dfCategoryPerCapitaTrafficPerRegion = dfCategoryTrafficPerRegion.div(dfCategoryUserNumPerRegion)
     
     # prepare to draw
-    ax0 = plt.figure().add_subplot(111)
+    fig = plt.figure()
+    ax0 = fig.add_subplot(111)
     
     # color
-    nColorCount = len(dfCategoryUserInRegions.index)
+    nColorCount = len(dfCategoryTrafficPerRegion.index)
     cm = plt.get_cmap('gist_rainbow')
     cNorm  = colors.Normalize(vmin=0, vmax=nColorCount-1)
     scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
     
-    dfCategoryPerCapitaTrafficInRegions.T.plot(ax=ax0, kind='bar', \
-                                             color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
-    ax0.set_ylabel = 'per capita traffic'
-    ax0.set_xticklabels(dfCategoryPerCapitaTrafficInRegions.columns.tolist(), rotation=0)
+    (dfCategoryPerCapitaTrafficPerRegion/1024.0).plot(ax=ax0, kind='bar')
+#                                              color=[scalarMap.to_rgba(i) for i in range(nColorCount)])
+    
+    ax0.set_xticklabels(dfCategoryPerCapitaTrafficPerRegion.index.tolist(), rotation=90)
     
     # hatches
     pred = lambda obj: isinstance(obj, matplotlib.patches.Rectangle)
     bars = filter(pred, ax0.get_children())
-    hatches = ''.join(h*len(dfCategoryPerCapitaTrafficInRegions) for h in '|oO/\\-x.*+')
+    hatches = ''.join(h*len(dfCategoryPerCapitaTrafficPerRegion) for h in '|ox/+*-.\\O')
 
     for bar, hatch in zip(bars, hatches):
         bar.set_hatch(hatch)
     
-    ax0.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0), ncol=1)
+    ax0.legend(loc='upper left', ncol=1)
+    ax0.set_ylabel = 'per capita traffic (KB)'
     
     plt.show()
     
@@ -310,7 +312,7 @@ def execute(dcPaths, dfCellLocType):
     
     # draw
     drawCategoryAccessProbabilityInRegions(dfCategoryUserNumPerRegion, srTotalUserNumPerRegion)
-    drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, srTotalUserNumPerRegion)
+    drawCategoryPerCapitaTrafficInRegions(dfCategoryTrafficPerRegion, dfCategoryUserNumPerRegion)
     
     return None
     
