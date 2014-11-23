@@ -110,7 +110,7 @@ def execute(sAppUserNum = None, dfCleanedAppTraffic = None, dcPaths = None, strA
         dfAgg = pd.DataFrame(dcData)
         sAppUserNum = pd.Series(dcAggAppNum)
     
-        dfCleanedAppTraffic = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
+        dfCleanedAppTraffic, sSelectedApps = data_loader.cleanData(dfAgg, sAppUserNum, nTopApp)
     
     #===========================================================================
     # draw
