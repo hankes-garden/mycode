@@ -102,9 +102,14 @@ def getCategoryDistributionInRegions(dcPaths, dfCellLocType):
     dfCategoryUserNumPerRegion = pd.DataFrame(dcCategoryUserNumPerRegion)
     dfCategoryTrafficPerRegion = pd.DataFrame(dcCategoryTrafficPerRegion)
     
-    # delete unknown category
+    # delete unknown region type & app cateogry
+    srUserNumPerRegion.drop(labels=region_type.g_dcRegionTypeName[region_type.ID_TYPE_UNKNOWN], inplace=True)
+    
     dfCategoryUserNumPerRegion.drop(labels=app_category.g_strUnknown, inplace=True)
+    del dfCategoryUserNumPerRegion[region_type.g_dcRegionTypeName[region_type.ID_TYPE_UNKNOWN]]
+    
     dfCategoryTrafficPerRegion.drop(labels=app_category.g_strUnknown, inplace=True)
+    del dfCategoryTrafficPerRegion[region_type.g_dcRegionTypeName[region_type.ID_TYPE_UNKNOWN]]
     
     return srUserNumPerRegion, dfCategoryUserNumPerRegion, dfCategoryTrafficPerRegion
                 
@@ -187,7 +192,7 @@ def drawCategoryPerCapitaTrafficInRegions(dfCategoryUserInRegions, srUserNumPerR
         Params:
                 dfCategoryUserInRegions - row = category_name, column = region_type_name
     '''
-    dfCategoryPerCapitaTrafficInRegions = dfCategoryUserInRegions.sum(axis=0).div(srUserNumPerRegion, axis=1)
+    dfCategoryPerCapitaTrafficInRegions = dfCategoryUserInRegions.div(srUserNumPerRegion, axis=1)
     
     # prepare to draw
     ax0 = plt.figure().add_subplot(111)
