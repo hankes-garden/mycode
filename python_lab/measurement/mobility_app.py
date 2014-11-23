@@ -432,7 +432,7 @@ def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_i
     return sSDPerMobility.apply(np.sqrt)
         
 
-def execute(dcPaths, bFilterOut):
+def execute(dcPaths, bFilterOut=True):
     '''
         include measurements on:
             1. access probability of each app vs. mobility

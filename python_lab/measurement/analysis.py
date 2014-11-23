@@ -106,11 +106,11 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
             import mobility_app
             
             print("heavy subscriber")
-            mobility_app.execute(dcHeavyUserPaths)
+            mobility_app.execute(dcHeavyUserPaths, False)
             plt.show()
             
             print("normal subscriber")
-            mobility_app.execute(dcNormalUserPaths)
+            mobility_app.execute(dcNormalUserPaths, False)
             plt.show()
             print("mobility_app is finished")
     
