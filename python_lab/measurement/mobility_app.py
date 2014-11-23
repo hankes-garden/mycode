@@ -79,7 +79,7 @@ def getAppDistributionOnMobility(dcPaths, mobility_indicator='cell'):
     
     return srTotalUserPerMobility, dfAppUserPerMobility, dfAppTrafficPerMobility
 
-def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
+def getCategoryDistributionOnMobility(dcPaths, mobility_indicator, bFilterOut):
     '''
         This function computes user number and traffic volume of 
         app categories in different mobility levels
@@ -150,6 +150,14 @@ def getCategoryDistributionOnMobility(dcPaths, mobility_indicator):
     # remember to delete "unknown" category
     dfCategoryUserPerMobility.drop(labels=app_category.g_strUnknown, inplace=True)
     dfCategoryTrafficPerMobility.drop(labels=app_category.g_strUnknown, inplace=True)
+    
+    if (bFilterOut is True):
+        lsCategory2Delete = [app_category.g_strStock, app_category.g_strShopping,\
+                             app_category.g_strReading, app_category.g_strP2P, \
+                             app_category.g_strEmail, app_category.g_strAppMarket]
+        
+        dfCategoryUserPerMobility.drop(labels=lsCategory2Delete, inplace=True)
+        dfCategoryTrafficPerMobility.drop(labels=lsCategory2Delete, inplace=True)
     
     return srTotalUserPerMobility, dfCategoryUserPerMobility, dfCategoryTrafficPerMobility
       
@@ -424,7 +432,7 @@ def getAvgTrafficSDPerMobility(dcPaths, sPerCapitaTrafficPerMobility, mobility_i
     return sSDPerMobility.apply(np.sqrt)
         
 
-def execute(dcPaths):
+def execute(dcPaths, bFilterOut):
     '''
         include measurements on:
             1. access probability of each app vs. mobility
@@ -439,7 +447,7 @@ def execute(dcPaths):
     #===========================================================================
     print("  mobility = #cell")
     srTotalUserPerCell, dfCategoryUserPerCell, dfCategoryTrafficPerCell = \
-        getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell)
+        getCategoryDistributionOnMobility(dcPaths, g_strMobilityInCell, bFilterOut)
      
     dfCategoryAvgTrafficPerCell = dfCategoryTrafficPerCell.div(dfCategoryUserPerCell)
     sPerCapitaTrafficPerCell = getPerCapitaTrafficOnMobility(srTotalUserPerCell, dfCategoryTrafficPerCell)
@@ -450,13 +458,15 @@ def execute(dcPaths):
     #===========================================================================
     print("  mobility = rog")
     srTotalUserPerRog, dfCategoryUserPerRog, dfCategoryTrafficPerRog = \
-     getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog)
+     getCategoryDistributionOnMobility(dcPaths, g_strMobilityInRog, bFilterOut)
+     
     dfCategoryAvgTrafficPerRog = dfCategoryTrafficPerRog.div(dfCategoryUserPerRog)
     sPerCapitaTrafficPerRog = getPerCapitaTrafficOnMobility(srTotalUserPerRog, dfCategoryTrafficPerRog)
     
     
     # draw
     drawPerCapitaTraffic(sPerCapitaTrafficPerCell.iloc[:nXLim], sPerCapitaTrafficPerRog.iloc[:nXLim+1], True, 3)
+    
     
     drawAccessProbability(dfCategoryUserPerCell.iloc[:,:nXLim].T, srTotalUserPerCell.iloc[:nXLim], \
                           dfCategoryUserPerRog.iloc[:,:nXLim].T, srTotalUserPerRog.iloc[:nXLim])

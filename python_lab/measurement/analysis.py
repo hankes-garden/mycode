@@ -53,7 +53,7 @@ def execute(strSerPathDir, strCellLocPath, bRaw, nTopApp):
     input = raw_input("mobility_app? [y/n]>> ")
     if('y' == input.strip() ):
         import mobility_app
-        mobility_app.execute(dcTotalPaths)
+        mobility_app.execute(dcTotalPaths, True)
         plt.show()
         print("mobility_app is finished")
     
